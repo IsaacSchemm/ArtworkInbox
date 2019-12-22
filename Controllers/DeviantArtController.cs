@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DANotify.Models;
 using DeviantArtFs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -18,16 +19,14 @@ namespace DANotify.Controllers {
         }
 
         public IActionResult Index() {
-            return RedirectToAction(nameof(Whoami));
+            return RedirectToAction(nameof(Feed));
         }
 
-        public async Task<IActionResult> Whoami() {
+        public async Task<IActionResult> Feed() {
             var authResult = await HttpContext.AuthenticateAsync();
             var token = new DeviantArtTokenWrapper(_auth, authResult.Properties);
-            var tx = new DeviantArtCommonParameters {
-                Expand = DeviantArtObjectExpansion.UserDetails | DeviantArtObjectExpansion.UserStats
-            }.WrapToken(token);
-            return Ok(await DeviantArtFs.Requests.User.Whoami.ExecuteAsync(tx));
+            var items = await DeviantArtFs.Requests.Feed.FeedHome.ToArrayAsync(token, null, 50);
+            return View(new DeviantArtFeedViewModel { Items = items });
         }
     }
 }

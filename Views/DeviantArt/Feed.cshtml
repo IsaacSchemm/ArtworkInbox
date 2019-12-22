@@ -1,0 +1,46 @@
+﻿@model DANotify.Models.DeviantArtFeedViewModel
+@{
+    ViewData["Title"] = "Feed";
+}
+
+@foreach (var i in Model.Items.Where(x => x.Type == "deviation_submitted")) {
+    <h1>@i.ByUser.Username</h1>
+    <h2>@i.BucketTotal deviations</h2>
+    <div class="container-fluid">
+        <div class="row">
+            @foreach (var d in i.Deviations) {
+                <div class="col-md-3 text-center">
+                    <a href="@d.Url">
+                        <img src="@d.Thumbs.Select(x => x.Src).FirstOrDefault()"
+                             style="width: 100%; height: 150px; object-fit: contain" />
+                        <br />
+                        @d.Title
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+    <hr />
+}
+
+<h1>Journal Entries</h1>
+@foreach (var i in Model.Items.Where(x => x.Type == "journal_submitted")) {
+    foreach (var d in i.Deviations) {
+        <a href="@d.Url">
+            <strong>@d.Author.Username:</strong> @d.Excerpt
+        </a>
+    }
+}
+<hr />
+
+<h1>Status Updates</h1>
+@foreach (var i in Model.Items.Where(x => x.Type == "status")) {
+    if (i.Status != null) {
+        <p>
+            <a href="@i.Status.Url">
+                <strong>@i.Status.Author.Username:</strong> @Html.Raw(i.Status.Body)
+            </a>
+        </p>
+    }
+}
+<hr />
