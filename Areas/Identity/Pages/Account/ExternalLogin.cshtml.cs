@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using AspNet.Security.OAuth.DeviantArt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -44,9 +45,13 @@ namespace DANotify.Areas.Identity.Pages.Account {
         public string ErrorMessage { get; set; }
 
         public class InputModel {
-            [Required]
             [EmailAddress]
+            [Display(Name = "Email address (optional)")]
             public string Email { get; set; }
+
+            [Required]
+            [Display(Name = "Username")]
+            public string UserName { get; set; }
         }
 
         public IActionResult OnGetAsync() {
@@ -84,11 +89,10 @@ namespace DANotify.Areas.Identity.Pages.Account {
                 // If the user does not have an account, then ask the user to create an account.
                 ReturnUrl = returnUrl;
                 LoginProvider = info.LoginProvider;
-                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email)) {
-                    Input = new InputModel {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    };
-                }
+                Input = new InputModel {
+                    UserName = info.Principal.FindFirstValue(DeviantArtAuthenticationConstants.Claims.Username),
+                    Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                };
                 return Page();
             }
         }
@@ -102,8 +106,12 @@ namespace DANotify.Areas.Identity.Pages.Account {
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
+            if (Input.Email == null) {
+                Input.Email = Guid.NewGuid() + "@example.com";
+            }
+
             if (ModelState.IsValid) {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new IdentityUser { UserName = Input.UserName, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded) {
                     result = await _userManager.AddLoginAsync(user, info);
@@ -116,7 +124,7 @@ namespace DANotify.Areas.Identity.Pages.Account {
                         }
 
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        var userId = await _userManager.GetUserIdAsync(user);
+                        /*var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                         var callbackUrl = Url.Page(
@@ -126,7 +134,7 @@ namespace DANotify.Areas.Identity.Pages.Account {
                             protocol: Request.Scheme);
 
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");*/
 
                         return LocalRedirect(returnUrl);
                     }
