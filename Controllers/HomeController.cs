@@ -11,14 +11,6 @@ using DeviantArtFs;
 
 namespace DANotify.Controllers {
     public class HomeController : Controller {
-        private readonly ILogger<HomeController> _logger;
-        private readonly IDeviantArtAuth _auth;
-
-        public HomeController(ILogger<HomeController> logger, IDeviantArtAuth auth) {
-            _logger = logger;
-            _auth = auth;
-        }
-
         public IActionResult Index() {
             return View();
         }
