@@ -23,6 +23,7 @@ namespace DANotify {
         public Task UpdateTokenAsync(IDeviantArtRefreshToken value) {
             _authenticationProperties.UpdateTokenValue("refresh_token", value.RefreshToken);
             _authenticationProperties.UpdateTokenValue("access_token", value.AccessToken);
+            //TODO actually store somewhere
             return Task.CompletedTask;
         }
     }

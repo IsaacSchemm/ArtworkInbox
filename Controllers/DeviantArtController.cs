@@ -25,7 +25,7 @@ namespace DANotify.Controllers {
         public async Task<IActionResult> Feed() {
             var authResult = await HttpContext.AuthenticateAsync();
             var token = new DeviantArtTokenWrapper(_auth, authResult.Properties);
-            var items = await DeviantArtFs.Requests.Feed.FeedHome.ToArrayAsync(token, null, 50);
+            var items = await DeviantArtFs.Requests.Feed.FeedHome.ToArrayAsync(token, null, 1000);
             return View(new DeviantArtFeedViewModel { Items = items });
         }
     }
