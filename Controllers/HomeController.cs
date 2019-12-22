@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using DANotify.Models;
+using Microsoft.AspNetCore.Authentication;
 
 namespace DANotify.Controllers {
     public class HomeController : Controller {
@@ -19,8 +20,9 @@ namespace DANotify.Controllers {
             return View();
         }
 
-        public IActionResult Privacy() {
-            return View();
+        public async Task<IActionResult> Privacy() {
+            var authResult = await HttpContext.AuthenticateAsync();
+            return Ok(authResult.Properties.Items);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
