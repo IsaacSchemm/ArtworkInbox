@@ -26,6 +26,12 @@ namespace DANotify {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+            services.AddAuthentication()
+                .AddDeviantArt(d => {
+                    d.ClientId = Configuration["Authentication:DeviantArt:ClientId"];
+                    d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
+                    d.SaveTokens = true;
+                });
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
