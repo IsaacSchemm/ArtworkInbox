@@ -12,6 +12,7 @@ using DANotify.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using DeviantArtFs;
 
 namespace DANotify {
     public class Startup {
@@ -32,6 +33,9 @@ namespace DANotify {
                     d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
                     d.SaveTokens = true;
                 });
+            services.AddSingleton<IDeviantArtAuth>(new DeviantArtAuth(
+                int.Parse(Configuration["Authentication:DeviantArt:ClientId"]),
+                Configuration["Authentication:DeviantArt:ClientSecret"]));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
