@@ -5,7 +5,7 @@
 
 @if (Model.More) {
     <div class="alert alert-secondary">
-        There are too many items in your activity feed to display here.
+        There are too many items in your activity feed to display on one page.
         Showing the @Model.Items.Count() most recent items.
     </div>
 }
@@ -34,21 +34,26 @@
     foreach (var d in i.Deviations) {
         <p>
             <a href="@d.Url">
-                <strong>@d.Author.Username:</strong> @d.Excerpt
+                <strong>@d.Author.Username:</strong>
             </a>
+            <span class="html-convertible-to-text">@d.Excerpt</span>
         </p>
     }
 }
 <hr />
 
 <h1>Status Updates</h1>
-@foreach (var i in Model.Items.Where(x => x.Type == "status")) {
-    if (i.Status != null) {
+@foreach (var g in Model.Items.Where(x => x.Type == "status").GroupBy(x => x.ByUser.Username)) {
+    <h3>@g.Key</h3>
+    foreach (var i in g) {
+        if (i.Status != null) {
         <p>
             <a href="@i.Status.Url">
-                <strong>@i.Status.Author.Username:</strong> @i.Status.Body
+                <strong>@i.Status.Author.Username:</strong>
             </a>
+            <span class="html-convertible-to-text">@i.Status.Body</span>
         </p>
+        }
     }
 }
 <hr />
@@ -59,8 +64,10 @@
         has changed their username to
         <a href="https://www.deviantart.com/@i.ByUser.Username">@i.ByUser.Username</a>
     </p>
+    <hr />
 }
 
+<h1>Collection Updates</h1>
 @foreach (var i in Model.Items.Where(x => x.Type == "collection_update")) {
     <p>
         <strong><a href="https://www.deviantart.com/@i.ByUser.Username">@i.ByUser.Username</a></strong>
@@ -68,3 +75,21 @@
         <strong><a href="@i.Collection.Url">@i.Collection.Name</a></strong>
     </p>
 }
+
+@if (Model.Cursor != null && Model.More) {
+    <a href="/DeviantArt/Feed?cursor=@Model.Cursor">
+        Next Page &raquo;
+    </a>
+}
+
+<script type="text/javascript">
+    var convertibles = document.getElementsByClassName("html-convertible-to-text");
+    var tempDiv = document.createElement("div");
+    for (var i = 0; i < convertibles.length; i++) {
+        tempDiv.innerHTML = convertibles[i].innerText;
+        var str = tempDiv.innerText;
+        if (str.length > 100)
+            str = str.substring(0, 100) + "...";
+        convertibles[i].innerText = str;
+    }
+</script>

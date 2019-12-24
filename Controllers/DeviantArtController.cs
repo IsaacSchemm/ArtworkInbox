@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using DANotify.Data;
 using DANotify.Models;
@@ -29,7 +30,7 @@ namespace DANotify.Controllers {
             return RedirectToAction(nameof(Feed));
         }
 
-        public async Task<IActionResult> Feed(int take = 200) {
+        public async Task<IActionResult> Feed(string cursor = null) {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserDeviantArtTokens
                 .Where(t => t.UserId == userId)
@@ -38,8 +39,22 @@ namespace DANotify.Controllers {
                 return View(new DeviantArtFeedViewModel { });
 
             var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
-            var items = await DeviantArtFs.Requests.Feed.FeedHome.ToArrayAsync(token, null, take + 1);
-            return View(new DeviantArtFeedViewModel { Items = items.Take(take), More = items.Length > take });
+            var items = new List<IBclDeviantArtFeedItem>();
+            bool hasMore = true;
+            for (int i = 0; i < 20; i++) {
+                try {
+                    var page = await DeviantArtFs.Requests.Feed.FeedHome.ExecuteAsync(token, cursor);
+                    items.AddRange(page.Items);
+                    cursor = page.Cursor;
+                    if (!page.HasMore) {
+                        hasMore = false;
+                        break;
+                    }
+                } catch (WebException) {
+                    if (i != 0) break;
+                }
+            }
+            return View(new DeviantArtFeedViewModel { Items = items, Cursor = cursor, More = hasMore });
         }
     }
 }
