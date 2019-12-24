@@ -33,7 +33,7 @@ namespace DANotify.Controllers {
         public async Task<IActionResult> Feed(string cursor = null, DateTimeOffset? start = null) {
             if (start == null)
                 start = DateTimeOffset.UtcNow;
-            
+
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserDeviantArtTokens
                 .Where(t => t.UserId == userId)
@@ -56,20 +56,21 @@ namespace DANotify.Controllers {
 
             var items = new List<IBclDeviantArtFeedItem>();
             bool hasMore = true;
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 20 && hasMore; i++) {
                 try {
                     var page = await DeviantArtFs.Requests.Feed.FeedHome.ExecuteAsync(token, cursor);
                     cursor = page.Cursor;
+
+                    if (!page.HasMore)
+                        hasMore = false;
+
                     foreach (var x in page.Items) {
-                        if (x.Ts < cutoff) {
+                        if (x.Ts.ToUniversalTime() < cutoff) {
                             hasMore = false;
                             break;
+                        } else {
+                            items.Add(x);
                         }
-                        items.Add(x);
-                    }
-                    if (!page.HasMore) {
-                        hasMore = false;
-                        break;
                     }
                 } catch (WebException ex) when (i != 0) {
                     _logger.LogWarning(ex, "Could not load DeviantArt feed");

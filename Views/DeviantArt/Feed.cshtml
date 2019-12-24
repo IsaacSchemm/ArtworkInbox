@@ -3,10 +3,6 @@
     ViewData["Title"] = "Feed";
 }
 
-<div class="alert alert-primary">
-    Visit the <a href="/DeviantArt/FeedSettings">feed settings page</a> to configure what kinds of items appear in the feed.
-</div>
-
 @if (Model.More) {
     <div class="alert alert-secondary">
         There are too many items in your activity feed to display on one page.
@@ -19,7 +15,7 @@
     <div class="alert alert-secondary">
         There are no new items to display in your activity feed.
     </div>
-    <p>
+    @*<p>
         <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?dt=@Uri.EscapeDataString(DateTimeOffset.MinValue.ToString("o"))">
             Mark all as new
         </a>
@@ -27,7 +23,7 @@
         <span class="small text-muted">
             This will show all activity items that have not yet been cleared from DeviantArt's own watch page.
         </span>
-    </p>
+    </p>*@
 }
 
 @foreach (var g in Model.DeviationsByUser) {

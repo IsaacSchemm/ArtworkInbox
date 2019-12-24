@@ -22,8 +22,16 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="DeviantArt" asp-action="Index">DeviantArt</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                DeviantArt
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdown-da">
+                                <a class="dropdown-item" asp-area="" asp-controller="DeviantArt" asp-action="Feed">Feed</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="DeviantArt" asp-action="FeedSettings">Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="https://www.deviantart.com/notifications/feedback">Notifications</a>
+                            </div>
                         </li>
                     </ul>
                 </div>
