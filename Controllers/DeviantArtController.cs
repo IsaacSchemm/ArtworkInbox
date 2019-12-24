@@ -39,7 +39,8 @@ namespace DANotify.Controllers {
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
-                return Forbid();
+                return View("NoAccount");
+            var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
 
             var lastRead = await _context.UserReadMarkers
                 .Where(t => t.UserId == userId)
@@ -53,7 +54,6 @@ namespace DANotify.Controllers {
 
             DateTimeOffset cutoff = lastRead.DeviantArtLastRead ?? DateTimeOffset.MinValue;
 
-            var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
             var items = new List<IBclDeviantArtFeedItem>();
             bool hasMore = true;
             for (int i = 0; i < 20; i++) {
@@ -100,6 +100,46 @@ namespace DANotify.Controllers {
             lastRead.DeviantArtLastRead = dt;
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Feed));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FeedSettings() {
+            var userId = _userManager.GetUserId(User);
+            var dbToken = await _context.UserDeviantArtTokens
+                .Where(t => t.UserId == userId)
+                .SingleOrDefaultAsync();
+            if (dbToken == null)
+                return View("NoAccount");
+            var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
+            var feedSettings = await DeviantArtFs.Requests.Feed.FeedSettings.ExecuteAsync(token);
+            return View(new DeviantArtFeedSettingsViewModel {
+                Statuses = feedSettings.Include.Statuses,
+                Deviations = feedSettings.Include.Deviations,
+                Journals = feedSettings.Include.Journals,
+                GroupDeviations = feedSettings.Include.GroupDeviations,
+                Collections = feedSettings.Include.Collections,
+                Misc = feedSettings.Include.Misc,
+            });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> FeedSettings(DeviantArtFeedSettingsViewModel model) {
+            var userId = _userManager.GetUserId(User);
+            var dbToken = await _context.UserDeviantArtTokens
+                .Where(t => t.UserId == userId)
+                .SingleOrDefaultAsync();
+            if (dbToken == null)
+                return View("NoAccount");
+            var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
+            await DeviantArtFs.Requests.Feed.FeedSettingsUpdate.ExecuteAsync(token, new DeviantArtFs.Requests.Feed.FeedSettingsUpdateRequest {
+                Statuses = model.Statuses,
+                Deviations = model.Deviations,
+                Journals = model.Journals,
+                GroupDeviations = model.GroupDeviations,
+                Collections = model.Collections,
+                Misc = model.Misc
+            });
+            return View(model);
         }
     }
 }
