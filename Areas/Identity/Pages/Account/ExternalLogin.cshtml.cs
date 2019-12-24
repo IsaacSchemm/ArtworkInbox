@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AspNet.Security.OAuth.DeviantArt;
+using DANotify.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DANotify.Areas.Identity.Pages.Account {
@@ -21,18 +23,18 @@ namespace DANotify.Areas.Identity.Pages.Account {
     public class ExternalLoginModel : PageModel {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender) {
+            ApplicationDbContext context) {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
-            _emailSender = emailSender;
+            _context = context;
         }
 
         [BindProperty]
@@ -66,6 +68,30 @@ namespace DANotify.Areas.Identity.Pages.Account {
             return new ChallengeResult(provider, properties);
         }
 
+        private async Task UpdateTokensAsync(IdentityUser user, ExternalLoginInfo info) {
+            if (info.LoginProvider == "DeviantArt") {
+                var token = await _context.UserDeviantArtTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token == null) {
+                    token = new UserDeviantArtToken {
+                        UserId = user.Id
+                    };
+                    _context.UserDeviantArtTokens.Add(token);
+                }
+                token.AccessToken = info.AuthenticationTokens
+                    .Where(t => t.Name == "access_token")
+                    .Select(t => t.Value)
+                    .Single();
+                token.RefreshToken = info.AuthenticationTokens
+                    .Where(t => t.Name == "refresh_token")
+                    .Select(t => t.Value)
+                    .Single();
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Updated DeviantArt tokens for {Name}.", info.Principal.Identity.Name);
+            }
+        }
+
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null) {
             returnUrl = returnUrl ?? Url.Content("~/");
             if (remoteError != null) {
@@ -81,16 +107,11 @@ namespace DANotify.Areas.Identity.Pages.Account {
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded) {
-                // Store the access token and resign in so the token is included in
-                // in the cookie
                 var user = await _userManager.FindByLoginAsync(
                     info.LoginProvider,
                     info.ProviderKey);
 
-                var props = new AuthenticationProperties();
-                props.StoreTokens(info.AuthenticationTokens);
-
-                await _signInManager.SignInAsync(user, props, info.LoginProvider);
+                await UpdateTokensAsync(user, info);
 
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 return LocalRedirect(returnUrl);
@@ -128,12 +149,9 @@ namespace DANotify.Areas.Identity.Pages.Account {
                 if (result.Succeeded) {
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded) {
-                        // Include the access token in the properties
-                        var props = new AuthenticationProperties();
-                        props.StoreTokens(info.AuthenticationTokens);
-                        props.IsPersistent = true;
+                        await UpdateTokensAsync(user, info);
 
-                        await _signInManager.SignInAsync(user, props);
+                        await _signInManager.SignInAsync(user, isPersistent: false);
 
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 

@@ -5,6 +5,11 @@
     <UserSecretsId>aspnet-DANotify-323AE0A6-D00F-4C91-89E7-85AF41063D20</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20191224155815_DATokenServerStorage.cs" />
+    <Compile Remove="Data\Migrations\20191224155815_DATokenServerStorage.Designer.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.DeviantArt" Version="3.0.0" />

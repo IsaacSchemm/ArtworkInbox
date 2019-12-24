@@ -3,6 +3,13 @@
     ViewData["Title"] = "Feed";
 }
 
+@if (Model.More) {
+    <div class="alert alert-secondary">
+        There are too many items in your activity feed to display here.
+        Showing the @Model.Items.Count() most recent items.
+    </div>
+}
+
 @foreach (var g in Model.DeviationsByUser) {
     <h1>@g.Key</h1>
     <div class="container-fluid">
@@ -25,9 +32,11 @@
 <h1>Journal Entries</h1>
 @foreach (var i in Model.Items.Where(x => x.Type == "journal_submitted")) {
     foreach (var d in i.Deviations) {
-        <a href="@d.Url">
-            <strong>@d.Author.Username:</strong> @d.Excerpt
-        </a>
+        <p>
+            <a href="@d.Url">
+                <strong>@d.Author.Username:</strong> @d.Excerpt
+            </a>
+        </p>
     }
 }
 <hr />

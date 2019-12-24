@@ -9,5 +9,7 @@ namespace DANotify.Data {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) {
         }
+
+        public DbSet<UserDeviantArtToken> UserDeviantArtTokens { get; set; }
     }
 }

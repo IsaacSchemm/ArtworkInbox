@@ -1,4 +1,5 @@
-﻿using DeviantArtFs;
+﻿using DANotify.Data;
+using DeviantArtFs;
 using Microsoft.AspNetCore.Authentication;
 using System;
 using System.Collections.Generic;
@@ -7,24 +8,25 @@ using System.Threading.Tasks;
 
 namespace DANotify {
     public class DeviantArtTokenWrapper : IDeviantArtAutomaticRefreshToken {
-        private readonly AuthenticationProperties _authenticationProperties;
+        private readonly ApplicationDbContext _context;
+        private readonly UserDeviantArtToken _token;
 
         public IDeviantArtAuth DeviantArtAuth { get; }
 
-        public DeviantArtTokenWrapper(IDeviantArtAuth auth, AuthenticationProperties authenticationProperties) {
+        public DeviantArtTokenWrapper(IDeviantArtAuth auth, ApplicationDbContext context, UserDeviantArtToken token) {
             DeviantArtAuth = auth ?? throw new ArgumentNullException(nameof(auth));
-            _authenticationProperties = authenticationProperties ?? throw new ArgumentNullException(nameof(authenticationProperties));
+            _context = context;
+            _token = token;
         }
 
-        public string RefreshToken => _authenticationProperties.GetTokenValue("refresh_token");
+        public string RefreshToken => _token.RefreshToken;
 
-        public string AccessToken => _authenticationProperties.GetTokenValue("access_token");
+        public string AccessToken => _token.AccessToken;
 
-        public Task UpdateTokenAsync(IDeviantArtRefreshToken value) {
-            _authenticationProperties.UpdateTokenValue("refresh_token", value.RefreshToken);
-            _authenticationProperties.UpdateTokenValue("access_token", value.AccessToken);
-            //TODO actually store somewhere
-            return Task.CompletedTask;
+        public async Task UpdateTokenAsync(IDeviantArtRefreshToken value) {
+            _token.RefreshToken = value.RefreshToken;
+            _token.AccessToken = value.AccessToken;
+            await _context.SaveChangesAsync();
         }
     }
 }
