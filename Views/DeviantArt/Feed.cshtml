@@ -10,6 +10,17 @@
     </div>
 }
 
+@if (!Model.Items.Any()) {
+    <div class="alert alert-secondary">
+        There are no new items to display in your activity feed.
+    </div>
+    <p>
+        <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?dt=@Uri.EscapeDataString(DateTimeOffset.MinValue.ToString("o"))">
+            Mark all as new
+        </a>
+    </p>
+}
+
 @foreach (var g in Model.DeviationsByUser) {
     <h1>@g.Key</h1>
     <div class="container-fluid">
@@ -29,9 +40,9 @@
     <hr />
 }
 
-<h1>Journal Entries</h1>
-@foreach (var i in Model.Items.Where(x => x.Type == "journal_submitted")) {
-    foreach (var d in i.Deviations) {
+@if (Model.Journals.Any()) {
+    <h1>Journal Entries</h1>
+    @foreach (var d in Model.Journals) {
         <p>
             <a href="@d.Url">
                 <strong>@d.Author.Username:</strong>
@@ -39,26 +50,26 @@
             <span class="html-convertible-to-text">@d.Excerpt</span>
         </p>
     }
+    <hr />
 }
-<hr />
 
-<h1>Status Updates</h1>
-@foreach (var g in Model.Items.Where(x => x.Type == "status").GroupBy(x => x.ByUser.Username)) {
-    <h3>@g.Key</h3>
-    foreach (var i in g) {
-        if (i.Status != null) {
-        <p>
-            <a href="@i.Status.Url">
-                <strong>@i.Status.Author.Username:</strong>
-            </a>
-            <span class="html-convertible-to-text">@i.Status.Body</span>
-        </p>
+@if (Model.StatusesByUser.Any()) {
+    <h1>Status Updates</h1>
+    @foreach (var g in Model.StatusesByUser) {
+        <h3>@g.Key</h3>
+        foreach (var s in g) {
+            <p>
+                <a href="@s.Url">
+                    <strong>@s.Author.Username:</strong>
+                </a>
+                <span class="html-convertible-to-text">@s.Body</span>
+            </p>
         }
     }
+    <hr />
 }
-<hr />
 
-@foreach (var i in Model.Items.Where(x => x.Type == "username_change")) {
+@foreach (var i in Model.UsernameChanges) {
     <p>
         <strong>@i.Formerly</strong>
         has changed their username to
@@ -67,26 +78,37 @@
     <hr />
 }
 
-<h1>Collection Updates</h1>
-@foreach (var i in Model.Items.Where(x => x.Type == "collection_update")) {
-    <p>
-        <strong><a href="https://www.deviantart.com/@i.ByUser.Username">@i.ByUser.Username</a></strong>
-        has added @i.AddedCount deviations to the collection
-        <strong><a href="@i.Collection.Url">@i.Collection.Name</a></strong>
-    </p>
+@if (Model.CollectionUpdates.Any()) {
+    <h1>Collection Updates</h1>
+    @foreach (var i in Model.CollectionUpdates) {
+        <p>
+            <strong><a href="https://www.deviantart.com/@i.ByUser.Username">@i.ByUser.Username</a></strong>
+            has added @i.AddedCount deviations to the collection
+            <strong><a href="@i.Collection.Url">@i.Collection.Name</a></strong>
+        </p>
+    }
+    <hr />
 }
 
 @if (Model.Cursor != null && Model.More) {
-    <a class="btn btn-primary" href="/DeviantArt/Feed?cursor=@Model.Cursor&start=@Model.Start">
-        Next Page &raquo;
-    </a>
-} else {
-    <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?dt=@Model.Start.ToString("o")">
-        Mark as Read
-    </a>
-    <div class="small text-muted">
-        This will not clear old activity from your DeviantArt feed, but it will hide it from this app.
-    </div>
+    <p>
+        <a class="btn btn-primary" href="/DeviantArt/Feed?cursor=@Model.Cursor&start=@Uri.EscapeDataString(Model.Start.ToString("o"))">
+            Next page &raquo;
+        </a>
+    </p>
+    <hr />
+}
+
+@if (Model.Items.Any()) {
+    <p>
+        <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?dt=@Uri.EscapeDataString(Model.Start.ToString("o"))">
+            Mark all as read
+        </a>
+        <br />
+        <span class="small text-muted">
+            This will not clear old activity from your DeviantArt feed, but it will hide it from this app.
+        </span>
+    </p>
 }
 
 <script type="text/javascript">
