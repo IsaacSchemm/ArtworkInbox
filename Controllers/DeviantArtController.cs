@@ -30,13 +30,28 @@ namespace DANotify.Controllers {
             return RedirectToAction(nameof(Feed));
         }
 
-        public async Task<IActionResult> Feed(string cursor = null) {
+        public async Task<IActionResult> Feed(string cursor = null, DateTimeOffset? start = null) {
+            if (start == null)
+                start = DateTimeOffset.UtcNow;
+            
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserDeviantArtTokens
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
-                return View(new DeviantArtFeedViewModel { });
+                return Forbid();
+
+            var lastRead = await _context.UserReadMarkers
+                .Where(t => t.UserId == userId)
+                .SingleOrDefaultAsync();
+            if (lastRead == null) {
+                lastRead = new UserReadMarker {
+                    UserId = userId
+                };
+                _context.UserReadMarkers.Add(lastRead);
+            }
+
+            DateTimeOffset cutoff = lastRead.DeviantArtLastRead ?? DateTimeOffset.MinValue;
 
             var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
             var items = new List<IBclDeviantArtFeedItem>();
@@ -44,17 +59,47 @@ namespace DANotify.Controllers {
             for (int i = 0; i < 20; i++) {
                 try {
                     var page = await DeviantArtFs.Requests.Feed.FeedHome.ExecuteAsync(token, cursor);
-                    items.AddRange(page.Items);
                     cursor = page.Cursor;
+                    foreach (var x in page.Items) {
+                        if (x.Ts < cutoff) {
+                            hasMore = false;
+                            break;
+                        }
+                        items.Add(x);
+                    }
                     if (!page.HasMore) {
                         hasMore = false;
                         break;
                     }
-                } catch (WebException) {
-                    if (i != 0) break;
+                } catch (WebException ex) when (i != 0) {
+                    _logger.LogWarning(ex, "Could not load DeviantArt feed");
+                    break;
                 }
             }
-            return View(new DeviantArtFeedViewModel { Items = items, Cursor = cursor, More = hasMore });
+
+            return View(new DeviantArtFeedViewModel {
+                Start = start.Value,
+                Cursor = cursor,
+                Items = items,
+                More = hasMore
+            });
+        }
+
+        public async Task<IActionResult> MarkAsRead(DateTimeOffset dt) {
+            var userId = _userManager.GetUserId(User);
+            var lastRead = await _context.UserReadMarkers
+                .Where(t => t.UserId == userId)
+                .SingleOrDefaultAsync();
+            if (lastRead == null) {
+                lastRead = new UserReadMarker {
+                    UserId = userId
+                };
+                _context.UserReadMarkers.Add(lastRead);
+            }
+
+            lastRead.DeviantArtLastRead = dt;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Feed));
         }
     }
 }

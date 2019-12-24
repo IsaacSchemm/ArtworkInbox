@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace DANotify.Models {
     public class DeviantArtFeedViewModel {
-        public IEnumerable<IBclDeviantArtFeedItem> Items { get; set; } = Enumerable.Empty<IBclDeviantArtFeedItem>();
-        public string Cursor { get; set; } = null;
-        public bool More { get; set; } = false;
+        public DateTimeOffset Start { get; set; }
+        public IEnumerable<IBclDeviantArtFeedItem> Items { get; set; }
+        public string Cursor { get; set; }
+        public bool More { get; set; }
 
         public IEnumerable<IBclDeviation> Deviations =>
             Items

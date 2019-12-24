@@ -11,5 +11,7 @@ namespace DANotify.Data {
         }
 
         public DbSet<UserDeviantArtToken> UserDeviantArtTokens { get; set; }
+
+        public DbSet<UserReadMarker> UserReadMarkers { get; set; }
     }
 }

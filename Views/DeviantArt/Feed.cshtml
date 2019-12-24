@@ -77,9 +77,16 @@
 }
 
 @if (Model.Cursor != null && Model.More) {
-    <a href="/DeviantArt/Feed?cursor=@Model.Cursor">
+    <a class="btn btn-primary" href="/DeviantArt/Feed?cursor=@Model.Cursor&start=@Model.Start">
         Next Page &raquo;
     </a>
+} else {
+    <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?dt=@Model.Start.ToString("o")">
+        Mark as Read
+    </a>
+    <div class="small text-muted">
+        This will not clear old activity from your DeviantArt feed, but it will hide it from this app.
+    </div>
 }
 
 <script type="text/javascript">

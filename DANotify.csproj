@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Data\Migrations\20191224155815_DATokenServerStorage.cs" />
     <Compile Remove="Data\Migrations\20191224155815_DATokenServerStorage.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191224172024_dfgdf.cs" />
+    <Compile Remove="Data\Migrations\20191224172024_dfgdf.Designer.cs" />
   </ItemGroup>
 
 
