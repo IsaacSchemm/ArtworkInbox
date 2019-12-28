@@ -1,6 +1,7 @@
 ﻿using DANotify.Backend.Types;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DANotify.Backend {
@@ -39,6 +40,32 @@ namespace DANotify.Backend {
                 HasMore = hasMore,
                 FeedItems = items
             };
+        }
+    }
+
+    public class EmptyFeedSource : FeedSource {
+        public override Task<Author> GetAuthenticatedUserAsync() {
+            return Task.FromResult(new Author {
+                Username = "Not logged in",
+                AvatarUrl = "https://upload.wikimedia.org/wikipedia/commons/c/ce/Transparent.gif",
+                ProfileUrl = "/Identity/Account/Manage/ExternalLogins"
+            });
+        }
+
+        public override Task<FeedBatch> GetBatchAsync(string cursor) {
+            return Task.FromResult(new FeedBatch {
+                Cursor = null,
+                HasMore = false,
+                FeedItems = Enumerable.Empty<FeedItem>()
+            });
+        }
+
+        public override string GetNotificationsUrl() {
+            return "https://www.example.com/";
+        }
+
+        public override Task<bool> HasNotificationsAsync() {
+            return Task.FromResult(false);
         }
     }
 }

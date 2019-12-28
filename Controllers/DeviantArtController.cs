@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DANotify.Controllers {
-    public class DeviantArtController : Controller {
+    public class DeviantArtController : FeedController {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
@@ -31,46 +31,41 @@ namespace DANotify.Controllers {
             return RedirectToAction(nameof(Feed));
         }
 
-        public async Task<IActionResult> Feed(string cursor = null, DateTimeOffset? latest = null) {
+        protected override async Task<FeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserDeviantArtTokens
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
-                return View("NoAccount");
+                return new EmptyFeedSource();
             var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
-
-            var lastRead = await _context.UserReadMarkers
-                .Where(t => t.UserId == userId)
-                .SingleOrDefaultAsync();
-            if (lastRead == null) {
-                lastRead = new UserReadMarker {
-                    UserId = userId
-                };
-                _context.UserReadMarkers.Add(lastRead);
-            }
-
-            DateTimeOffset earliest = lastRead.DeviantArtLastRead ?? DateTimeOffset.MinValue;
-
-            var feedSource = new DeviantArtFeedSource(token);
-            return View(await FeedViewModel.BuildAsync(feedSource, cursor, earliest, latest));
+            return new DeviantArtFeedSource(token);
         }
 
-        public async Task<IActionResult> MarkAsRead(DateTimeOffset dt) {
+        protected override async Task<DateTimeOffset> GetLastRead() {
             var userId = _userManager.GetUserId(User);
-            var lastRead = await _context.UserReadMarkers
+            var dt = await _context.UserReadMarkers
+                .Where(t => t.UserId == userId)
+                .Select(t => t.DeviantArtLastRead)
+                .SingleOrDefaultAsync();
+            return dt ?? DateTimeOffset.MinValue;
+        }
+
+        protected override async Task SetLastRead(DateTimeOffset lastRead) {
+            var userId = _userManager.GetUserId(User);
+            var o = await _context.UserReadMarkers
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
-            if (lastRead == null) {
-                lastRead = new UserReadMarker {
+
+            if (o == null) {
+                o = new UserReadMarker {
                     UserId = userId
                 };
-                _context.UserReadMarkers.Add(lastRead);
+                _context.UserReadMarkers.Add(o);
             }
 
-            lastRead.DeviantArtLastRead = dt;
+            o.DeviantArtLastRead = lastRead;
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Feed));
         }
 
         [HttpGet]

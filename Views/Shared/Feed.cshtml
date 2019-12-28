@@ -96,7 +96,7 @@
 
 @if (Model.FeedBatch.FeedItems.Any()) {
     <p>
-        <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?dt=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+        <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
             Mark all as read
         </a>
         <br />
