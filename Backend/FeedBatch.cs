@@ -3,19 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace DANotify.Backend {
-    public class FeedResult<T> {
-        public T Cursor { get; set; }
+    public class FeedBatch {
+        public string Cursor { get; set; }
         public bool HasMore { get; set; }
         public IEnumerable<FeedItem> FeedItems { get; set; }
-
-        public void Concat(FeedResult<T> newResult) {
-            if (!HasMore)
-                throw new System.Exception("Cannot append to a FeedResult when HasMore = false");
-
-            Cursor = newResult.Cursor;
-            HasMore = newResult.HasMore;
-            FeedItems = FeedItems.Concat(newResult.FeedItems);
-        }
 
         public IEnumerable<Artwork> Artworks {
             get {

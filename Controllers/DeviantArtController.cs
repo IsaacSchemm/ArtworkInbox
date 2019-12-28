@@ -31,10 +31,7 @@ namespace DANotify.Controllers {
             return RedirectToAction(nameof(Feed));
         }
 
-        public async Task<IActionResult> Feed(string cursor = null, DateTimeOffset? start = null) {
-            if (start == null)
-                start = DateTimeOffset.UtcNow;
-
+        public async Task<IActionResult> Feed(string cursor = null, DateTimeOffset? latest = null) {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserDeviantArtTokens
                 .Where(t => t.UserId == userId)
@@ -53,22 +50,10 @@ namespace DANotify.Controllers {
                 _context.UserReadMarkers.Add(lastRead);
             }
 
-            var notifications = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(token, null, 1);
-
-            DateTimeOffset cutoff = lastRead.DeviantArtLastRead ?? DateTimeOffset.MinValue;
+            DateTimeOffset earliest = lastRead.DeviantArtLastRead ?? DateTimeOffset.MinValue;
 
             var feedSource = new DeviantArtFeedSource(token);
-            var feedResult = await feedSource.GetBatchesAsync(new FeedParameters<string> {
-                Cursor = cursor,
-                StartAt = cutoff,
-                StopAtTime = TimeSpan.FromSeconds(3)
-            });
-
-            return View(new DeviantArtFeedViewModel {
-                Start = start.Value,
-                FeedResult = feedResult,
-                AnyNotifications = notifications.Any()
-            });
+            return View(await FeedViewModel.BuildAsync(feedSource, cursor, earliest, latest));
         }
 
         public async Task<IActionResult> MarkAsRead(DateTimeOffset dt) {

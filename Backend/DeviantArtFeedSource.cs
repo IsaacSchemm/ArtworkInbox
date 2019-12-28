@@ -6,11 +6,20 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace DANotify.Backend {
-    public class DeviantArtFeedSource : FeedSource<string> {
+    public class DeviantArtFeedSource : FeedSource {
         private readonly IDeviantArtAccessToken _token;
 
         public DeviantArtFeedSource(IDeviantArtAccessToken token) {
             _token = token;
+        }
+
+        public override async Task<Author> GetAuthenticatedUserAsync() {
+            var user = await DeviantArtFs.Requests.User.Whoami.ExecuteAsync(_token);
+            return new Author {
+                Username = user.Username,
+                AvatarUrl = user.Usericon,
+                ProfileUrl = $"https://www.deviantart.com/{Uri.EscapeDataString(user.Username)}"
+            };
         }
 
         private static IEnumerable<FeedItem> Wrangle(IEnumerable<IBclDeviantArtFeedItem> feedItems) {
@@ -69,13 +78,20 @@ namespace DANotify.Backend {
             }
         }
 
-        public override async Task<FeedResult<string>> GetBatchAsync(string cursor) {
+        public override async Task<FeedBatch> GetBatchAsync(string cursor) {
             var page = await DeviantArtFs.Requests.Feed.FeedHome.ExecuteAsync(_token, cursor);
-            return new FeedResult<string> {
+            return new FeedBatch {
                 Cursor = page.Cursor,
                 HasMore = page.HasMore,
                 FeedItems = Wrangle(page.Items)
             };
         }
+
+        public override async Task<bool> HasNotificationsAsync() {
+            var notifications = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(_token, null, 1);
+            return notifications.Any();
+        }
+
+        public override string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
     }
 }

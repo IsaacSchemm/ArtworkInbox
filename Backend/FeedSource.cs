@@ -1,17 +1,19 @@
 ﻿using DANotify.Backend.Types;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DANotify.Backend {
-    public abstract class FeedSource<T> {
-        public abstract Task<FeedResult<T>> GetBatchAsync(T cursor);
+    public abstract class FeedSource {
+        public abstract Task<Author> GetAuthenticatedUserAsync();
+        public abstract Task<FeedBatch> GetBatchAsync(string cursor);
+        public abstract Task<bool> HasNotificationsAsync();
+        public abstract string GetNotificationsUrl();
 
-        public async Task<FeedResult<T>> GetBatchesAsync(FeedParameters<T> parameters) {
+        public async Task<FeedBatch> GetBatchesAsync(FeedParameters parameters) {
             DateTime start = DateTime.Now;
 
-            T cursor = parameters.Cursor;
+            string cursor = parameters.Cursor;
             bool hasMore = true;
             var items = new List<FeedItem>();
 
@@ -32,7 +34,7 @@ namespace DANotify.Backend {
                 }
             }
 
-            return new FeedResult<T> {
+            return new FeedBatch {
                 Cursor = cursor,
                 HasMore = hasMore,
                 FeedItems = items

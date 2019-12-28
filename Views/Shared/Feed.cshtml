@@ -1,23 +1,30 @@
-﻿@model DANotify.Models.DeviantArtFeedViewModel
+﻿@model DANotify.Models.FeedViewModel
 @{
     ViewData["Title"] = "Feed";
 }
 
-@if (Model.AnyNotifications) {
+<div class="mb-4">
+    <a href="@Model.FeedUserInfo.AuthenticatedUser.ProfileUrl" target="_blank">
+        <img src="@Model.FeedUserInfo.AuthenticatedUser.AvatarUrl" />
+        @Model.FeedUserInfo.AuthenticatedUser.Username
+    </a>
+</div>
+
+@if (Model.FeedUserInfo.HasNotifications) {
     <div class="alert alert-primary">
-        You have new <a href="https://www.deviantart.com/notifications/feedback">notifications</a> on DeviantArt.
+        You have new <a href="@Model.FeedUserInfo.NotificationsUrl" target="_blank">notifications</a> on this site.
     </div>
 }
 
-@if (Model.FeedResult.HasMore) {
+@if (Model.FeedBatch.HasMore) {
     <div class="alert alert-secondary">
         There are too many items in your activity feed to display on one page.
-        Showing the @Model.FeedResult.FeedItems.Count() most recent items.
+        Showing the @Model.FeedBatch.FeedItems.Count() most recent items.
         <br />
     </div>
 }
 
-@if (!Model.FeedResult.FeedItems.Any()) {
+@if (!Model.FeedBatch.FeedItems.Any()) {
     <div class="alert alert-secondary">
         There are no new items to display in your activity feed.
     </div>
@@ -42,9 +49,9 @@
     <hr />
 }
 
-@if (Model.FeedResult.JournalEntries.Any()) {
+@if (Model.FeedBatch.JournalEntries.Any()) {
     <h1>Journal Entries</h1>
-    @foreach (var d in Model.FeedResult.JournalEntries) {
+    @foreach (var d in Model.FeedBatch.JournalEntries) {
         <p>
             <a href="@d.LinkUrl">
                 <strong>@d.Author.Username:</strong>
@@ -78,18 +85,18 @@
     <hr />
 }
 
-@if (Model.FeedResult.Cursor != null && Model.FeedResult.HasMore) {
+@if (Model.FeedBatch.Cursor != null && Model.FeedBatch.HasMore) {
     <p>
-        <a class="btn btn-primary" href="/DeviantArt/Feed?cursor=@Model.FeedResult.Cursor&start=@Uri.EscapeDataString(Model.Start.ToString("o"))">
+        <a class="btn btn-primary" href="/DeviantArt/Feed?cursor=@Model.FeedBatch.Cursor&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
             Next page &raquo;
         </a>
     </p>
     <hr />
 }
 
-@if (Model.FeedResult.FeedItems.Any()) {
+@if (Model.FeedBatch.FeedItems.Any()) {
     <p>
-        <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?dt=@Uri.EscapeDataString(Model.Start.ToString("o"))">
+        <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?dt=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
             Mark all as read
         </a>
         <br />

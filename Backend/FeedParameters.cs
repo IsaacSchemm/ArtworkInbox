@@ -1,9 +1,9 @@
 ﻿using System;
 
 namespace DANotify.Backend {
-    public class FeedParameters<T> {
+    public class FeedParameters {
         public DateTimeOffset StartAt { get; set; } = DateTimeOffset.MinValue;
-        public T Cursor { get; set; } = default;
+        public string Cursor { get; set; } = null;
         public int StopAtCount { get; set; } = 200;
         public TimeSpan StopAtTime { get; set; } = TimeSpan.FromSeconds(15);
     }
