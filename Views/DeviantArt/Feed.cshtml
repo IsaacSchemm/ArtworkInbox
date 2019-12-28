@@ -3,6 +3,12 @@
     ViewData["Title"] = "Feed";
 }
 
+@if (Model.AnyNotifications) {
+    <div class="alert alert-primary">
+        You have new <a href="https://www.deviantart.com/notifications/feedback">notifications</a> on DeviantArt.
+    </div>
+}
+
 @if (Model.More) {
     <div class="alert alert-secondary">
         There are too many items in your activity feed to display on one page.
@@ -15,15 +21,6 @@
     <div class="alert alert-secondary">
         There are no new items to display in your activity feed.
     </div>
-    @*<p>
-        <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?dt=@Uri.EscapeDataString(DateTimeOffset.MinValue.ToString("o"))">
-            Mark all as new
-        </a>
-        <br />
-        <span class="small text-muted">
-            This will show all activity items that have not yet been cleared from DeviantArt's own watch page.
-        </span>
-    </p>*@
 }
 
 @foreach (var g in Model.DeviationsByUser) {

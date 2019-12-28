@@ -52,6 +52,8 @@ namespace DANotify.Controllers {
                 _context.UserReadMarkers.Add(lastRead);
             }
 
+            var notifications = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(token, null, 1);
+
             DateTimeOffset cutoff = lastRead.DeviantArtLastRead ?? DateTimeOffset.MinValue;
 
             var items = new List<IBclDeviantArtFeedItem>();
@@ -73,7 +75,7 @@ namespace DANotify.Controllers {
                         }
                     }
                 } catch (WebException ex) when (i != 0) {
-                    _logger.LogWarning(ex, "Could not load DeviantArt feed");
+                    _logger.LogWarning(ex, "Could not load part of DeviantArt feed");
                     break;
                 }
             }
@@ -82,7 +84,8 @@ namespace DANotify.Controllers {
                 Start = start.Value,
                 Cursor = cursor,
                 Items = items,
-                More = hasMore
+                More = hasMore,
+                AnyNotifications = notifications.Any()
             });
         }
 

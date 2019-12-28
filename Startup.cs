@@ -29,6 +29,7 @@ namespace DANotify {
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddAuthentication()
                 .AddDeviantArt(d => {
+                    d.Scope.Add("feed");
                     d.ClientId = Configuration["Authentication:DeviantArt:ClientId"];
                     d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
                     d.SaveTokens = true;

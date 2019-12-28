@@ -10,6 +10,7 @@ namespace DANotify.Models {
         public IEnumerable<IBclDeviantArtFeedItem> Items { get; set; }
         public string Cursor { get; set; }
         public bool More { get; set; }
+        public bool AnyNotifications { get; set; }
 
         public IEnumerable<IBclDeviation> Deviations =>
             Items
