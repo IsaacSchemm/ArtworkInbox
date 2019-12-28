@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DeviantArtFs;
+using Tweetinvi.Models;
 
 namespace DANotify {
     public class Startup {
@@ -42,6 +43,9 @@ namespace DANotify {
             services.AddSingleton<IDeviantArtAuth>(new DeviantArtAuth(
                 int.Parse(Configuration["Authentication:DeviantArt:ClientId"]),
                 Configuration["Authentication:DeviantArt:ClientSecret"]));
+            services.AddSingleton<IConsumerCredentials>(new ConsumerCredentials(
+                Configuration["Authentication:Twitter:ConsumerKey"],
+                Configuration["Authentication:Twitter:ConsumerSecret"]));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
