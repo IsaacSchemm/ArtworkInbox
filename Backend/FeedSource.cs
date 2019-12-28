@@ -34,7 +34,7 @@ namespace DANotify.Backend {
                             items.Add(newItem);
                         }
                     }
-                } catch (Exception) when (items.Count > 0) {
+                } catch (TooManyRequestsException) when (items.Count > 0) {
                     break;
                 }
             }

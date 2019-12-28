@@ -11,9 +11,15 @@ namespace DANotify.Controllers {
         protected abstract Task SetLastRead(DateTimeOffset lastRead);
 
         public async Task<IActionResult> Feed(string cursor = null, DateTimeOffset? latest = null) {
-            DateTimeOffset earliest = await GetLastRead();
-            var feedSource = await GetFeedSourceAsync();
-            return View(await FeedViewModel.BuildAsync(feedSource, cursor, earliest, latest));
+            try {
+                DateTimeOffset earliest = await GetLastRead();
+                var feedSource = await GetFeedSourceAsync();
+                return View(await FeedViewModel.BuildAsync(feedSource, cursor, earliest, latest));
+            } catch (TooManyRequestsException) {
+                return View("TooManyRequests");
+            } catch (NoTokenException) {
+                return View("NoToken");
+            }
         }
 
         public async Task<IActionResult> MarkAsRead(DateTimeOffset latest) {

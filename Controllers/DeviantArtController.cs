@@ -37,7 +37,7 @@ namespace DANotify.Controllers {
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
-                return new EmptyFeedSource();
+                throw new NoTokenException();
             var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
             return new DeviantArtFeedSource(token);
         }
@@ -75,7 +75,7 @@ namespace DANotify.Controllers {
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
-                return View("NoAccount");
+                return View("NoToken");
             var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
             var feedSettings = await DeviantArtFs.Requests.Feed.FeedSettings.ExecuteAsync(token);
             return View(new DeviantArtFeedSettingsViewModel {
@@ -95,7 +95,7 @@ namespace DANotify.Controllers {
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
-                return View("NoAccount");
+                return View("NoToken");
             var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
             await DeviantArtFs.Requests.Feed.FeedSettingsUpdate.ExecuteAsync(token, new DeviantArtFs.Requests.Feed.FeedSettingsUpdateRequest {
                 Statuses = model.Statuses,

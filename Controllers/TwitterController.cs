@@ -33,7 +33,7 @@ namespace DANotify.Controllers {
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
-                return new EmptyFeedSource();
+                throw new NoTokenException();
             var credentials = new TwitterCredentials(
                 _consumerCredentials.ConsumerKey,
                 _consumerCredentials.ConsumerSecret,
