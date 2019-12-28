@@ -33,6 +33,11 @@ namespace DANotify {
                     d.ClientId = Configuration["Authentication:DeviantArt:ClientId"];
                     d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
                     d.SaveTokens = true;
+                })
+                .AddTwitter(t => {
+                    t.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
+                    t.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                    t.SaveTokens = true;
                 });
             services.AddSingleton<IDeviantArtAuth>(new DeviantArtAuth(
                 int.Parse(Configuration["Authentication:DeviantArt:ClientId"]),

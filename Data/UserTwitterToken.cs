@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace DANotify.Data {
-    public class UserDeviantArtToken {
+    public class UserTwitterToken {
         [Key]
         public string UserId { get; set; }
 
@@ -19,6 +19,6 @@ namespace DANotify.Data {
         public string AccessToken { get; set; }
 
         [Column(TypeName = "varchar(max)")]
-        public string RefreshToken { get; set; }
+        public string AccessTokenSecret { get; set; }
     }
 }

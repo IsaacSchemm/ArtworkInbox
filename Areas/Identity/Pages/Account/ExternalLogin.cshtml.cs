@@ -68,30 +68,6 @@ namespace DANotify.Areas.Identity.Pages.Account {
             return new ChallengeResult(provider, properties);
         }
 
-        private async Task UpdateTokensAsync(IdentityUser user, ExternalLoginInfo info) {
-            if (info.LoginProvider == "DeviantArt") {
-                var token = await _context.UserDeviantArtTokens
-                    .Where(t => t.UserId == user.Id)
-                    .SingleOrDefaultAsync();
-                if (token == null) {
-                    token = new UserDeviantArtToken {
-                        UserId = user.Id
-                    };
-                    _context.UserDeviantArtTokens.Add(token);
-                }
-                token.AccessToken = info.AuthenticationTokens
-                    .Where(t => t.Name == "access_token")
-                    .Select(t => t.Value)
-                    .Single();
-                token.RefreshToken = info.AuthenticationTokens
-                    .Where(t => t.Name == "refresh_token")
-                    .Select(t => t.Value)
-                    .Single();
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Updated DeviantArt tokens for {Name}.", info.Principal.Identity.Name);
-            }
-        }
-
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null) {
             returnUrl = returnUrl ?? Url.Content("~/");
             if (remoteError != null) {
@@ -111,7 +87,7 @@ namespace DANotify.Areas.Identity.Pages.Account {
                     info.LoginProvider,
                     info.ProviderKey);
 
-                await UpdateTokensAsync(user, info);
+                await new TokenSaver(_context).UpdateTokensAsync(user, info);
 
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 return LocalRedirect(returnUrl);
@@ -149,7 +125,7 @@ namespace DANotify.Areas.Identity.Pages.Account {
                 if (result.Succeeded) {
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded) {
-                        await UpdateTokensAsync(user, info);
+                        await new TokenSaver(_context).UpdateTokensAsync(user, info);
 
                         await _signInManager.SignInAsync(user, isPersistent: false);
 
