@@ -1,0 +1,11 @@
+DANotify
+========
+
+An ASP.NET Core web application that provides an alternate UI for viewing your DeviantArt inbox.
+
+Note: due to API limitations, clearing your notifications from this app does not actually clear them from DeviantArt - it just hides them from this app's view.
+
+Future plans:
+
+* Add Twitter support
+* Add Tumblr support (?)
