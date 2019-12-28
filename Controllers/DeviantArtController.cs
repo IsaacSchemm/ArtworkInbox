@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using DANotify.Backend;
 using DANotify.Data;
 using DANotify.Models;
 using DeviantArtFs;
@@ -56,35 +57,16 @@ namespace DANotify.Controllers {
 
             DateTimeOffset cutoff = lastRead.DeviantArtLastRead ?? DateTimeOffset.MinValue;
 
-            var items = new List<IBclDeviantArtFeedItem>();
-            bool hasMore = true;
-            for (int i = 0; i < 20 && hasMore; i++) {
-                try {
-                    var page = await DeviantArtFs.Requests.Feed.FeedHome.ExecuteAsync(token, cursor);
-                    cursor = page.Cursor;
-
-                    if (!page.HasMore)
-                        hasMore = false;
-
-                    foreach (var x in page.Items) {
-                        if (x.Ts.ToUniversalTime() < cutoff) {
-                            hasMore = false;
-                            break;
-                        } else {
-                            items.Add(x);
-                        }
-                    }
-                } catch (WebException ex) when (i != 0) {
-                    _logger.LogWarning(ex, "Could not load part of DeviantArt feed");
-                    break;
-                }
-            }
+            var feedSource = new DeviantArtFeedSource(token);
+            var feedResult = await feedSource.GetBatchesAsync(new FeedParameters<string> {
+                Cursor = cursor,
+                StartAt = cutoff,
+                StopAtTime = TimeSpan.FromSeconds(3)
+            });
 
             return View(new DeviantArtFeedViewModel {
                 Start = start.Value,
-                Cursor = cursor,
-                Items = items,
-                More = hasMore,
+                FeedResult = feedResult,
                 AnyNotifications = notifications.Any()
             });
         }

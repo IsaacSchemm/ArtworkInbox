@@ -1,45 +1,29 @@
-﻿using DeviantArtFs;
+﻿using DANotify.Backend;
+using DANotify.Backend.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DANotify.Models {
     public class DeviantArtFeedViewModel {
         public DateTimeOffset Start { get; set; }
-        public IEnumerable<IBclDeviantArtFeedItem> Items { get; set; }
-        public string Cursor { get; set; }
-        public bool More { get; set; }
+        public FeedResult<string> FeedResult { get; set; }
         public bool AnyNotifications { get; set; }
 
-        public IEnumerable<IBclDeviation> Deviations =>
-            Items
-            .Where(i => i.Type == "deviation_submitted")
-            .SelectMany(i => i.Deviations);
-
-        public IEnumerable<IGrouping<string, IBclDeviation>> DeviationsByUser =>
-            Deviations
+        public IEnumerable<IGrouping<string, Artwork>> ArtworkByUser =>
+            FeedResult.Artworks
             .GroupBy(d => d.Author.Username)
-            .OrderByDescending(g => g.Select(x => x.PublishedTime?.Ticks ?? 0L).Max());
+            .OrderByDescending(g => g.Select(x => x.Timestamp).Max());
 
-        public IEnumerable<IBclDeviation> Journals =>
-            Items
-            .Where(x => x.Type == "journal_submitted")
-            .SelectMany(x => x.Deviations);
-
-        public IEnumerable<IGrouping<string, IBclDeviantArtStatus>> StatusesByUser =>
-            Items
-            .Where(x => x.Type == "status")
-            .Select(i => i.Status)
+        public IEnumerable<IGrouping<string, StatusUpdate>> StatusesByUser =>
+            FeedResult.StatusUpdates
             .GroupBy(s => s.Author.Username)
-            .OrderByDescending(g => g.Select(x => x.Ts.Ticks).Max());
+            .OrderByDescending(g => g.Select(x => x.Timestamp).Max());
 
-        public IEnumerable<IBclDeviantArtFeedItem> UsernameChanges =>
-            Items
-            .Where(x => x.Type == "username_change");
-
-        public IEnumerable<IBclDeviantArtFeedItem> CollectionUpdates =>
-            Items
-            .Where(x => x.Type == "collection_update");
+        public IEnumerable<FeedItem> Misc =>
+            FeedResult.FeedItems
+            .Except(FeedResult.Artworks)
+            .Except(FeedResult.JournalEntries)
+            .Except(FeedResult.StatusUpdates);
     }
 }
