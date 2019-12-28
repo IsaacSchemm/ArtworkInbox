@@ -15,5 +15,9 @@ namespace DANotify.Data {
         public IdentityUser User { get; set; }
 
         public DateTimeOffset? DeviantArtLastRead { get; set; }
+
+        public DateTimeOffset? TwitterLastRead { get; set; }
+
+        public DateTimeOffset? TumblrLastRead { get; set; }
     }
 }

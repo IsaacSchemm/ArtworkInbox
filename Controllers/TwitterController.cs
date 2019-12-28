@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
+using DANotify.Backend;
 using DANotify.Data;
-using DANotify.Models;
-using DeviantArtFs;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Tweetinvi.Models;
 
 namespace DANotify.Controllers {
-    public class TwitterController : Controller {
+    public class TwitterController : FeedController {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
@@ -27,27 +23,49 @@ namespace DANotify.Controllers {
             _consumerCredentials = consumerCredentials;
         }
 
-        private async Task<ITwitterCredentials> GetTwitterCredentialsAsync() {
-            var userId = _userManager.GetUserId(User); 
+        public IActionResult Index() {
+            return RedirectToAction(nameof(Feed));
+        }
+
+        protected override async Task<FeedSource> GetFeedSourceAsync() {
+            var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserTwitterTokens
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
-            return dbToken == null
-                ? null
-                : new TwitterCredentials(
-                    _consumerCredentials.ConsumerKey,
-                    _consumerCredentials.ConsumerSecret,
-                    dbToken.AccessToken,
-                    dbToken.AccessTokenSecret);
+            if (dbToken == null)
+                return new EmptyFeedSource();
+            var credentials = new TwitterCredentials(
+                _consumerCredentials.ConsumerKey,
+                _consumerCredentials.ConsumerSecret,
+                dbToken.AccessToken,
+                dbToken.AccessTokenSecret);
+            return new TwitterFeedSource(credentials);
         }
 
-        public async Task<IActionResult> Index() {
-            var credentials = await GetTwitterCredentialsAsync();
-            if (credentials == null)
-                return View("NoAccount");
-            return Ok(Tweetinvi.Auth.ExecuteOperationWithCredentials(credentials, () => {
-                return Tweetinvi.User.GetAuthenticatedUser();
-            }));
+        protected override async Task<DateTimeOffset> GetLastRead() {
+            var userId = _userManager.GetUserId(User);
+            var dt = await _context.UserReadMarkers
+                .Where(t => t.UserId == userId)
+                .Select(t => t.TwitterLastRead)
+                .SingleOrDefaultAsync();
+            return dt ?? DateTimeOffset.MinValue;
+        }
+
+        protected override async Task SetLastRead(DateTimeOffset lastRead) {
+            var userId = _userManager.GetUserId(User);
+            var o = await _context.UserReadMarkers
+                .Where(t => t.UserId == userId)
+                .SingleOrDefaultAsync();
+
+            if (o == null) {
+                o = new UserReadMarker {
+                    UserId = userId
+                };
+                _context.UserReadMarkers.Add(o);
+            }
+
+            o.TwitterLastRead = lastRead;
+            await _context.SaveChangesAsync();
         }
     }
 }
