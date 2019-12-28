@@ -1,0 +1,107 @@
+﻿@model DANotify.Models.FeedViewModel
+@{
+    ViewData["Title"] = "Feed";
+}
+
+<div class="mb-4">
+    <a href="@Model.FeedUserInfo.AuthenticatedUser.ProfileUrl" target="_blank">
+        <img src="@Model.FeedUserInfo.AuthenticatedUser.AvatarUrl" />
+        @Model.FeedUserInfo.AuthenticatedUser.Username
+    </a>
+</div>
+
+@if (Model.FeedUserInfo.HasNotifications) {
+    <div class="alert alert-primary">
+        You have new <a href="@Model.FeedUserInfo.NotificationsUrl" target="_blank">notifications</a> on this site.
+    </div>
+}
+
+@if (Model.FeedBatch.HasMore) {
+    <div class="alert alert-secondary">
+        There are too many items in your activity feed to display on one page.
+        Showing the @Model.FeedBatch.FeedItems.Count() most recent items.
+        <br />
+    </div>
+}
+
+@if (!Model.FeedBatch.FeedItems.Any()) {
+    <div class="alert alert-secondary">
+        There are no new items to display in your activity feed.
+    </div>
+}
+
+@foreach (var g in Model.ArtworkByUser) {
+    <h1>@g.Key</h1>
+    <div class="container-fluid">
+        <div class="row">
+            @foreach (var d in g) {
+                <div class="col-md-3 text-center">
+                    <a href="@d.LinkUrl">
+                        <img src="@(d.ThumbnailUrl ?? "/images/no-thumbnail.png")"
+                             style="width: 100%; height: 150px; object-fit: contain" />
+                        <br />
+                        @d.Title
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+    <hr />
+}
+
+@if (Model.FeedBatch.JournalEntries.Any()) {
+    <h1>Journal Entries</h1>
+    @foreach (var d in Model.FeedBatch.JournalEntries) {
+        <p>
+            <a href="@d.LinkUrl">
+                <strong>@d.Author.Username:</strong>
+            </a>
+            <span>@d.Excerpt</span>
+        </p>
+    }
+    <hr />
+}
+
+@if (Model.StatusesByUser.Any()) {
+    <h1>Status Updates</h1>
+    @foreach (var g in Model.StatusesByUser) {
+        <h3>@g.Key</h3>
+        foreach (var s in g) {
+            <p>
+                <a href="@s.LinkUrl">
+                    <strong>@s.Author.Username:</strong>
+                </a>
+                <span>@s.Excerpt</span>
+            </p>
+        }
+    }
+    <hr />
+}
+
+@foreach (var i in Model.Misc) {
+    <p>
+        @i.GetDescription()
+    </p>
+    <hr />
+}
+
+@if (Model.FeedBatch.Cursor != null && Model.FeedBatch.HasMore) {
+    <p>
+        <a class="btn btn-primary" href="/DeviantArt/Feed?cursor=@Model.FeedBatch.Cursor&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+            Next page &raquo;
+        </a>
+    </p>
+    <hr />
+}
+
+@if (Model.FeedBatch.FeedItems.Any()) {
+    <p>
+        <a class="btn btn-danger" href="/DeviantArt/MarkAsRead?latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+            Mark all as read
+        </a>
+        <br />
+        <span class="small text-muted">
+            This will not clear old activity from your feed, but it will hide it from this app.
+        </span>
+    </p>
+}
