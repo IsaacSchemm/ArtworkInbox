@@ -56,14 +56,19 @@ namespace DANotify.Backend {
         public override async Task<FeedBatch> GetBatchAsync(string cursor) {
             var parameters = new Tweetinvi.Parameters.HomeTimelineParameters();
             if (cursor != null && long.TryParse(cursor, out long l))
-                parameters.SinceId = l;
+                parameters.MaxId = l - 1;
 
             var page = await Tweetinvi.Auth.ExecuteOperationWithCredentials(_token, () => {
-                return Tweetinvi.TimelineAsync.GetHomeTimeline();
+                return Tweetinvi.TimelineAsync.GetHomeTimeline(parameters);
             });
+            if (page == null)
+                throw Tweetinvi.ExceptionHandler.GetLastException() is Tweetinvi.Exceptions.TwitterException t
+                    ? new Exception("Could not load tweets", t)
+                    : new Exception("Could not load tweets");
+
             return new FeedBatch {
                 Cursor = page.Any()
-                    ? $"{page.Select(x => x.Id).Max()}"
+                    ? $"{page.Select(x => x.Id).Min()}"
                     : cursor,
                 HasMore = page.Count() > 0,
                 FeedItems = Wrangle(page)

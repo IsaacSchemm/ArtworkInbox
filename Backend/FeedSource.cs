@@ -22,16 +22,20 @@ namespace DANotify.Backend {
                 if (items.Count >= parameters.StopAtCount) break;
                 if (DateTime.Now - start >= parameters.StopAtTime) break;
 
-                var result = await GetBatchAsync(cursor);
-                cursor = result.Cursor;
-                hasMore = result.HasMore;
-                foreach (var newItem in result.FeedItems) {
-                    if (newItem.Timestamp < parameters.StartAt) {
-                        hasMore = false;
-                        break;
-                    } else {
-                        items.Add(newItem);
+                try {
+                    var result = await GetBatchAsync(cursor);
+                    cursor = result.Cursor;
+                    hasMore = result.HasMore;
+                    foreach (var newItem in result.FeedItems) {
+                        if (newItem.Timestamp < parameters.StartAt) {
+                            hasMore = false;
+                            break;
+                        } else {
+                            items.Add(newItem);
+                        }
                     }
+                } catch (Exception) when (items.Count > 0) {
+                    break;
                 }
             }
 
