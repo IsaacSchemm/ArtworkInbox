@@ -4,6 +4,7 @@ namespace DANotify.Backend.Types {
     public abstract class FeedItem {
         public DateTimeOffset Timestamp { get; set; }
         public Author Author { get; set; }
+        public string RepostedFrom { get; set; }
 
         public abstract string GetDescription();
 

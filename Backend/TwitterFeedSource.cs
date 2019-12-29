@@ -21,7 +21,7 @@ namespace DANotify.Backend {
             return new Author {
                 Username = user.ScreenName,
                 AvatarUrl = user.ProfileImageUrl,
-                ProfileUrl = user.Url
+                ProfileUrl = $"https://twitter.com/{Uri.EscapeDataString(user.ScreenName)}"
             };
         }
 
@@ -30,7 +30,7 @@ namespace DANotify.Backend {
                 var author = new Author {
                     Username = t.CreatedBy.ScreenName,
                     AvatarUrl = t.CreatedBy.ProfileImageUrl,
-                    ProfileUrl = t.CreatedBy.Url
+                    ProfileUrl = $"https://twitter.com/{Uri.EscapeDataString(t.CreatedBy.ScreenName)}"
                 };
                 foreach (var media in t.Media) {
                     yield return new Artwork {
@@ -39,7 +39,8 @@ namespace DANotify.Backend {
                         LinkUrl = t.Url,
                         ThumbnailUrl = media.MediaType == "photo" || media.MediaType == "animated_gif"
                             ? media.MediaURL
-                            : null
+                            : null,
+                        RepostedFrom = t.RetweetedTweet?.CreatedBy?.ScreenName
                     };
                 }
                 if (!t.Media.Any()) {
@@ -47,7 +48,8 @@ namespace DANotify.Backend {
                         Author = author,
                         Timestamp = t.CreatedAt,
                         LinkUrl = t.Url,
-                        Html = t.Text
+                        Html = t.Text,
+                        RepostedFrom = t.RetweetedTweet?.CreatedBy?.ScreenName
                     };
                 }
             }
