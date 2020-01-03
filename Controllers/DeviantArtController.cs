@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using DANotify.Backend;
-using DANotify.Data;
-using DANotify.Models;
+using ArtworkInbox.Backend;
+using ArtworkInbox.Data;
+using ArtworkInbox.Models;
 using DeviantArtFs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace DANotify.Controllers {
+namespace ArtworkInbox.Controllers {
     public class DeviantArtController : FeedController {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;

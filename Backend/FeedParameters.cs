@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DANotify.Backend {
+namespace ArtworkInbox.Backend {
     public class FeedParameters {
         public DateTimeOffset StartAt { get; set; } = DateTimeOffset.MinValue;
         public string Cursor { get; set; } = null;

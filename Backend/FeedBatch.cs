@@ -1,8 +1,8 @@
-﻿using DANotify.Backend.Types;
+﻿using ArtworkInbox.Backend.Types;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DANotify.Backend {
+namespace ArtworkInbox.Backend {
     public class FeedBatch {
         public string Cursor { get; set; }
         public bool HasMore { get; set; }

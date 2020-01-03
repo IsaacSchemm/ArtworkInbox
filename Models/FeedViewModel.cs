@@ -1,11 +1,11 @@
-﻿using DANotify.Backend;
-using DANotify.Backend.Types;
+﻿using ArtworkInbox.Backend;
+using ArtworkInbox.Backend.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DANotify.Models {
+namespace ArtworkInbox.Models {
     public class FeedViewModel {
         public DateTimeOffset Latest { get; set; }
         public FeedBatch FeedBatch { get; set; }

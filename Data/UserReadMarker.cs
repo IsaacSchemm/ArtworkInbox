@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DANotify.Data {
+namespace ArtworkInbox.Data {
     public class UserReadMarker {
         [Key]
         public string UserId { get; set; }

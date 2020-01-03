@@ -1,11 +1,11 @@
-﻿using DANotify.Backend.Types;
+﻿using ArtworkInbox.Backend.Types;
 using DeviantArtFs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DANotify.Backend {
+namespace ArtworkInbox.Backend {
     public class DeviantArtFeedSource : FeedSource {
         private readonly IDeviantArtAccessToken _token;
 

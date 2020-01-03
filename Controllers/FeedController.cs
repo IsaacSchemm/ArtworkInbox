@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DANotify.Backend;
-using DANotify.Models;
+using ArtworkInbox.Backend;
+using ArtworkInbox.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DANotify.Controllers {
+namespace ArtworkInbox.Controllers {
     public abstract class FeedController : Controller {
         protected abstract Task<FeedSource> GetFeedSourceAsync();
         protected abstract Task<DateTimeOffset> GetLastRead();

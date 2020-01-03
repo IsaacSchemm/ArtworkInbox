@@ -1,10 +1,10 @@
-﻿using DANotify.Data;
+﻿using ArtworkInbox.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DANotify {
+namespace ArtworkInbox {
     public class TokenSaver {
         private readonly ApplicationDbContext _context;
 

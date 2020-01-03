@@ -1,5 +1,5 @@
 ﻿using System;
-using DANotify.Data;
+using ArtworkInbox.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: HostingStartup(typeof(DANotify.Areas.Identity.IdentityHostingStartup))]
-namespace DANotify.Areas.Identity
+namespace ArtworkInbox.Areas.Identity
 {
     public class IdentityHostingStartup : IHostingStartup
     {

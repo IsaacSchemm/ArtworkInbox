@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DANotify.Backend.Types {
+namespace ArtworkInbox.Backend.Types {
     public abstract class FeedItem {
         public DateTimeOffset Timestamp { get; set; }
         public Author Author { get; set; }

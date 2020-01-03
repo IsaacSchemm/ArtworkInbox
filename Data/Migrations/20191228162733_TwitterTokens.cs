@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace DANotify.Data.Migrations
+namespace ArtworkInbox.Data.Migrations
 {
     public partial class TwitterTokens : Migration
     {

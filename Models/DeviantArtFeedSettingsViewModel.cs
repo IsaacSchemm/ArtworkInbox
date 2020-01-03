@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DANotify.Models {
+namespace ArtworkInbox.Models {
     public class DeviantArtFeedSettingsViewModel {
         public bool Statuses { get; set; }
 

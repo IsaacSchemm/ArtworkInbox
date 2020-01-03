@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AspNet.Security.OAuth.DeviantArt;
-using DANotify.Data;
+using ArtworkInbox.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace DANotify.Areas.Identity.Pages.Account {
+namespace ArtworkInbox.Areas.Identity.Pages.Account {
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel {
         private readonly SignInManager<IdentityUser> _signInManager;

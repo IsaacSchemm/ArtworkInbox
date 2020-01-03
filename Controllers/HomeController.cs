@@ -5,11 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using DANotify.Models;
+using ArtworkInbox.Models;
 using Microsoft.AspNetCore.Authentication;
 using DeviantArtFs;
 
-namespace DANotify.Controllers {
+namespace ArtworkInbox.Controllers {
     public class HomeController : Controller {
         public IActionResult Index() {
             return View();

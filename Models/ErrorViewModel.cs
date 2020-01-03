@@ -1,6 +1,6 @@
 using System;
 
-namespace DANotify.Models {
+namespace ArtworkInbox.Models {
     public class ErrorViewModel {
         public string RequestId { get; set; }
 

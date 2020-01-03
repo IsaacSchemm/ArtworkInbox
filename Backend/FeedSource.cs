@@ -1,10 +1,10 @@
-﻿using DANotify.Backend.Types;
+﻿using ArtworkInbox.Backend.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DANotify.Backend {
+namespace ArtworkInbox.Backend {
     public abstract class FeedSource {
         public abstract Task<Author> GetAuthenticatedUserAsync();
         public abstract Task<FeedBatch> GetBatchAsync(string cursor);

@@ -1,4 +1,4 @@
-﻿using DANotify.Data;
+﻿using ArtworkInbox.Data;
 using DeviantArtFs;
 using Microsoft.AspNetCore.Authentication;
 using System;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DANotify {
+namespace ArtworkInbox {
     public class DeviantArtTokenWrapper : IDeviantArtAutomaticRefreshToken {
         private readonly ApplicationDbContext _context;
         private readonly UserDeviantArtToken _token;

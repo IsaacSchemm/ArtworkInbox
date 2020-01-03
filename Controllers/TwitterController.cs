@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using DANotify.Backend;
-using DANotify.Data;
+using ArtworkInbox.Backend;
+using ArtworkInbox.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Tweetinvi.Models;
 
-namespace DANotify.Controllers {
+namespace ArtworkInbox.Controllers {
     public class TwitterController : FeedController {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
