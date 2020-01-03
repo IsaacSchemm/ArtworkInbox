@@ -3,21 +3,17 @@
     ViewData["Title"] = "Feed";
 }
 
-<div class="container-fluid mb-4" style="line-height: 50px">
-    <div class="row">
-        <div class="col-6">
-            <img src="@Model.FeedUserInfo.AuthenticatedUser.AvatarUrl" width="50" height="50" />
-            <a href="@Model.FeedUserInfo.AuthenticatedUser.ProfileUrl" target="_blank">
-                @Model.FeedUserInfo.AuthenticatedUser.Username
-            </a>
-        </div>
-        <div class="col-6 text-right align-middle">
-            @if (Model.FeedUserInfo.NotificationsUrl != null) {
-                <a href="@Model.FeedUserInfo.NotificationsUrl" target="_blank">Notifications</a>
-            }
-        </div>
-    </div>
+<div>
+    <h5 class="card-title">
+        <img src="@Model.FeedUserInfo.AuthenticatedUser.AvatarUrl" width="50" height="50" />
+        @Model.FeedUserInfo.AuthenticatedUser.Username
+    </h5>
+    <a href="@Model.FeedUserInfo.AuthenticatedUser.ProfileUrl" target="_blank">Profile</a>
+    &middot;
+    <a href="@Model.FeedUserInfo.NotificationsUrl" target="_blank">Notifications</a>
 </div>
+
+<hr />
 
 @if (Model.FeedBatch.HasMore) {
     <div class="alert alert-primary">
@@ -72,7 +68,7 @@
 @if (Model.StatusesByUser.Any()) {
     <h1>Status Updates</h1>
     @foreach (var g in Model.StatusesByUser) {
-        <h3>@g.Key</h3>
+        <p class="font-weight-bold">@g.Key</p>
         foreach (var s in g) {
             <p>
                 <a href="@s.LinkUrl">
