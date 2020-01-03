@@ -83,5 +83,6 @@ namespace DANotify.Backend {
         }
 
         public override string GetNotificationsUrl() => "https://twitter.com/notifications";
+        public override string GetSubmitUrl() => "https://twitter.com/compose/tweet";
     }
 }

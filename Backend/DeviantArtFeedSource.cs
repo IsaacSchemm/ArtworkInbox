@@ -88,5 +88,6 @@ namespace DANotify.Backend {
         }
 
         public override string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
+        public override string GetSubmitUrl() => "https://www.deviantart.com/submit";
     }
 }

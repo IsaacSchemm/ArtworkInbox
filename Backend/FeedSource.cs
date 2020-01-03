@@ -8,7 +8,9 @@ namespace DANotify.Backend {
     public abstract class FeedSource {
         public abstract Task<Author> GetAuthenticatedUserAsync();
         public abstract Task<FeedBatch> GetBatchAsync(string cursor);
+
         public abstract string GetNotificationsUrl();
+        public abstract string GetSubmitUrl();
 
         public async Task<FeedBatch> GetBatchesAsync(FeedParameters parameters) {
             DateTime start = DateTime.Now;
@@ -63,6 +65,7 @@ namespace DANotify.Backend {
             });
         }
 
-        public override string GetNotificationsUrl() => null;
+        public override string GetNotificationsUrl() => "https://www.example.com";
+        public override string GetSubmitUrl() => "https://www.example.org";
     }
 }

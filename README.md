@@ -7,11 +7,11 @@ Note: due to API limitations, clearing your notifications from this app does not
 
 Currently working on:
 
-* Twitter support
+* UX improvements
 
 Future plans:
 
 * Add Tumblr support (?)
 * Add Weasyl support (?)
 * Filter thumbnails of sensitive content
-* UX improvements
+* `srcset`

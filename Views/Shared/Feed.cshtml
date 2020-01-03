@@ -11,12 +11,14 @@
 
 <div>
     <h5 class="card-title">
-        <img src="@Model.FeedUserInfo.AuthenticatedUser.AvatarUrl" width="50" height="50" />
-        @Model.FeedUserInfo.AuthenticatedUser.Username
+        <img src="@Model.AuthenticatedUser.AvatarUrl" width="50" height="50" />
+        @Model.AuthenticatedUser.Username
     </h5>
-    <a href="@Model.FeedUserInfo.AuthenticatedUser.ProfileUrl" target="_blank">Profile</a>
+    <a href="@Model.AuthenticatedUser.ProfileUrl" target="_blank">Profile</a>
     &middot;
-    <a href="@Model.FeedUserInfo.NotificationsUrl" target="_blank">Notifications</a>
+    <a href="@Model.NotificationsUrl" target="_blank">Notifications</a>
+    &middot;
+    <a href="@Model.SubmitUrl" target="_blank">Submit</a>
 </div>
 
 <hr />
@@ -40,7 +42,7 @@
     <div class="container-fluid">
         <div class="row">
             @foreach (var d in g) {
-                <div class="col-md-3 text-center">
+                <div class="col-md-3 text-center my-4">
                     <a href="@d.LinkUrl">
                         <img src="@(d.ThumbnailUrl ?? "/images/no-thumbnail.png")"
                              style="width: 100%; height: 150px; object-fit: contain" />

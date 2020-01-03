@@ -9,7 +9,9 @@ namespace DANotify.Models {
     public class FeedViewModel {
         public DateTimeOffset Latest { get; set; }
         public FeedBatch FeedBatch { get; set; }
-        public FeedUserInfo FeedUserInfo { get; set; }
+        public Author AuthenticatedUser { get; set; }
+        public string NotificationsUrl { get; set; }
+        public string SubmitUrl { get; set; }
 
         public static async Task<FeedViewModel> BuildAsync(FeedSource feedSource, string cursor = null, DateTimeOffset? earliest = null, DateTimeOffset? latest = null) {
             return new FeedViewModel {
@@ -18,10 +20,9 @@ namespace DANotify.Models {
                     Cursor = cursor,
                     StartAt = earliest ?? DateTimeOffset.MinValue
                 }),
-                FeedUserInfo = new FeedUserInfo {
-                    AuthenticatedUser = await feedSource.GetAuthenticatedUserAsync(),
-                    NotificationsUrl = feedSource.GetNotificationsUrl()
-                }
+                AuthenticatedUser = await feedSource.GetAuthenticatedUserAsync(),
+                NotificationsUrl = feedSource.GetNotificationsUrl(),
+                SubmitUrl = feedSource.GetSubmitUrl()
             };
         }
 
