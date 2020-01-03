@@ -19,7 +19,7 @@ namespace DANotify.Backend {
                 return Tweetinvi.UserAsync.GetAuthenticatedUser();
             });
             return new Author {
-                Username = user.ScreenName,
+                Username = $"@{user.ScreenName}",
                 AvatarUrl = user.ProfileImageUrl,
                 ProfileUrl = $"https://twitter.com/{Uri.EscapeDataString(user.ScreenName)}"
             };
@@ -28,7 +28,7 @@ namespace DANotify.Backend {
         private static IEnumerable<FeedItem> Wrangle(IEnumerable<ITweet> tweets) {
             foreach (var t in tweets) {
                 var author = new Author {
-                    Username = t.CreatedBy.ScreenName,
+                    Username = $"@{t.CreatedBy.ScreenName}",
                     AvatarUrl = t.CreatedBy.ProfileImageUrl,
                     ProfileUrl = $"https://twitter.com/{Uri.EscapeDataString(t.CreatedBy.ScreenName)}"
                 };
