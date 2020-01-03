@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly: HostingStartup(typeof(DANotify.Areas.Identity.IdentityHostingStartup))]
+[assembly: HostingStartup(typeof(ArtworkInbox.Areas.Identity.IdentityHostingStartup))]
 namespace ArtworkInbox.Areas.Identity
 {
     public class IdentityHostingStartup : IHostingStartup

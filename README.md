@@ -1,5 +1,5 @@
-DANotify
-========
+Artwork Inbox
+=============
 
 An ASP.NET Core web application that provides an alternate UI for viewing your DeviantArt inbox.
 
