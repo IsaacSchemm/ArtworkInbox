@@ -87,11 +87,6 @@ namespace DANotify.Backend {
             };
         }
 
-        public override async Task<bool> HasNotificationsAsync() {
-            var notifications = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(_token, null, 1);
-            return notifications.Any();
-        }
-
         public override string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
     }
 }

@@ -3,21 +3,24 @@
     ViewData["Title"] = "Feed";
 }
 
-<div class="mb-4">
-    <a href="@Model.FeedUserInfo.AuthenticatedUser.ProfileUrl" target="_blank">
-        <img src="@Model.FeedUserInfo.AuthenticatedUser.AvatarUrl" />
-        @Model.FeedUserInfo.AuthenticatedUser.Username
-    </a>
+<div class="container-fluid mb-4" style="line-height: 50px">
+    <div class="row">
+        <div class="col-6">
+            <img src="@Model.FeedUserInfo.AuthenticatedUser.AvatarUrl" width="50" height="50" />
+            <a href="@Model.FeedUserInfo.AuthenticatedUser.ProfileUrl" target="_blank">
+                @Model.FeedUserInfo.AuthenticatedUser.Username
+            </a>
+        </div>
+        <div class="col-6 text-right align-middle">
+            @if (Model.FeedUserInfo.NotificationsUrl != null) {
+                <a href="@Model.FeedUserInfo.NotificationsUrl" target="_blank">Notifications</a>
+            }
+        </div>
+    </div>
 </div>
 
-@if (Model.FeedUserInfo.HasNotifications) {
-    <div class="alert alert-primary">
-        You have new <a href="@Model.FeedUserInfo.NotificationsUrl" target="_blank">notifications</a> on this site.
-    </div>
-}
-
 @if (Model.FeedBatch.HasMore) {
-    <div class="alert alert-secondary">
+    <div class="alert alert-primary">
         There are too many items in your activity feed to display on one page.
         Showing the @Model.FeedBatch.FeedItems.Count() most recent items.
         <br />

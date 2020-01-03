@@ -8,7 +8,6 @@ namespace DANotify.Backend {
     public abstract class FeedSource {
         public abstract Task<Author> GetAuthenticatedUserAsync();
         public abstract Task<FeedBatch> GetBatchAsync(string cursor);
-        public abstract Task<bool> HasNotificationsAsync();
         public abstract string GetNotificationsUrl();
 
         public async Task<FeedBatch> GetBatchesAsync(FeedParameters parameters) {
@@ -64,12 +63,6 @@ namespace DANotify.Backend {
             });
         }
 
-        public override string GetNotificationsUrl() {
-            return "https://www.example.com/";
-        }
-
-        public override Task<bool> HasNotificationsAsync() {
-            return Task.FromResult(false);
-        }
+        public override string GetNotificationsUrl() => null;
     }
 }

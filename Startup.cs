@@ -48,7 +48,7 @@ namespace DANotify {
                 Configuration["Authentication:Twitter:ConsumerSecret"]));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
         }
 

@@ -20,7 +20,6 @@ namespace DANotify.Models {
                 }),
                 FeedUserInfo = new FeedUserInfo {
                     AuthenticatedUser = await feedSource.GetAuthenticatedUserAsync(),
-                    HasNotifications = await feedSource.HasNotificationsAsync(),
                     NotificationsUrl = feedSource.GetNotificationsUrl()
                 }
             };

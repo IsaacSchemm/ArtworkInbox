@@ -82,10 +82,6 @@ namespace DANotify.Backend {
             };
         }
 
-        public override async Task<bool> HasNotificationsAsync() {
-            return false;
-        }
-
         public override string GetNotificationsUrl() => "https://twitter.com/notifications";
     }
 }
