@@ -25,9 +25,9 @@ namespace ArtworkInbox.Backend.Types {
         public string Html { get; set; }
         public string LinkUrl { get; set; }
 
-        public string Excerpt => Html.Length > 50
+        public string Excerpt => /*Html.Length > 50
             ? Html.Substring(0, 49) + "..."
-            : Html;
+            :*/ Html;
 
         public override string GetDescription() => $"{Author.Username}: {Excerpt}";
     }

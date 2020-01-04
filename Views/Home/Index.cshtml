@@ -2,7 +2,37 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<p>
+    <strong>Artwork Inbox</strong> is a web application that connects to your
+    DeviantArt and/or Twitter feed(s), allowing you to view your friends'
+    artwork and status updates with a simple, lo-fi interface that lets you
+    make sure you don't miss anything.
+</p>
+
+<p>
+    To sign up:
+</p>
+
+<ol>
+    <li>
+        <a href="/Identity/Account/Register">
+            Create an Artwork Inbox account
+        </a>
+        by logging in with your DeviantArt and/or Twitter credentials
+    </li>
+    <li>
+        Attach additional accounts from the
+        <a asp-area="Identity" asp-page="/Account/Manage/ExternalLogins">
+            external logins page.
+        </a>
+        (Note that at this time, you can only have one account from each site 
+        attached to a single Artwork Inbox account.)
+    </li>
+</ol>
+
+<p>
+    If you ever want to delete your Artwork Inbox account, visit the
+    <a href="https://localhost:44345/Identity/Account/Manage/PersonalData">
+        personal data page.
+    </a>
+</p>

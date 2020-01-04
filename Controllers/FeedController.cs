@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkInbox.Controllers {
     public abstract class FeedController : Controller {
+        protected abstract string GetSiteName();
         protected abstract Task<FeedSource> GetFeedSourceAsync();
         protected abstract Task<DateTimeOffset> GetLastRead();
         protected abstract Task SetLastRead(DateTimeOffset lastRead);
@@ -18,6 +19,7 @@ namespace ArtworkInbox.Controllers {
             } catch (TooManyRequestsException) {
                 return View("TooManyRequests");
             } catch (NoTokenException) {
+                ViewBag.SiteName = GetSiteName();
                 return View("NoToken");
             }
         }

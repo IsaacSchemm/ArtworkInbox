@@ -27,6 +27,10 @@ namespace ArtworkInbox.Controllers {
             return RedirectToAction(nameof(Feed));
         }
 
+        protected override string GetSiteName() {
+            return "Twitter";
+        }
+
         protected override async Task<FeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserTwitterTokens
