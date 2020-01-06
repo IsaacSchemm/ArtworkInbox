@@ -48,10 +48,6 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account {
         public string ErrorMessage { get; set; }
 
         public class InputModel {
-            [EmailAddress]
-            [Display(Name = "Email address (optional)")]
-            public string Email { get; set; }
-
             [Required]
             [Display(Name = "Username")]
             public string UserName { get; set; }
@@ -99,8 +95,9 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account {
                 ReturnUrl = returnUrl;
                 LoginProvider = info.LoginProvider;
                 Input = new InputModel {
-                    UserName = info.Principal.FindFirstValue(DeviantArtAuthenticationConstants.Claims.Username),
-                    Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                    UserName =
+                        info.Principal.FindFirstValue("urn:twitter:screenname")
+                        ?? info.Principal.FindFirstValue(DeviantArtAuthenticationConstants.Claims.Username)
                 };
                 return Page();
             }
@@ -115,12 +112,8 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account {
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
-            if (Input.Email == null) {
-                Input.Email = Guid.NewGuid() + "@example.com";
-            }
-
             if (ModelState.IsValid) {
-                var user = new IdentityUser { UserName = Input.UserName, Email = Input.Email };
+                var user = new IdentityUser { UserName = Input.UserName, Email = Guid.NewGuid() + "@example.com" };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded) {
                     result = await _userManager.AddLoginAsync(user, info);
