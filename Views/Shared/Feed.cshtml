@@ -63,7 +63,7 @@
 @if (Model.FeedBatch.JournalEntries.Any()) {
     <h1>Journal Entries</h1>
     @foreach (var d in Model.FeedBatch.JournalEntries) {
-        <p>
+        <p style="white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis">
             <a href="@d.LinkUrl">
                 <strong>@d.Author.Username:</strong>
             </a>
@@ -78,7 +78,7 @@
     @foreach (var g in Model.StatusesByUser) {
         <p class="font-weight-bold">@g.Key</p>
         foreach (var s in g) {
-            <p>
+            <p style="white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis">
                 <a href="@s.LinkUrl">
                     <strong>@s.Author.Username:</strong>
                 </a>
