@@ -33,18 +33,23 @@ namespace ArtworkInbox.Backend {
                     AvatarUrl = t.CreatedBy.ProfileImageUrl,
                     ProfileUrl = $"https://twitter.com/{Uri.EscapeDataString(t.CreatedBy.ScreenName)}"
                 };
-                foreach (var media in t.Media) {
+                var photos = t.Media.Where(m => m.MediaType == "photo");
+                foreach (var media in photos) {
                     yield return new Artwork {
                         Author = author,
                         Timestamp = t.CreatedAt,
                         LinkUrl = t.Url,
-                        ThumbnailUrl = media.MediaType == "photo" || media.MediaType == "animated_gif"
-                            ? media.MediaURL
-                            : null,
+                        Thumbnails = media.Sizes
+                            .Where(x => x.Value.Resize == "fit")
+                            .Select(x => new Thumbnail {
+                                Url = $"{media.MediaURLHttps}?format=jpg&name={x.Key}",
+                                Width = x.Value.Width ?? 0,
+                                Height = x.Value.Height ?? 0
+                            }),
                         RepostedFrom = t.RetweetedTweet?.CreatedBy?.ScreenName
                     };
                 }
-                if (!t.Media.Any()) {
+                if (!photos.Any()) {
                     yield return new StatusUpdate {
                         Author = author,
                         Timestamp = t.CreatedAt,

@@ -36,10 +36,11 @@ namespace ArtworkInbox.Backend {
                                 Author = author,
                                 Timestamp = f.Ts,
                                 Title = d.Title,
-                                ThumbnailUrl = d.Thumbs
-                                    .OrderByDescending(x => x.Width * x.Height)
-                                    .Select(x => x.Src)
-                                    .FirstOrDefault(),
+                                Thumbnails = d.Thumbs.Select(x => new Thumbnail {
+                                    Url = x.Src,
+                                    Width = x.Width,
+                                    Height = x.Height
+                                }),
                                 LinkUrl = d.Url
                             };
                         break;

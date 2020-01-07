@@ -44,7 +44,7 @@
             @foreach (var d in g) {
                 <div class="col-md-3 text-center my-4">
                     <a href="@d.LinkUrl">
-                        <img src="@(d.ThumbnailUrl ?? "/images/no-thumbnail.png")"
+                        <img src="@d.ThumbnailUrl" srcset="@d.Srcset" alt=""
                              style="width: 100%; height: 150px; object-fit: contain" />
                         <br />
                         @if (d.RepostedFrom != null) {

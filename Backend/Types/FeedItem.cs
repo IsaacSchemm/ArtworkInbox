@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ArtworkInbox.Backend.Types {
     public abstract class FeedItem {
@@ -13,10 +15,27 @@ namespace ArtworkInbox.Backend.Types {
         }
     }
 
+    public class Thumbnail {
+        public string Url { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+    }
+
     public class Artwork : FeedItem {
         public string Title { get; set; }
-        public string ThumbnailUrl { get; set; }
+        public IEnumerable<Thumbnail> Thumbnails { get; set; }
         public string LinkUrl { get; set; }
+
+        public Thumbnail DefaultThumbnail =>
+            Thumbnails
+            .OrderBy(t => t.Height)
+            .FirstOrDefault();
+
+        public string ThumbnailUrl => DefaultThumbnail?.Url;
+
+        public string Srcset => Thumbnails.Skip(1).Any()
+            ? string.Join(", ", Thumbnails.Select(x => $"{x.Url} {1.0 * x.Height / DefaultThumbnail.Height}x"))
+            : null;
 
         public override string GetDescription() => $"{Author.Username}: {Title ?? "[untitled]"}";
     }
