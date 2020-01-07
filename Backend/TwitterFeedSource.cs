@@ -3,6 +3,7 @@ using DeviantArtFs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Tweetinvi.Models;
 
@@ -48,7 +49,7 @@ namespace ArtworkInbox.Backend {
                         Author = author,
                         Timestamp = t.CreatedAt,
                         LinkUrl = t.Url,
-                        Html = t.Text,
+                        Html = WebUtility.HtmlEncode(WebUtility.HtmlDecode(t.FullText ?? t.Text)),
                         RepostedFrom = t.RetweetedTweet?.CreatedBy?.ScreenName
                     };
                 }
