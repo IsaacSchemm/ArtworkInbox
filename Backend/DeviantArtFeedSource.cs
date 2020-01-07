@@ -14,12 +14,16 @@ namespace ArtworkInbox.Backend {
         }
 
         public override async Task<Author> GetAuthenticatedUserAsync() {
-            var user = await DeviantArtFs.Requests.User.Whoami.ExecuteAsync(_token);
-            return new Author {
-                Username = user.Username,
-                AvatarUrl = user.Usericon,
-                ProfileUrl = $"https://www.deviantart.com/{Uri.EscapeDataString(user.Username)}"
-            };
+            try {
+                var user = await DeviantArtFs.Requests.User.Whoami.ExecuteAsync(_token);
+                return new Author {
+                    Username = user.Username,
+                    AvatarUrl = user.Usericon,
+                    ProfileUrl = $"https://www.deviantart.com/{Uri.EscapeDataString(user.Username)}"
+                };
+            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
+                throw new TooManyRequestsException();
+            }
         }
 
         private static IEnumerable<FeedItem> Wrangle(IEnumerable<IBclDeviantArtFeedItem> feedItems) {
@@ -41,7 +45,8 @@ namespace ArtworkInbox.Backend {
                                     Width = x.Width,
                                     Height = x.Height
                                 }),
-                                LinkUrl = d.Url
+                                LinkUrl = d.Url,
+                                MatureContent = d.IsMature
                             };
                         break;
                     case "journal_submitted":
@@ -80,12 +85,16 @@ namespace ArtworkInbox.Backend {
         }
 
         public override async Task<FeedBatch> GetBatchAsync(string cursor) {
-            var page = await DeviantArtFs.Requests.Feed.FeedHome.ExecuteAsync(_token, cursor);
-            return new FeedBatch {
-                Cursor = page.Cursor,
-                HasMore = page.HasMore,
-                FeedItems = Wrangle(page.Items)
-            };
+            try {
+                var page = await DeviantArtFs.Requests.Feed.FeedHome.ExecuteAsync(_token, cursor);
+                return new FeedBatch {
+                    Cursor = page.Cursor,
+                    HasMore = page.HasMore,
+                    FeedItems = Wrangle(page.Items)
+                };
+            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
+                throw new TooManyRequestsException();
+            }
         }
 
         public override string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";

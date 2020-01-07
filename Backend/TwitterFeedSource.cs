@@ -46,7 +46,8 @@ namespace ArtworkInbox.Backend {
                                 Width = x.Value.Width ?? 0,
                                 Height = x.Value.Height ?? 0
                             }),
-                        RepostedFrom = t.RetweetedTweet?.CreatedBy?.ScreenName
+                        RepostedFrom = t.RetweetedTweet?.CreatedBy?.ScreenName,
+                        MatureContent = t.PossiblySensitive
                     };
                 }
                 if (!photos.Any()) {

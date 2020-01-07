@@ -25,6 +25,7 @@ namespace ArtworkInbox.Backend.Types {
         public string Title { get; set; }
         public IEnumerable<Thumbnail> Thumbnails { get; set; }
         public string LinkUrl { get; set; }
+        public bool MatureContent { get; set; }
 
         public Thumbnail DefaultThumbnail =>
             Thumbnails
