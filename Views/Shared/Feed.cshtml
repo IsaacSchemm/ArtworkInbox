@@ -67,7 +67,7 @@
             <a href="@d.LinkUrl">
                 <strong>@d.Author.Username:</strong>
             </a>
-            <span>@d.Excerpt</span>
+            <span class="html-to-convert">@d.Excerpt</span>
         </p>
     }
     <hr />
@@ -82,7 +82,7 @@
                 <a href="@s.LinkUrl">
                     <strong>@s.Author.Username:</strong>
                 </a>
-                <span>@s.Excerpt</span>
+                <span class="html-to-convert">@s.Excerpt</span>
             </p>
         }
     }
@@ -116,3 +116,18 @@
         </span>
     </p>
 }
+
+<script type="text/javascript">
+    var to_convert = document.getElementsByClassName("html-to-convert");
+    var div = document.createElement("div");
+    for (var i = 0; i < to_convert.length; i++) {
+        div.innerHTML = to_convert[i].innerText;
+
+        // Add spaces between paragraphs
+        for (var j = div.children.length - 1; j >= 0; j--) {
+            div.insertBefore(document.createTextNode(" "), div.children[j]);
+        }
+
+        to_convert[i].innerText = div.innerText;
+    }
+</script>
