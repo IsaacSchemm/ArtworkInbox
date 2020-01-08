@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using ArtworkInbox.Backend;
 using ArtworkInbox.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkInbox.Controllers {
+    [Authorize]
     public abstract class FeedController : Controller {
         protected abstract string GetSiteName();
         protected abstract Task<FeedSource> GetFeedSourceAsync();
