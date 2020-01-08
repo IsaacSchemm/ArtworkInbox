@@ -10,6 +10,10 @@
     <Compile Remove="Data\Migrations\20191224155815_DATokenServerStorage.Designer.cs" />
     <Compile Remove="Data\Migrations\20191224172024_dfgdf.cs" />
     <Compile Remove="Data\Migrations\20191224172024_dfgdf.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200108184221_Preferences.cs" />
+    <Compile Remove="Data\Migrations\20200108184221_Preferences.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200108184640_HideMatre.cs" />
+    <Compile Remove="Data\Migrations\20200108184640_HideMatre.Designer.cs" />
   </ItemGroup>
 
 

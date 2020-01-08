@@ -33,6 +33,11 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            [Display(Name = "Hide mature content")]
+            public bool HideMature { get; set; }
+
+            [Display(Name = "Hide mature content thumbnails")]
+            public bool HideMatureThumbnails { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -43,6 +48,8 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
+                HideMature = user.HideMature,
+                HideMatureThumbnails = user.HideMatureThumbnails
             };
         }
 
@@ -71,6 +78,10 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+
+            user.HideMature = Input.HideMature;
+            user.HideMatureThumbnails = Input.HideMatureThumbnails;
+            await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";

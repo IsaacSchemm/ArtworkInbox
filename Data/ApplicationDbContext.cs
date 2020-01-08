@@ -10,6 +10,13 @@ namespace ArtworkInbox.Data {
             : base(options) {
         }
 
+        protected override void OnModelCreating(ModelBuilder builder) {
+            base.OnModelCreating(builder);
+            builder.Entity<ApplicationUser>()
+                .Property(u => u.HideMatureThumbnails)
+                .HasDefaultValue(true);
+        }
+
         public DbSet<UserDeviantArtToken> UserDeviantArtTokens { get; set; }
 
         public DbSet<UserTwitterToken> UserTwitterTokens { get; set; }
