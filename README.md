@@ -7,6 +7,5 @@ Note: clearing your notifications from this app does not actually clear them fro
 
 Future plans:
 
-* Filter thumbnails of sensitive content
 * Add Tumblr support (?)
 * Add Weasyl support (?)
