@@ -12,7 +12,7 @@ namespace ArtworkInbox.Data {
         public string UserId { get; set; }
 
         [ForeignKey(nameof(UserId))]
-        public IdentityUser User { get; set; }
+        public ApplicationUser User { get; set; }
 
         public DateTimeOffset? DeviantArtLastRead { get; set; }
 

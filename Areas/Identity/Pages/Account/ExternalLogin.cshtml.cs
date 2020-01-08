@@ -21,14 +21,14 @@ using Microsoft.Extensions.Logging;
 namespace ArtworkInbox.Areas.Identity.Pages.Account {
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
-            SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
             ILogger<ExternalLoginModel> logger,
             ApplicationDbContext context) {
             _signInManager = signInManager;
@@ -113,7 +113,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account {
             }
 
             if (ModelState.IsValid) {
-                var user = new IdentityUser { UserName = Input.UserName, Email = Guid.NewGuid() + "@example.com" };
+                var user = new ApplicationUser { UserName = Input.UserName, Email = Guid.NewGuid() + "@example.com" };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded) {
                     result = await _userManager.AddLoginAsync(user, info);

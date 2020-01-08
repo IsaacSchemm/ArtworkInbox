@@ -46,7 +46,7 @@ namespace ArtworkInbox {
             services.AddSingleton<IConsumerCredentials>(new ConsumerCredentials(
                 Configuration["Authentication:Twitter:ConsumerKey"],
                 Configuration["Authentication:Twitter:ConsumerSecret"]));
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();

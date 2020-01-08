@@ -15,12 +15,12 @@ using Microsoft.Extensions.Logging;
 
 namespace ArtworkInbox.Controllers {
     public class DeviantArtController : FeedController {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
         private readonly IDeviantArtAuth _auth;
 
-        public DeviantArtController(UserManager<IdentityUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, IDeviantArtAuth auth) {
+        public DeviantArtController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, IDeviantArtAuth auth) {
             _userManager = userManager;
             _context = context;
             _logger = logger;

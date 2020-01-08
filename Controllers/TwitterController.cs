@@ -11,12 +11,12 @@ using Tweetinvi.Models;
 
 namespace ArtworkInbox.Controllers {
     public class TwitterController : FeedController {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
         private readonly IConsumerCredentials _consumerCredentials;
 
-        public TwitterController(UserManager<IdentityUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, IConsumerCredentials consumerCredentials) {
+        public TwitterController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, IConsumerCredentials consumerCredentials) {
             _userManager = userManager;
             _context = context;
             _logger = logger;
