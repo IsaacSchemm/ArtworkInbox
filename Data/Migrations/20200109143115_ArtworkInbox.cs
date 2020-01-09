@@ -17,7 +17,7 @@ namespace ArtworkInbox.Data.Migrations
                 name: "HideMatureThumbnails",
                 table: "AspNetUsers",
                 nullable: false,
-                defaultValue: true);
+                defaultValue: false);
 
             migrationBuilder.AddColumn<bool>(
                 name: "HideReposts",

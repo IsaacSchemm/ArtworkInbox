@@ -113,7 +113,11 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account {
             }
 
             if (ModelState.IsValid) {
-                var user = new ApplicationUser { UserName = Input.UserName, Email = Guid.NewGuid() + "@example.com" };
+                var user = new ApplicationUser {
+                    UserName = Input.UserName,
+                    Email = Guid.NewGuid() + "@example.com",
+                    HideMatureThumbnails = true
+                };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded) {
                     result = await _userManager.AddLoginAsync(user, info);

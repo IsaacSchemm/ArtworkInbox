@@ -42,9 +42,7 @@ namespace ArtworkInbox.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("HideMatureThumbnails")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<bool>("HideReposts")
                         .HasColumnType("bit");

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkInbox.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200109010528_ArtworkInbox")]
+    [Migration("20200109143115_ArtworkInbox")]
     partial class ArtworkInbox
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,9 +44,7 @@ namespace ArtworkInbox.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("HideMatureThumbnails")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<bool>("HideReposts")
                         .HasColumnType("bit");
