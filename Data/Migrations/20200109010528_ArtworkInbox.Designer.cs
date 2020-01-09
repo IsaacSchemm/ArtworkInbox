@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkInbox.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200109005907_HideReposts")]
-    partial class HideReposts
+    [Migration("20200109010528_ArtworkInbox")]
+    partial class ArtworkInbox
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

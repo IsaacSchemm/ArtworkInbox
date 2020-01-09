@@ -8,14 +8,26 @@
   <ItemGroup>
     <Compile Remove="Data\Migrations\20191224155815_DATokenServerStorage.cs" />
     <Compile Remove="Data\Migrations\20191224155815_DATokenServerStorage.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191224161530_DATokenServerStorage.cs" />
+    <Compile Remove="Data\Migrations\20191224161530_DATokenServerStorage.Designer.cs" />
     <Compile Remove="Data\Migrations\20191224172024_dfgdf.cs" />
     <Compile Remove="Data\Migrations\20191224172024_dfgdf.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191224172307_UserReadMarker.cs" />
+    <Compile Remove="Data\Migrations\20191224172307_UserReadMarker.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191228162733_TwitterTokens.cs" />
+    <Compile Remove="Data\Migrations\20191228162733_TwitterTokens.Designer.cs" />
+    <Compile Remove="Data\Migrations\20191228214947_TwitterLastRead.cs" />
+    <Compile Remove="Data\Migrations\20191228214947_TwitterLastRead.Designer.cs" />
     <Compile Remove="Data\Migrations\20200108184221_Preferences.cs" />
     <Compile Remove="Data\Migrations\20200108184221_Preferences.Designer.cs" />
     <Compile Remove="Data\Migrations\20200108184640_HideMatre.cs" />
     <Compile Remove="Data\Migrations\20200108184640_HideMatre.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200108184748_HideMature.cs" />
+    <Compile Remove="Data\Migrations\20200108184748_HideMature.Designer.cs" />
     <Compile Remove="Data\Migrations\20200109005732_HideReposts.cs" />
     <Compile Remove="Data\Migrations\20200109005732_HideReposts.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200109005907_HideReposts.cs" />
+    <Compile Remove="Data\Migrations\20200109005907_HideReposts.Designer.cs" />
   </ItemGroup>
 
 
