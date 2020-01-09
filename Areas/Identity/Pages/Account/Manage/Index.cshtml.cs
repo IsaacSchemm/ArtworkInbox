@@ -33,6 +33,9 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            [Display(Name = "Hide reposts")]
+            public bool HideReposts { get; set; }
+
             [Display(Name = "Hide mature content")]
             public bool HideMature { get; set; }
 
@@ -48,6 +51,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
+                HideReposts = user.HideReposts,
                 HideMature = user.HideMature,
                 HideMatureThumbnails = user.HideMatureThumbnails
             };
@@ -79,6 +83,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
+            user.HideReposts = Input.HideReposts;
             user.HideMature = Input.HideMature;
             user.HideMatureThumbnails = Input.HideMatureThumbnails;
             await _userManager.UpdateAsync(user);

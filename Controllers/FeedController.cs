@@ -22,6 +22,8 @@ namespace ArtworkInbox.Controllers {
                 var user = await GetUserAsync();
                 var earliest = await GetLastRead();
                 var feedSource = await GetFeedSourceAsync();
+                if (user.HideReposts)
+                    feedSource = new HideRepostsFilter(feedSource);
                 if (user.HideMature)
                     feedSource = new HideMatureFilter(feedSource);
                 if (user.HideMatureThumbnails)

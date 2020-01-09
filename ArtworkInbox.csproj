@@ -14,6 +14,8 @@
     <Compile Remove="Data\Migrations\20200108184221_Preferences.Designer.cs" />
     <Compile Remove="Data\Migrations\20200108184640_HideMatre.cs" />
     <Compile Remove="Data\Migrations\20200108184640_HideMatre.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200109005732_HideReposts.cs" />
+    <Compile Remove="Data\Migrations\20200109005732_HideReposts.Designer.cs" />
   </ItemGroup>
 
 

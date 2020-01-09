@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace ArtworkInbox.Data {
     public class ApplicationUser : IdentityUser {
+        public bool HideReposts { get; set; }
         public bool HideMature { get; set; }
-
         public bool HideMatureThumbnails { get; set; }
     }
 }
