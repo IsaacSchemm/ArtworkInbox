@@ -7,6 +7,7 @@ namespace ArtworkInbox.Backend.Types {
         public DateTimeOffset Timestamp { get; set; }
         public Author Author { get; set; }
         public string RepostedFrom { get; set; }
+        public bool MatureContent { get; set; }
 
         public abstract string GetDescription();
 
@@ -25,7 +26,6 @@ namespace ArtworkInbox.Backend.Types {
         public string Title { get; set; }
         public IEnumerable<Thumbnail> Thumbnails { get; set; }
         public string LinkUrl { get; set; }
-        public bool MatureContent { get; set; }
 
         public Thumbnail DefaultThumbnail =>
             Thumbnails

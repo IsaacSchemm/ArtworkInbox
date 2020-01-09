@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ArtworkInbox.Backend;
+using ArtworkInbox.Backend.Filters;
+using ArtworkInbox.Backend.Sources;
+using ArtworkInbox.Data;
 using ArtworkInbox.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ArtworkInbox.Controllers {
     [Authorize]
     public abstract class FeedController : Controller {
+        protected abstract Task<ApplicationUser> GetUserAsync();
         protected abstract string GetSiteName();
         protected abstract Task<FeedSource> GetFeedSourceAsync();
         protected abstract Task<DateTimeOffset> GetLastRead();
@@ -15,8 +19,13 @@ namespace ArtworkInbox.Controllers {
 
         public async Task<IActionResult> Feed(string cursor = null, DateTimeOffset? latest = null) {
             try {
-                DateTimeOffset earliest = await GetLastRead();
+                var user = await GetUserAsync();
+                var earliest = await GetLastRead();
                 var feedSource = await GetFeedSourceAsync();
+                if (user.HideMature)
+                    feedSource = new HideMatureFilter(feedSource);
+                if (user.HideMatureThumbnails)
+                    feedSource = new HideMatureThumbnailsFilter(feedSource);
                 return View(await FeedViewModel.BuildAsync(feedSource, cursor, earliest, latest));
             } catch (TooManyRequestsException) {
                 return View("TooManyRequests");

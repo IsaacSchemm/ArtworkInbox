@@ -9,4 +9,3 @@ Future plans:
 
 * Add Tumblr support (?)
 * Add Weasyl support (?)
-* Perform mature content filtering (and any other filtering) in backend

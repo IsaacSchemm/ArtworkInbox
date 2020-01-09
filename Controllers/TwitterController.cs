@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using ArtworkInbox.Backend;
+using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +28,10 @@ namespace ArtworkInbox.Controllers {
             return RedirectToAction(nameof(Feed));
         }
 
-        protected override string GetSiteName() {
-            return "Twitter";
-        }
+        protected override Task<ApplicationUser> GetUserAsync() =>
+            _userManager.GetUserAsync(User);
+
+        protected override string GetSiteName() => "Twitter";
 
         protected override async Task<FeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);

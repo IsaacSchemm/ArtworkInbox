@@ -7,7 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Tweetinvi.Models;
 
-namespace ArtworkInbox.Backend {
+namespace ArtworkInbox.Backend.Sources {
     public class TwitterFeedSource : FeedSource {
         private readonly ITwitterCredentials _token;
 

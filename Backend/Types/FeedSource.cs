@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ArtworkInbox.Backend {
+namespace ArtworkInbox.Backend.Sources {
     public abstract class FeedSource {
         public abstract Task<Author> GetAuthenticatedUserAsync();
         public abstract Task<FeedBatch> GetBatchAsync(string cursor);

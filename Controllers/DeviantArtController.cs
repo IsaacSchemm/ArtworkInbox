@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using ArtworkInbox.Backend;
+using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Data;
 using ArtworkInbox.Models;
 using DeviantArtFs;
@@ -31,9 +32,10 @@ namespace ArtworkInbox.Controllers {
             return RedirectToAction(nameof(Feed));
         }
 
-        protected override string GetSiteName() {
-            return "DeviantArt";
-        }
+        protected override Task<ApplicationUser> GetUserAsync() =>
+            _userManager.GetUserAsync(User);
+
+        protected override string GetSiteName() => "DeviantArt";
 
         protected override async Task<FeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);

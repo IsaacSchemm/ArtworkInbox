@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ArtworkInbox.Backend {
+namespace ArtworkInbox.Backend.Sources {
     public class DeviantArtFeedSource : FeedSource {
         private readonly IDeviantArtAccessToken _token;
 
