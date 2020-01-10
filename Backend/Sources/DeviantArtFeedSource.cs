@@ -59,7 +59,7 @@ namespace ArtworkInbox.Backend.Sources {
                             };
                         break;
                     case "status":
-                        yield return new JournalEntry {
+                        yield return new StatusUpdate {
                             Author = author,
                             Timestamp = f.Ts,
                             Html = f.Status.Body,
