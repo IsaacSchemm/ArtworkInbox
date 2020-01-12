@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ISchemm.AspNetCore.Authentication.Tumblr;
 
 namespace ArtworkInbox.Areas.Identity.Pages.Account {
     [AllowAnonymous]
@@ -97,6 +98,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account {
                 Input = new InputModel {
                     UserName =
                         info.Principal.FindFirstValue("urn:twitter:screenname")
+                        ?? info.Principal.FindFirstValue(TumblrConstants.Claims.Username)
                         ?? info.Principal.FindFirstValue(DeviantArtAuthenticationConstants.Claims.Username)
                 };
                 return Page();

@@ -39,6 +39,11 @@ namespace ArtworkInbox {
                     t.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
                     t.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
                     t.SaveTokens = true;
+                })
+                .AddTumblr(t => {
+                    t.ConsumerKey = Configuration["Authentication:Tumblr:ConsumerKey"];
+                    t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
+                    t.SaveTokens = true;
                 });
             services.AddSingleton<IDeviantArtAuth>(new DeviantArtAuth(
                 int.Parse(Configuration["Authentication:DeviantArt:ClientId"]),
