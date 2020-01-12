@@ -51,6 +51,9 @@ namespace ArtworkInbox {
             services.AddSingleton<IConsumerCredentials>(new ConsumerCredentials(
                 Configuration["Authentication:Twitter:ConsumerKey"],
                 Configuration["Authentication:Twitter:ConsumerSecret"]));
+            services.AddSingleton(new ArtworkInboxTumblrClientFactory(
+                Configuration["Authentication:Tumblr:ConsumerKey"],
+                Configuration["Authentication:Tumblr:ConsumerSecret"]));
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
