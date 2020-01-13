@@ -14,25 +14,49 @@ namespace ArtworkInbox.Backend.Sources {
             _client = client;
         }
 
+        public class UserInfoResponse {
+            public User user;
+        }
+
+        public class User {
+            public string name;
+            public IEnumerable<Blog> blogs;
+        }
+
+        public class Blog {
+            public IEnumerable<Avatar> avatar;
+            public bool primary;
+            public string url;
+        }
+
+        public class Avatar {
+            public int width;
+            public int height;
+            public string url;
+        }
+
         public override async Task<Author> GetAuthenticatedUserAsync() {
-            var user = await _client.GetUserInfoAsync();
-            var defaultBlogId = user.Blogs
-                .Where(x => x.IsPrimary)
-                .Select(x => $"{x.Name}.tumblr.com")
-                .DefaultIfEmpty(null)
-                .First();
-            if (defaultBlogId == null) {
-                return new Author {
-                    AvatarUrl = user.Name
-                };
-            } else {
-                var defaultBlog = await _client.GetBlogInfoAsync(defaultBlogId);
-                return new Author {
-                    AvatarUrl = null,
-                    ProfileUrl = defaultBlog?.Url,
-                    Username = defaultBlog?.Name
-                };
-            }
+            var response = await _client.CallApiMethodAsync<UserInfoResponse>(
+                new DontPanic.TumblrSharp.ApiMethod(
+                    $"https://api.tumblr.com/v2/user/info",
+                    _client.OAuthToken,
+                    System.Net.Http.HttpMethod.Get),
+                CancellationToken.None);
+            return new Author {
+                AvatarUrl = response.user.blogs
+                    .Where(x => x.primary)
+                    .SelectMany(x => x.avatar)
+                    .OrderByDescending(x => x.width * x.height)
+                    .Select(x => x.url)
+                    .DefaultIfEmpty(null)
+                    .First(),
+                ProfileUrl = response.user.blogs
+                    .Where(x => x.primary)
+                    .Select(x => x.url)
+                    .DefaultIfEmpty(null)
+                    .First(),
+                Username = response.user.name
+            };
         }
 
         private static IEnumerable<FeedItem> Wrangle(IEnumerable<BasePost> posts) {
