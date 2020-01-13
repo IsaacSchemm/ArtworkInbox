@@ -14,10 +14,9 @@ namespace ArtworkInbox.Controllers {
     public class TumblrController : FeedController {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<HomeController> _logger;
         private readonly ArtworkInboxTumblrClientFactory _factory;
 
-        public TumblrController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, ArtworkInboxTumblrClientFactory factory) {
+        public TumblrController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ArtworkInboxTumblrClientFactory factory) {
             _userManager = userManager;
             _context = context;
             _factory = factory;
