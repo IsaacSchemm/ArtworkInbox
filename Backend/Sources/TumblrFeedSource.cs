@@ -3,6 +3,7 @@ using DontPanic.TumblrSharp.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,6 +26,7 @@ namespace ArtworkInbox.Backend.Sources {
 
         public class Blog {
             public IEnumerable<Avatar> avatar;
+            public string name;
             public bool primary;
             public string url;
         }
@@ -59,65 +61,119 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        private static IEnumerable<FeedItem> Wrangle(IEnumerable<BasePost> posts) {
+        public class Dashboard {
+            public IEnumerable<Post> posts;
+        }
+
+        public class Post {
+            public string type; // = "blocks"
+            public long id;
+            public Blog blog;
+            public string post_url;
+            public long timestamp;
+            public string summary;
+            public IEnumerable<Content> content;
+            public IEnumerable<Trail> trail;
+        }
+
+        public class Content {
+            public string type;
+            public IEnumerable<Media> media; // type = "image"
+            public string text; // type = "text"
+        }
+
+        public class Trail {
+            public Blog blog;
+            public IEnumerable<Content> content;
+        }
+
+        public class Media {
+            public string type;
+            public int width;
+            public int height;
+            public string url;
+        }
+
+        private static IEnumerable<FeedItem> Wrangle(IEnumerable<Post> posts) {
             foreach (var p in posts) {
                 var author = new Author {
-                    Username = p.BlogName,
-                    AvatarUrl = null,
-                    ProfileUrl = $"https://{p.BlogName}.tumblr.com"
+                    Username = p.blog.name,
+                    ProfileUrl = $"https://{p.blog.name}.tumblr.com"
                 };
-                if (p is PhotoPost pp) {
-                    foreach (var ph in pp.PhotoSet) {
-                        yield return new Artwork {
-                            Author = author,
-                            LinkUrl = pp.Url,
-                            Thumbnails = new[] { ph.OriginalSize }
-                                .Concat(ph.AlternateSizes)
-                                .Select(s => new Thumbnail {
-                                    Url = s.ImageUrl,
-                                    Width = s.Width,
-                                    Height = s.Height
+                if (p.type == "blocks") {
+                    foreach (var c in p.content) {
+                        if (c.type == "image") {
+                            yield return new Artwork {
+                                Author = author,
+                                LinkUrl = p.post_url,
+                                Thumbnails = c.media.Select(x => new Thumbnail {
+                                    Height = x.height,
+                                    Width = x.width,
+                                    Url = x.url
                                 }),
-                            Timestamp = pp.Timestamp,
-                            Title = ""
-                        };
+                                Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp),
+                                Title = ""
+                            };
+                        } else if (c.type == "text") {
+                            yield return new StatusUpdate {
+                                Author = author,
+                                Html = WebUtility.HtmlEncode(c.text),
+                                LinkUrl = p.post_url,
+                                Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp)
+                            };
+                        }
                     }
-                } else if (p is TextPost tp) {
-                    yield return new StatusUpdate {
-                        Author = author,
-                        Html = tp.Body,
-                        LinkUrl = tp.Url,
-                        Timestamp = tp.Timestamp
-                    };
+                    foreach (var t in p.trail)
+                    foreach (var c in t.content) {
+                        if (c.type == "image") {
+                            yield return new Artwork {
+                                Author = author,
+                                LinkUrl = p.post_url,
+                                RepostedFrom = t.blog.name,
+                                Thumbnails = c.media.Select(x => new Thumbnail {
+                                    Height = x.height,
+                                    Width = x.width,
+                                    Url = x.url
+                                }),
+                                Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp),
+                                Title = ""
+                            };
+                        } else if (c.type == "text") {
+                            yield return new StatusUpdate {
+                                Author = author,
+                                Html = WebUtility.HtmlEncode(c.text),
+                                LinkUrl = p.post_url,
+                                RepostedFrom = t.blog.name,
+                                Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp)
+                            };
+                        }
+                    }
                 } else {
-                    yield return new StatusUpdate {
-                        Author = author,
-                        Html = p.Summary,
-                        LinkUrl = p.Url,
-                        Timestamp = p.Timestamp
-                    };
+                    throw new NotImplementedException();
                 }
             }
         }
 
         public override async Task<FeedBatch> GetBatchAsync(string cursor) {
-            long sinceId = 0;
+            long offset = 0;
             if (cursor != null && long.TryParse(cursor, out long l))
-                sinceId = l;
-            //var ps = new DontPanic.TumblrSharp.MethodParameterSet {
-            //    { "npf", "true" }
-            //};
-            //var ts = new CancellationTokenSource();
-            //var page1 = await _client.CallApiMethodAsync<Newtonsoft.Json.Linq.JObject>(new DontPanic.TumblrSharp.ApiMethod($"https://api.tumblr.com/v2/user/dashboard", _client.OAuthToken, System.Net.Http.HttpMethod.Get, ps), ts.Token);
-            //System.Diagnostics.Debug.WriteLine(page1);
-            var page = await _client.GetDashboardPostsAsync(sinceId: sinceId);
+                offset = l;
+
+            var response = await _client.CallApiMethodAsync<Dashboard>(
+                new DontPanic.TumblrSharp.ApiMethod(
+                    $"https://api.tumblr.com/v2/user/dashboard",
+                    _client.OAuthToken,
+                    System.Net.Http.HttpMethod.Get,
+                    new DontPanic.TumblrSharp.MethodParameterSet {
+                        { "npf", "true" },
+                        { "offset", offset }
+                    }),
+                CancellationToken.None);
 
             return new FeedBatch {
-                Cursor = page.Any()
-                    ? $"{page.Select(x => x.Id).Min()}"
-                    : cursor,
-                HasMore = page.Count() > 0,
-                FeedItems = Wrangle(page)
+                Cursor = $"{offset + response.posts.Count()}",
+                HasMore = response.posts.Any(),
+                FeedItems = Wrangle(response.posts)
             };
         }
 
