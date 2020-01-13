@@ -30,6 +30,8 @@
     <Compile Remove="Data\Migrations\20200109005907_HideReposts.Designer.cs" />
     <Compile Remove="Data\Migrations\20200109010528_ArtworkInbox.cs" />
     <Compile Remove="Data\Migrations\20200109010528_ArtworkInbox.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200113210812_Weasyl.cs" />
+    <Compile Remove="Data\Migrations\20200113210812_Weasyl.Designer.cs" />
   </ItemGroup>
 
 
