@@ -94,62 +94,70 @@ namespace ArtworkInbox.Backend.Sources {
             public string url;
         }
 
+        private static IEnumerable<Thumbnail> WrangleThumbnails(IEnumerable<Media> media) {
+            return media.Select(x => new Thumbnail {
+                Height = x.height,
+                Width = x.width,
+                Url = x.url
+            });
+        }
+
+        private static IEnumerable<FeedItem> WranglePhotos(Post p) {
+            var author = new Author {
+                Username = p.blog.name,
+                ProfileUrl = $"https://{p.blog.name}.tumblr.com"
+            };
+
+            foreach (var c in p.content) {
+                if (c.type == "image") {
+                    yield return new Artwork {
+                        Author = author,
+                        LinkUrl = p.post_url,
+                        RepostedFrom = null,
+                        Thumbnails = WrangleThumbnails(c.media),
+                        Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp),
+                        Title = ""
+                    };
+                }
+            }
+
+            foreach (var t in p.trail) {
+                foreach (var c in t.content) {
+                    if (c.type == "image") {
+                        yield return new Artwork {
+                            Author = author,
+                            LinkUrl = p.post_url,
+                            RepostedFrom = t.blog.name,
+                            Thumbnails = WrangleThumbnails(c.media),
+                            Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp),
+                            Title = ""
+                        };
+                    }
+                }
+            }
+        }
+
         private static IEnumerable<FeedItem> Wrangle(IEnumerable<Post> posts) {
             foreach (var p in posts) {
-                var author = new Author {
-                    Username = p.blog.name,
-                    ProfileUrl = $"https://{p.blog.name}.tumblr.com"
-                };
-                if (p.type == "blocks") {
-                    foreach (var c in p.content) {
-                        if (c.type == "image") {
-                            yield return new Artwork {
-                                Author = author,
-                                LinkUrl = p.post_url,
-                                Thumbnails = c.media.Select(x => new Thumbnail {
-                                    Height = x.height,
-                                    Width = x.width,
-                                    Url = x.url
-                                }),
-                                Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp),
-                                Title = ""
-                            };
-                        } else if (c.type == "text") {
-                            yield return new StatusUpdate {
-                                Author = author,
-                                Html = WebUtility.HtmlEncode(c.text),
-                                LinkUrl = p.post_url,
-                                Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp)
-                            };
-                        }
-                    }
-                    foreach (var t in p.trail)
-                    foreach (var c in t.content) {
-                        if (c.type == "image") {
-                            yield return new Artwork {
-                                Author = author,
-                                LinkUrl = p.post_url,
-                                RepostedFrom = t.blog.name,
-                                Thumbnails = c.media.Select(x => new Thumbnail {
-                                    Height = x.height,
-                                    Width = x.width,
-                                    Url = x.url
-                                }),
-                                Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp),
-                                Title = ""
-                            };
-                        } else if (c.type == "text") {
-                            yield return new StatusUpdate {
-                                Author = author,
-                                Html = WebUtility.HtmlEncode(c.text),
-                                LinkUrl = p.post_url,
-                                RepostedFrom = t.blog.name,
-                                Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp)
-                            };
-                        }
-                    }
-                } else {
+                if (p.type != "blocks")
                     throw new NotImplementedException();
+
+                var photos = WranglePhotos(p);
+                foreach (var x in photos)
+                    yield return x;
+
+                if (!photos.Any()) {
+                    var author = new Author {
+                        Username = p.blog.name,
+                        ProfileUrl = $"https://{p.blog.name}.tumblr.com"
+                    };
+                    yield return new StatusUpdate {
+                        Author = author,
+                        Html = WebUtility.HtmlEncode(p.summary),
+                        LinkUrl = p.post_url,
+                        RepostedFrom = p.trail.Select(x => x.blog.name).DefaultIfEmpty(null).Last(),
+                        Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp)
+                    };
                 }
             }
         }
