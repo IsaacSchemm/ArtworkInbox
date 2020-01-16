@@ -27,7 +27,8 @@ namespace ArtworkInbox {
         public void ConfigureServices(IServiceCollection services) {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection"),
+                    o => o.EnableRetryOnFailure()));
             services.AddAuthentication()
                 .AddDeviantArt(d => {
                     d.Scope.Add("feed");
