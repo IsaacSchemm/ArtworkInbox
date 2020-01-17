@@ -62,8 +62,8 @@ namespace ArtworkInbox.Backend.Sources {
                         yield return new StatusUpdate {
                             Author = author,
                             Timestamp = f.Ts,
-                            Html = f.Status.Body,
-                            LinkUrl = f.Status.Url
+                            Html = f.Status.Body ?? "",
+                            LinkUrl = f.Status.Url ?? ""
                         };
                         break;
                     case "username_change":
