@@ -35,7 +35,7 @@ namespace ArtworkInbox.Backend.Sources {
                 };
                 switch (f.Type) {
                     case "deviation_submitted":
-                        foreach (var d in f.Deviations)
+                        foreach (var d in f.Deviations.Where(x => !x.IsDeleted))
                             yield return new Artwork {
                                 Author = author,
                                 Timestamp = f.Ts,
@@ -50,7 +50,7 @@ namespace ArtworkInbox.Backend.Sources {
                             };
                         break;
                     case "journal_submitted":
-                        foreach (var d in f.Deviations)
+                        foreach (var d in f.Deviations.Where(x => !x.IsDeleted))
                             yield return new JournalEntry {
                                 Author = author,
                                 Timestamp = f.Ts,
@@ -59,12 +59,13 @@ namespace ArtworkInbox.Backend.Sources {
                             };
                         break;
                     case "status":
-                        yield return new StatusUpdate {
-                            Author = author,
-                            Timestamp = f.Ts,
-                            Html = f.Status.Body ?? "",
-                            LinkUrl = f.Status.Url ?? ""
-                        };
+                        if (!f.Status.IsDeleted)
+                            yield return new StatusUpdate {
+                                Author = author,
+                                Timestamp = f.Ts,
+                                Html = f.Status.Body ?? "",
+                                LinkUrl = f.Status.Url ?? ""
+                            };
                         break;
                     case "username_change":
                         yield return new CustomFeedItem {
