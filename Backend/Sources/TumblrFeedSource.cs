@@ -1,5 +1,7 @@
 ﻿using ArtworkInbox.Backend.Types;
 using DontPanic.TumblrSharp.Client;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,8 +80,13 @@ namespace ArtworkInbox.Backend.Sources {
 
         public class Content {
             public string type;
-            public IEnumerable<Media> media; // type = "image"
+            public JContainer media; // type = "image"
             public string text; // type = "text"
+
+            public IEnumerable<Media> GetImages() =>
+                type == "image"
+                    ? JsonConvert.DeserializeObject<IEnumerable<Media>>(media.ToString())
+                    : Enumerable.Empty<Media>();
         }
 
         public class Trail {
@@ -114,7 +121,7 @@ namespace ArtworkInbox.Backend.Sources {
                         Author = author,
                         LinkUrl = p.post_url,
                         RepostedFrom = null,
-                        Thumbnails = WrangleThumbnails(c.media),
+                        Thumbnails = WrangleThumbnails(c.GetImages()),
                         Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp),
                         Title = ""
                     };
@@ -128,7 +135,7 @@ namespace ArtworkInbox.Backend.Sources {
                             Author = author,
                             LinkUrl = p.post_url,
                             RepostedFrom = t.blog.name,
-                            Thumbnails = WrangleThumbnails(c.media),
+                            Thumbnails = WrangleThumbnails(c.GetImages()),
                             Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp),
                             Title = ""
                         };
