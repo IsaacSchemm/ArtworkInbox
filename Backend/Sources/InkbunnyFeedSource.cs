@@ -13,8 +13,8 @@ namespace ArtworkInbox.Backend.Sources {
             _sid = sid;
         }
 
-        public override async Task<Author> GetAuthenticatedUserAsync() {
-            return new Author();
+        public override Task<Author> GetAuthenticatedUserAsync() {
+            return Task.FromResult(new Author());
         }
 
         private static IEnumerable<Thumbnail> GetThumbnails(InkbunnySearchSubmission s) {

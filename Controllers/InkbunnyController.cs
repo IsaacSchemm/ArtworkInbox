@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using ArtworkInbox.Backend;
 using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Data;
+using ArtworkInbox.Inkbunny;
+using ArtworkInbox.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +65,42 @@ namespace ArtworkInbox.Controllers {
 
             o.InkbunnyLastRead = lastRead;
             await _context.SaveChangesAsync();
+        }
+
+        [HttpGet]
+        public IActionResult Login() {
+            return View(new InkbunnyLoginViewModel());
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(InkbunnyLoginViewModel model) {
+            var c = await InkbunnyClient.CreateAsync(model.Username, model.Password);
+
+            var user = await _userManager.GetUserAsync(User);
+            user.InkbunnySessionId = c.Sid;
+            await _userManager.UpdateAsync(user);
+
+            return LocalRedirect("/Identity/Account/Manage");
+        }
+
+        [HttpGet]
+        public IActionResult Logout() {
+            return View();
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, ActionName("Logout")]
+        public async Task<IActionResult> LogoutPost() {
+            var user = await _userManager.GetUserAsync(User);
+
+            try {
+                var c = new InkbunnyClient(user.InkbunnySessionId);
+                await c.LogoutAsync();
+            } catch (Exception) { }
+
+            user.InkbunnySessionId = null;
+            await _userManager.UpdateAsync(user);
+
+            return LocalRedirect("/Identity/Account/Manage");
         }
     }
 }
