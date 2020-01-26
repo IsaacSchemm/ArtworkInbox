@@ -1,4 +1,23 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using ArtworkInbox.Data
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext ApplicationDbContext
+@{ 
+    var user = await UserManager.GetUserAsync(User);
+
+    bool has_deviantart = user != null && await ApplicationDbContext.UserDeviantArtTokens
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
+    bool has_twitter = user != null && await ApplicationDbContext.UserTwitterTokens
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
+    bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
+    bool has_weasyl = user != null && !string.IsNullOrEmpty(user.WeasylApiKey);
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -20,47 +39,55 @@
                 <div class="navbar-collapse collapse d-md-inline-flex flex-md-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                DeviantArt
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="dropdown-da">
-                                <a class="dropdown-item" asp-area="" asp-controller="DeviantArt" asp-action="Feed">Feed</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="DeviantArt" asp-action="FeedSettings">Settings</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="https://www.deviantart.com/notifications/feedback">Notifications</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Twitter
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="dropdown-da">
-                                <a class="dropdown-item" asp-area="" asp-controller="Twitter" asp-action="Feed">Feed</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="https://www.twitter.com/notifications">Notifications</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Tumblr
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="dropdown-da">
-                                <a class="dropdown-item" asp-area="" asp-controller="Tumblr" asp-action="Feed">Feed</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="https://www.tumblr.com/inbox">Notifications</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Weasyl
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="dropdown-da">
-                                <a class="dropdown-item" asp-area="" asp-controller="Weasyl" asp-action="Feed">Feed</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="https://www.weasyl.com/messages/notifications#notifications">Notifications</a>
-                            </div>
-                        </li>
+                        @if (has_deviantart) {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    DeviantArt
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-da">
+                                    <a class="dropdown-item" asp-area="" asp-controller="DeviantArt" asp-action="Feed">Feed</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="DeviantArt" asp-action="FeedSettings">Settings</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://www.deviantart.com/notifications/feedback">Notifications</a>
+                                </div>
+                            </li>
+                        }
+                        @if (has_twitter) {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Twitter
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-da">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Twitter" asp-action="Feed">Feed</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://www.twitter.com/notifications">Notifications</a>
+                                </div>
+                            </li>
+                        }
+                        @if (has_tumblr) {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Tumblr
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-da">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Tumblr" asp-action="Feed">Feed</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://www.tumblr.com/inbox">Notifications</a>
+                                </div>
+                            </li>
+                        }
+                        @if (has_weasyl) {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Weasyl
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-da">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Weasyl" asp-action="Feed">Feed</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://www.weasyl.com/messages/notifications#notifications">Notifications</a>
+                                </div>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

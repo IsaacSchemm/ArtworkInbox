@@ -24,7 +24,7 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        private static IEnumerable<Thumbnail> GetThumbnails(Submission submission) {
+        private static IEnumerable<Thumbnail> GetThumbnails(WeasylSubmission submission) {
             var pairs = submission.media
                 .Where(p => p.Key == "thumbnail" || p.Key == "thumbnail-generated")
                 .SelectMany(x => x.Value);
@@ -32,7 +32,7 @@ namespace ArtworkInbox.Backend.Sources {
                 yield return new Thumbnail { Url = m.url };
         }
 
-        private static IEnumerable<FeedItem> Wrangle(IEnumerable<Submission> submissions) {
+        private static IEnumerable<FeedItem> Wrangle(IEnumerable<WeasylSubmission> submissions) {
             foreach (var s in submissions) {
                 if (s.type != "submission")
                     throw new NotImplementedException();
