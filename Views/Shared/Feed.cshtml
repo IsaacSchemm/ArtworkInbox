@@ -11,7 +11,9 @@
 
 <div>
     <h5 class="card-title">
-        <img src="@Model.AuthenticatedUser.AvatarUrl" width="50" height="50" />
+        @if (Model.AuthenticatedUser.AvatarUrl != null) {
+            <img src="@Model.AuthenticatedUser.AvatarUrl" width="50" height="50" />
+        }
         @Model.AuthenticatedUser.Username
     </h5>
     <a href="@Model.AuthenticatedUser.ProfileUrl" target="_blank">Profile</a>
@@ -47,6 +49,7 @@
                         <img src="@(d.ThumbnailUrl ?? "/images/no-thumb.svg")"
                              srcset="@d.Srcset"
                              alt=""
+                             referrerpolicy="no-referrer"
                              style="width: 100%; height: 150px; object-fit: contain" />
                         @if (d.RepostedFrom != null) {
                             @:Reposted from @d.RepostedFrom
