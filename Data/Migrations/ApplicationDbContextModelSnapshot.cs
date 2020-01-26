@@ -47,9 +47,6 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<bool>("HideReposts")
                         .HasColumnType("bit");
 
-                    b.Property<string>("InkbunnySessionId")
-                        .HasColumnType("varchar(max)");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -82,9 +79,6 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
-
-                    b.Property<string>("WeasylApiKey")
-                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -123,16 +117,10 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<DateTimeOffset?>("DeviantArtLastRead")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset?>("InkbunnyLastRead")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<DateTimeOffset?>("TumblrLastRead")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("TwitterLastRead")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("WeasylLastRead")
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("UserId");

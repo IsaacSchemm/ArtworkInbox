@@ -11,11 +11,5 @@ namespace ArtworkInbox.Data {
         public bool HideReposts { get; set; }
         public bool HideMature { get; set; }
         public bool HideMatureThumbnails { get; set; }
-
-        [Column(TypeName = "varchar(max)")]
-        public string WeasylApiKey { get; set; }
-
-        [Column(TypeName = "varchar(max)")]
-        public string InkbunnySessionId { get; set; }
     }
 }
