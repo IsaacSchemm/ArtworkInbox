@@ -11,11 +11,9 @@ using System.Threading.Tasks;
 namespace ArtworkInbox.Inkbunny {
 	public class InkbunnyClient {
 		public string Sid { get; private set; }
-		public int UserId { get; private set; }
 
-		public InkbunnyClient(string sid, int userId) {
+		public InkbunnyClient(string sid) {
             Sid = sid;
-            UserId = userId;
         }
 
         public static async Task<InkbunnyClient> CreateAsync(string username, string password) {
@@ -36,7 +34,7 @@ namespace ArtworkInbox.Inkbunny {
                     if (loginResponse.error_code != null) {
                         throw new Exception(loginResponse.error_message);
                     }
-                    return new InkbunnyClient(loginResponse.sid, loginResponse.user_id);
+                    return new InkbunnyClient(loginResponse.sid);
                 }
             }
         }
@@ -217,14 +215,6 @@ namespace ArtworkInbox.Inkbunny {
             string json = await PostMultipartAsync("https://inkbunny.net/api_search.php", parameters);
             return JsonConvert.DeserializeObject<InkbunnySearchResponse>(json);
         }
-
-        public async Task<string> GetUsernameAsync() {
-            var submission = await SearchFirstOrDefaultAsync(new InkbunnySearchParameters {
-				UserId = UserId
-			});
-            if (submission == null) throw new Exception("Cannot determine your Inkbunny username. Try uploading a submission to Inkbunny first.");
-            return submission.username;
-		}
 
 		public async Task<InkbunnySearchSubmission> SearchFirstOrDefaultAsync(InkbunnySearchParameters searchParams) {
 			var resp = await SearchAsync(searchParams, 1, false);
