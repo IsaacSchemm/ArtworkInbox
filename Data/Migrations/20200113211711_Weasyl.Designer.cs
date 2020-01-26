@@ -4,14 +4,16 @@ using ArtworkInbox.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ArtworkInbox.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200113211711_Weasyl")]
+    partial class Weasyl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,9 +48,6 @@ namespace ArtworkInbox.Data.Migrations
 
                     b.Property<bool>("HideReposts")
                         .HasColumnType("bit");
-
-                    b.Property<string>("InkbunnySessionId")
-                        .HasColumnType("varchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -121,9 +120,6 @@ namespace ArtworkInbox.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTimeOffset?>("DeviantArtLastRead")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("InkbunnyLastRead")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("TumblrLastRead")
