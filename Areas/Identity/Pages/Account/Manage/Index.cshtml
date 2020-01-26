@@ -27,27 +27,6 @@
                 <input asp-for="Input.HideMatureThumbnails" class="form-check-input" />
                 <label asp-for="Input.HideMatureThumbnails" class="form-check-label"></label>
             </div>
-            <hr />
-            <fieldset class="form-group">
-                <legend class="col-form-label font-weight-bold pt-0">Additional connections</legend>
-                <div class="form-group">
-                    <label asp-for="Input.WeasylApiKey"></label>
-                    <input asp-for="Input.WeasylApiKey" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label asp-for="Input.InkbunnySessionId"></label>
-                    <input asp-for="Input.InkbunnySessionId" readonly class="form-control" />
-                    @if (string.IsNullOrEmpty(Model.Input.InkbunnySessionId)) {
-                        <div class="form-control form-control-plaintext">
-                            <a href="/Inkbunny/Login" class="btn btn-secondary">Log in</a>
-                        </div>
-                    } else {
-                        <div class="form-control form-control-plaintext">
-                            <a href="/Inkbunny/Logout" class="btn btn-secondary">Log out</a>
-                        </div>
-                    }
-                </div>
-            </fieldset>
             <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>
