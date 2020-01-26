@@ -10,14 +10,14 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-md navbar-toggleable-md navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Artwork Inbox</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="navbar-collapse collapse d-md-inline-flex flex-md-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item dropdown">
@@ -51,6 +51,16 @@
                                 <a class="dropdown-item" href="https://www.tumblr.com/inbox">Notifications</a>
                             </div>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Weasyl
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdown-da">
+                                <a class="dropdown-item" asp-area="" asp-controller="Weasyl" asp-action="Feed">Feed</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="https://www.weasyl.com/messages/notifications#notifications">Notifications</a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -71,5 +81,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js" integrity="sha256-OUFW7hFO0/r5aEGTQOz9F/aXQOt+TwqI1Z4fbVvww04=" crossorigin="anonymous"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+    <noscript>
+        <style type="text/css">
+            .navbar .container,
+            .navbar-nav,
+            .navbar-collapse {
+                flex-direction: column !important;
+            }
+
+            .dropdown-menu {
+                display: block;
+                position: static !important;
+            }
+
+            .collapse:not(.show) {
+                display: block;
+            }
+        </style>
+    </noscript>
 </body>
 </html>

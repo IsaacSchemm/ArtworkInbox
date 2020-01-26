@@ -31,7 +31,9 @@ namespace ArtworkInbox.Controllers {
 
         protected override async Task<FeedSource> GetFeedSourceAsync() {
             var user = await _userManager.GetUserAsync(User);
-            throw new NoTokenException();
+            if (string.IsNullOrEmpty(user.WeasylApiKey))
+                throw new NoTokenException();
+            return new WeasylFeedSource(user);
         }
 
         protected override async Task<DateTimeOffset> GetLastRead() {
