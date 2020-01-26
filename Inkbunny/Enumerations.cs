@@ -30,10 +30,4 @@ namespace ArtworkInbox.Inkbunny {
         CharacterSheet = 13,
         Photography = 14
     }
-
-    public enum InkbunnyTwitterImagePref {
-        TextOnly = 0,
-        Thumbnail = 1,
-        FullPicture = 2
-    }
 }
