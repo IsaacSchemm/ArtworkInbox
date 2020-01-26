@@ -16,6 +16,9 @@ namespace ArtworkInbox.Data {
         [Column(TypeName = "varchar(max)")]
         public string WeasylApiKey { get; set; }
 
+        [Column(TypeName = "varchar(max)")]
+        public string InkbunnySessionId { get; set; }
+
         string IWeasylCredentials.ApiKey => WeasylApiKey;
     }
 }

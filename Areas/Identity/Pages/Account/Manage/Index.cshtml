@@ -15,10 +15,6 @@
                 <label asp-for="Username"></label>
                 <input asp-for="Username" class="form-control" disabled />
             </div>
-            <div class="form-group">
-                <label asp-for="Input.WeasylApiKey"></label>
-                <input asp-for="Input.WeasylApiKey" class="form-control" />
-            </div>
             <div class="form-group form-check">
                 <input asp-for="Input.HideReposts" class="form-check-input" />
                 <label asp-for="Input.HideReposts" class="form-check-label"></label>
@@ -31,6 +27,18 @@
                 <input asp-for="Input.HideMatureThumbnails" class="form-check-input" />
                 <label asp-for="Input.HideMatureThumbnails" class="form-check-label"></label>
             </div>
+            <hr />
+            <fieldset class="form-group">
+                <legend class="col-form-label font-weight-bold pt-0">Additional connections</legend>
+                <div class="form-group">
+                    <label asp-for="Input.WeasylApiKey"></label>
+                    <input asp-for="Input.WeasylApiKey" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.InkbunnySessionId"></label>
+                    <input asp-for="Input.InkbunnySessionId" class="form-control" />
+                </div>
+            </fieldset>
             <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>

@@ -16,6 +16,7 @@
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_weasyl = user != null && !string.IsNullOrEmpty(user.WeasylApiKey);
+    bool has_inkbunny = user != null && !string.IsNullOrEmpty(user.InkbunnySessionId);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -54,10 +55,10 @@
                         }
                         @if (has_twitter) {
                             <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tw" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Twitter
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-da">
+                                <div class="dropdown-menu" aria-labelledby="dropdown-tw">
                                     <a class="dropdown-item" asp-area="" asp-controller="Twitter" asp-action="Feed">Feed</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="https://www.twitter.com/notifications">Notifications</a>
@@ -66,10 +67,10 @@
                         }
                         @if (has_tumblr) {
                             <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Tumblr
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-da">
+                                <div class="dropdown-menu" aria-labelledby="dropdown-tu">
                                     <a class="dropdown-item" asp-area="" asp-controller="Tumblr" asp-action="Feed">Feed</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="https://www.tumblr.com/inbox">Notifications</a>
@@ -78,13 +79,25 @@
                         }
                         @if (has_weasyl) {
                             <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-da" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-w" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Weasyl
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-da">
+                                <div class="dropdown-menu" aria-labelledby="dropdown-w">
                                     <a class="dropdown-item" asp-area="" asp-controller="Weasyl" asp-action="Feed">Feed</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="https://www.weasyl.com/messages/notifications#notifications">Notifications</a>
+                                </div>
+                            </li>
+                        }
+                        @if (has_inkbunny) {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-ib" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Inkbunny
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-ib">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Inkbunny" asp-action="Feed">Feed</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://inkbunny.net/portal.php">Notifications</a>
                                 </div>
                             </li>
                         }

@@ -33,8 +33,11 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Display(Name = "Weasyl API key (optional)")]
+            [Display(Name = "Weasyl API key")]
             public string WeasylApiKey { get; set; }
+
+            [Display(Name = "Inkbunny session ID")]
+            public string InkbunnySessionId { get; set; }
 
             [Display(Name = "Hide reposts")]
             public bool HideReposts { get; set; }
@@ -55,6 +58,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 WeasylApiKey = user.WeasylApiKey,
+                InkbunnySessionId = user.InkbunnySessionId,
                 HideReposts = user.HideReposts,
                 HideMature = user.HideMature,
                 HideMatureThumbnails = user.HideMatureThumbnails
@@ -91,6 +95,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
                 Input.WeasylApiKey = null;
 
             user.WeasylApiKey = Input.WeasylApiKey;
+            user.InkbunnySessionId = Input.InkbunnySessionId;
             user.HideReposts = Input.HideReposts;
             user.HideMature = Input.HideMature;
             user.HideMatureThumbnails = Input.HideMatureThumbnails;
