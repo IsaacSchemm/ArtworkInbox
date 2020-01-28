@@ -36,6 +36,12 @@
     <Compile Remove="Data\Migrations\20200113211711_Weasyl.Designer.cs" />
     <Compile Remove="Data\Migrations\20200126202911_Inkbunny.cs" />
     <Compile Remove="Data\Migrations\20200126202911_Inkbunny.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200128001112_MastodonTokens.cs" />
+    <Compile Remove="Data\Migrations\20200128001112_MastodonTokens.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200128002507_MastodonTokens.cs" />
+    <Compile Remove="Data\Migrations\20200128002507_MastodonTokens.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200128002836_MastodonTokens.cs" />
+    <Compile Remove="Data\Migrations\20200128002836_MastodonTokens.Designer.cs" />
   </ItemGroup>
 
 

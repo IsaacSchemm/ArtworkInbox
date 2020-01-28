@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace ArtworkInbox {
     public static class MastodonOAuthExtensions {
         public static AuthenticationBuilder AddMastodon(this AuthenticationBuilder builder, string hostname, Action<OAuthOptions> configureOptions) {
-            return builder.AddOAuth($"mastodon:{hostname}", hostname, o => {
+            return builder.AddOAuth(hostname, hostname, o => {
                 // https://medium.com/@mauridb/using-oauth2-middleware-with-asp-net-core-2-0-b31ffef58cd0
 
                 if (string.IsNullOrEmpty(hostname) || Uri.CheckHostName(hostname) == UriHostNameType.Unknown) {

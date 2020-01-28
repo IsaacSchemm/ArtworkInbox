@@ -70,6 +70,23 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
+            } else if (new[] { "botsin.space" }.Contains(info.LoginProvider)) {
+                var token = await _context.UserMastodonTokens
+                    .Where(t => t.UserId == user.Id)
+                    .Where(t => t.LoginProvider == info.LoginProvider)
+                    .SingleOrDefaultAsync();
+                if (token == null) {
+                    token = new UserMastodonToken {
+                        UserId = user.Id,
+                        LoginProvider = info.LoginProvider
+                    };
+                    _context.UserMastodonTokens.Add(token);
+                }
+                token.AccessToken = info.AuthenticationTokens
+                    .Where(t => t.Name == "access_token")
+                    .Select(t => t.Value)
+                    .Single();
+                await _context.SaveChangesAsync();
             }
         }
     }
