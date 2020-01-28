@@ -53,50 +53,12 @@ namespace ArtworkInbox {
                     t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
                     t.SaveTokens = true;
                 })
-                .AddOAuth("botsin.space", o => {
-                    // https://medium.com/@mauridb/using-oauth2-middleware-with-asp-net-core-2-0-b31ffef58cd0
-
-                    o.ClientId = Configuration["Authentication:botsin.space:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:botsin.space:ClientSecret"];
-
-                    o.AuthorizationEndpoint = "https://botsin.space/oauth/authorize";
-                    o.TokenEndpoint = "https://botsin.space/oauth/token";
-                    o.UserInformationEndpoint = "https://botsin.space/api/v1/accounts/verify_credentials";
-                    o.CallbackPath = new Microsoft.AspNetCore.Http.PathString("/signin-botsin-space");
-
-                    o.Scope.Add("read");
-
-                    o.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-                    o.ClaimActions.MapJsonKey(ClaimTypes.Name, "username");
-                    o.ClaimActions.MapJsonKey("urn:botsin.space:id", "id");
-                    o.ClaimActions.MapJsonKey("urn:botsin.space:username", "username");
-
-                    o.Events = new OAuthEvents {
-                        OnCreatingTicket = async context => {
-                            var request = new HttpRequestMessage(System.Net.Http.HttpMethod.Get, context.Options.UserInformationEndpoint);
-                            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
-
-                            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                            var response = await context.Backchannel.SendAsync(request, context.HttpContext.RequestAborted);
-                            response.EnsureSuccessStatusCode();
-
-                            //context.HttpContext.Response.Cookies.Append("token", context.AccessToken);
-                            if (context.Options.SaveTokens) {
-                                context.Properties.StoreTokens(new[] {
-                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
-                                });
-                            }
-
-                            using var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-                            context.RunClaimActions(user.RootElement);
-                        },
-                        OnRemoteFailure = context => {
-                            context.HandleResponse();
-                            context.Response.Redirect("/Home/Error?message=" + context.Failure.Message);
-                            return Task.FromResult(0);
-                        }
-                    };
+                .AddMastodon("botsin.space", o => {
+                    o.Scope.Add("read:statuses");
+                    o.Scope.Add("read:accounts");
+                    o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
+                    o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
+                    o.SaveTokens = true;
                 });
             services.AddSingleton<IDeviantArtAuth>(new DeviantArtAuth(
                 int.Parse(Configuration["Authentication:DeviantArt:ClientId"]),
