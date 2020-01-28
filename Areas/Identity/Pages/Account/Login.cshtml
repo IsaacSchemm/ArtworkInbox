@@ -9,7 +9,7 @@
 <div class="row">
     <div class="col-md-12">
         <section>
-            <h4>Use another service to log in.</h4>
+            <h4>Log in with:</h4>
             <hr />
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
@@ -35,6 +35,13 @@
                     </form>
                 }
             }
+            <p class="small">
+                To create your Artwork Inbox account, just attach an account on one of the sites above.
+                Once you've logged in, you can attach your other accounts from the external logins page.
+            </p>
+            <p>
+                If you would like to see your Mastodon or Pleroma instance listed here, file an issue on the Artwork Inbox repository at GitHub.
+            </p>
         </section>
     </div>
 </div>

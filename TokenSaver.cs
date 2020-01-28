@@ -70,7 +70,7 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
-            } else if (new[] { "botsin.space" }.Contains(info.LoginProvider)) {
+            } else if (new[] { "mastodon.social", "botsin.space" }.Contains(info.LoginProvider)) {
                 var token = await _context.UserMastodonTokens
                     .Where(t => t.UserId == user.Id)
                     .Where(t => t.LoginProvider == info.LoginProvider)
