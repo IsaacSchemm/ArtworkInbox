@@ -98,6 +98,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account {
                 Input = new InputModel {
                     UserName =
                         info.Principal.FindFirstValue("urn:twitter:screenname")
+                        ?? info.Principal.FindFirstValue("urn:weasyl:login")
                         ?? info.Principal.FindFirstValue(TumblrConstants.Claims.Username)
                         ?? info.Principal.FindFirstValue(DeviantArtAuthenticationConstants.Claims.Username)
                 };
