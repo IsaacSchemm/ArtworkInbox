@@ -3,6 +3,7 @@ using MapleFedNet.Common;
 using MapleFedNet.Model;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
@@ -48,7 +49,9 @@ namespace ArtworkInbox.Backend.Sources {
                         Author = author,
                         Timestamp = s.CreatedAt,
                         LinkUrl = s.Url,
-                        Html = s.Content,
+                        Html = !string.IsNullOrEmpty(s.SpoilerText)
+                            ? WebUtility.HtmlEncode(s.SpoilerText)
+                            : s.Content,
                         RepostedFrom = s.Reblog?.Account?.UserName
                     };
                 }
