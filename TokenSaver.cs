@@ -114,6 +114,14 @@ namespace ArtworkInbox {
                     _context.Remove(token);
                     await _context.SaveChangesAsync();
                 }
+            } else if (loginProvider == "botsin.space") {
+                var token = await _context.UserBotsinSpaceTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
             }
         }
     }
