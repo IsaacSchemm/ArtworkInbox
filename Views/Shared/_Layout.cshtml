@@ -15,7 +15,10 @@
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
-    bool has_mastodon = user != null && await ApplicationDbContext.UserMastodonTokens
+    bool has_botsin_space = user != null && await ApplicationDbContext.UserBotsinSpaceTokens
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
+    bool has_mastodon_technology = user != null && await ApplicationDbContext.UserMastodonTechnologyTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
 }
@@ -78,13 +81,27 @@
                                 </div>
                             </li>
                         }
-                        @if (has_mastodon) {
+                        @if (has_botsin_space) {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Mastodon
+                                    botsin.space
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dropdown-tu">
-                                    <a class="dropdown-item" asp-area="" asp-controller="Mastodon" asp-action="Feed">Feed</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="BotsinSpace" asp-action="Feed">Feed</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://botsin.space">Notifications</a>
+                                </div>
+                            </li>
+                        }
+                        @if (has_mastodon_technology) {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    mastodon.technology
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-tu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="MastodonTechnology" asp-action="Feed">Feed</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://mastodon.technology">Notifications</a>
                                 </div>
                             </li>
                         }

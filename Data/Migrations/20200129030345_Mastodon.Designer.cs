@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkInbox.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200129022205_Mastodon")]
+    [Migration("20200129030345_Mastodon")]
     partial class Mastodon
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,6 +95,19 @@ namespace ArtworkInbox.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("ArtworkInbox.Data.UserBotsinSpaceToken", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AccessToken")
+                        .HasColumnType("varchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserBotsinSpaceTokens");
+                });
+
             modelBuilder.Entity("ArtworkInbox.Data.UserDeviantArtToken", b =>
                 {
                     b.Property<string>("UserId")
@@ -111,29 +124,17 @@ namespace ArtworkInbox.Data.Migrations
                     b.ToTable("UserDeviantArtTokens");
                 });
 
-            modelBuilder.Entity("ArtworkInbox.Data.UserMastodonToken", b =>
+            modelBuilder.Entity("ArtworkInbox.Data.UserMastodonTechnologyToken", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AccessToken")
                         .HasColumnType("varchar(max)");
 
-                    b.Property<string>("Hostname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("UserId");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserMastodonTokens");
+                    b.ToTable("UserMastodonTechnologyTokens");
                 });
 
             modelBuilder.Entity("ArtworkInbox.Data.UserReadMarker", b =>
@@ -141,10 +142,13 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTimeOffset?>("BotsinSpaceLastRead")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset?>("DeviantArtLastRead")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset?>("MastodonLastRead")
+                    b.Property<DateTimeOffset?>("MastodonTechnologyLastRead")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("TumblrLastRead")
@@ -325,6 +329,15 @@ namespace ArtworkInbox.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("ArtworkInbox.Data.UserBotsinSpaceToken", b =>
+                {
+                    b.HasOne("ArtworkInbox.Data.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ArtworkInbox.Data.UserDeviantArtToken", b =>
                 {
                     b.HasOne("ArtworkInbox.Data.ApplicationUser", "User")
@@ -334,7 +347,7 @@ namespace ArtworkInbox.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ArtworkInbox.Data.UserMastodonToken", b =>
+            modelBuilder.Entity("ArtworkInbox.Data.UserMastodonTechnologyToken", b =>
                 {
                     b.HasOne("ArtworkInbox.Data.ApplicationUser", "User")
                         .WithMany()

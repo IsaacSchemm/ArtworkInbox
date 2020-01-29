@@ -8,15 +8,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Tweetinvi.Models;
 
 namespace ArtworkInbox.Controllers {
-    public class MastodonController : FeedController {
+    public class BotsinSpaceController : FeedController {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
 
-        public MastodonController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger) {
+        public BotsinSpaceController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger) {
             _userManager = userManager;
             _context = context;
             _logger = logger;
@@ -29,11 +28,11 @@ namespace ArtworkInbox.Controllers {
         protected override Task<ApplicationUser> GetUserAsync() =>
             _userManager.GetUserAsync(User);
 
-        protected override string GetSiteName() => "Mastodon";
+        protected override string GetSiteName() => "botsin.space";
 
         protected override async Task<FeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);
-            var dbToken = await _context.UserMastodonTokens
+            var dbToken = await _context.UserBotsinSpaceTokens
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
@@ -45,7 +44,7 @@ namespace ArtworkInbox.Controllers {
             var userId = _userManager.GetUserId(User);
             var dt = await _context.UserReadMarkers
                 .Where(t => t.UserId == userId)
-                .Select(t => t.MastodonLastRead)
+                .Select(t => t.BotsinSpaceLastRead)
                 .SingleOrDefaultAsync();
             return dt ?? DateTimeOffset.MinValue;
         }
@@ -63,7 +62,7 @@ namespace ArtworkInbox.Controllers {
                 _context.UserReadMarkers.Add(o);
             }
 
-            o.MastodonLastRead = lastRead;
+            o.BotsinSpaceLastRead = lastRead;
             await _context.SaveChangesAsync();
         }
     }

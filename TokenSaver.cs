@@ -70,21 +70,30 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
-            } else if (info.Principal.HasClaim(x => x.Type == "urn:mastodon:hostname")) {
-                string hostname = info.Principal.Claims
-                    .Where(x => x.Type == "urn:mastodon:hostname")
-                    .Select(x => x.Value)
-                    .First();
-                var token = await _context.UserMastodonTokens
+            } else if (info.LoginProvider == "botsin.space") {
+                var token = await _context.UserBotsinSpaceTokens
                     .Where(t => t.UserId == user.Id)
-                    .Where(t => t.Hostname == hostname)
                     .SingleOrDefaultAsync();
                 if (token == null) {
-                    token = new UserMastodonToken {
-                        UserId = user.Id,
-                        Hostname = hostname
+                    token = new UserBotsinSpaceToken {
+                        UserId = user.Id
                     };
-                    _context.UserMastodonTokens.Add(token);
+                    _context.UserBotsinSpaceTokens.Add(token);
+                }
+                token.AccessToken = info.AuthenticationTokens
+                    .Where(t => t.Name == "access_token")
+                    .Select(t => t.Value)
+                    .Single();
+                await _context.SaveChangesAsync();
+            } else if (info.LoginProvider == "mastodon.technology") {
+                var token = await _context.UserMastodonTechnologyTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token == null) {
+                    token = new UserMastodonTechnologyToken {
+                        UserId = user.Id
+                    };
+                    _context.UserMastodonTechnologyTokens.Add(token);
                 }
                 token.AccessToken = info.AuthenticationTokens
                     .Where(t => t.Name == "access_token")
