@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkInbox.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200128003204_MastodonTokens")]
-    partial class MastodonTokens
+    [Migration("20200129005550_Mastodon")]
+    partial class Mastodon
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -121,7 +121,7 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<string>("AccessToken")
                         .HasColumnType("varchar(max)");
 
-                    b.Property<string>("LoginProvider")
+                    b.Property<string>("Hostname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -70,15 +70,19 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
-            } else if (new[] { "mastodon.social", "botsin.space" }.Contains(info.LoginProvider)) {
+            } else if (info.Principal.HasClaim(x => x.Type == "urn:mastodon:hostname")) {
+                string hostname = info.Principal.Claims
+                    .Where(x => x.Type == "urn:mastodon:hostname")
+                    .Select(x => x.Value)
+                    .First();
                 var token = await _context.UserMastodonTokens
                     .Where(t => t.UserId == user.Id)
-                    .Where(t => t.LoginProvider == info.LoginProvider)
+                    .Where(t => t.Hostname == hostname)
                     .SingleOrDefaultAsync();
                 if (token == null) {
                     token = new UserMastodonToken {
                         UserId = user.Id,
-                        LoginProvider = info.LoginProvider
+                        Hostname = hostname
                     };
                     _context.UserMastodonTokens.Add(token);
                 }

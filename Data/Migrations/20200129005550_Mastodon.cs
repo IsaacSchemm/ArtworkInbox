@@ -2,7 +2,7 @@
 
 namespace ArtworkInbox.Data.Migrations
 {
-    public partial class MastodonTokens : Migration
+    public partial class Mastodon : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,7 +12,7 @@ namespace ArtworkInbox.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    LoginProvider = table.Column<string>(nullable: false),
+                    Hostname = table.Column<string>(nullable: false),
                     UserId = table.Column<string>(nullable: false),
                     AccessToken = table.Column<string>(type: "varchar(max)", nullable: true)
                 },

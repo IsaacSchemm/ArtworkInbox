@@ -6,7 +6,7 @@ namespace ArtworkInbox.Data {
         public int Id { get; set; }
 
         [Required]
-        public string LoginProvider { get; set; }
+        public string Hostname { get; set; }
 
         [Required]
         public string UserId { get; set; }

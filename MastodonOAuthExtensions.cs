@@ -24,9 +24,10 @@ namespace ArtworkInbox {
                 o.CallbackPath = new Microsoft.AspNetCore.Http.PathString($"/signin-mastodon-{hostname}");
 
                 o.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-                o.ClaimActions.MapJsonKey(ClaimTypes.Name, "username");
-                o.ClaimActions.MapJsonKey($"urn:mastodon:{hostname}:id", "id");
-                o.ClaimActions.MapJsonKey($"urn:mastodon:{hostname}:username", "username");
+                .ClaimActions.MapJsonKey(ClaimTypes.Name, "username");
+                o.ClaimActions.MapJsonKey($"urn:mastodon:hostname", hostname);
+                o.ClaimActions.MapJsonKey($"urn:mastodon:id", "id");
+                o.ClaimActions.MapJsonKey($"urn:mastodon:username", "username");
 
                 o.Events = new OAuthEvents {
                     OnCreatingTicket = async context => {

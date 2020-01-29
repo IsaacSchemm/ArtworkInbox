@@ -119,7 +119,7 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<string>("AccessToken")
                         .HasColumnType("varchar(max)");
 
-                    b.Property<string>("LoginProvider")
+                    b.Property<string>("Hostname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -42,6 +42,8 @@
     <Compile Remove="Data\Migrations\20200128002507_MastodonTokens.Designer.cs" />
     <Compile Remove="Data\Migrations\20200128002836_MastodonTokens.cs" />
     <Compile Remove="Data\Migrations\20200128002836_MastodonTokens.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200128003204_MastodonTokens.cs" />
+    <Compile Remove="Data\Migrations\20200128003204_MastodonTokens.Designer.cs" />
   </ItemGroup>
 
 
