@@ -1,6 +1,7 @@
 ﻿using ArtworkInbox.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -70,6 +71,34 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task RemoveTokensAsync(ApplicationUser user, string loginProvider) {
+            if (loginProvider == "DeviantArt") {
+                var token = await _context.UserDeviantArtTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
+            } else if (loginProvider == "Twitter") {
+                var token = await _context.UserTwitterTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
+            } else if (loginProvider == "Tumblr") {
+                var token = await _context.UserTumblrTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
             }
         }
     }
