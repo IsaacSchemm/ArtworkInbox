@@ -59,6 +59,8 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            await new TokenSaver(_context).RemoveTokensAsync(user, loginProvider);
+
             var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
             if (!result.Succeeded)
             {
