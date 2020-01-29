@@ -122,19 +122,6 @@ namespace ArtworkInbox.Data.Migrations
                     b.ToTable("UserDeviantArtTokens");
                 });
 
-            modelBuilder.Entity("ArtworkInbox.Data.UserMastodonTechnologyToken", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AccessToken")
-                        .HasColumnType("varchar(max)");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("UserMastodonTechnologyTokens");
-                });
-
             modelBuilder.Entity("ArtworkInbox.Data.UserReadMarker", b =>
                 {
                     b.Property<string>("UserId")
@@ -144,9 +131,6 @@ namespace ArtworkInbox.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DeviantArtLastRead")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("MastodonTechnologyLastRead")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("TumblrLastRead")
@@ -337,15 +321,6 @@ namespace ArtworkInbox.Data.Migrations
                 });
 
             modelBuilder.Entity("ArtworkInbox.Data.UserDeviantArtToken", b =>
-                {
-                    b.HasOne("ArtworkInbox.Data.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ArtworkInbox.Data.UserMastodonTechnologyToken", b =>
                 {
                     b.HasOne("ArtworkInbox.Data.ApplicationUser", "User")
                         .WithMany()

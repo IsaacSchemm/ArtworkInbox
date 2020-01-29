@@ -21,7 +21,5 @@ namespace ArtworkInbox.Data {
         public DateTimeOffset? TumblrLastRead { get; set; }
 
         public DateTimeOffset? BotsinSpaceLastRead { get; set; }
-
-        public DateTimeOffset? MastodonTechnologyLastRead { get; set; }
     }
 }

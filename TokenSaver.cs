@@ -85,21 +85,6 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
-            } else if (info.LoginProvider == "mastodon.technology") {
-                var token = await _context.UserMastodonTechnologyTokens
-                    .Where(t => t.UserId == user.Id)
-                    .SingleOrDefaultAsync();
-                if (token == null) {
-                    token = new UserMastodonTechnologyToken {
-                        UserId = user.Id
-                    };
-                    _context.UserMastodonTechnologyTokens.Add(token);
-                }
-                token.AccessToken = info.AuthenticationTokens
-                    .Where(t => t.Name == "access_token")
-                    .Select(t => t.Value)
-                    .Single();
-                await _context.SaveChangesAsync();
             }
         }
     }

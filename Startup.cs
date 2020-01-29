@@ -53,13 +53,6 @@ namespace ArtworkInbox {
                     t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
                     t.SaveTokens = true;
                 })
-                .AddMastodon("mastodon.technology", o => {
-                    o.Scope.Add("read:statuses");
-                    o.Scope.Add("read:accounts");
-                    o.ClientId = Configuration["Authentication:Mastodon:mastodon.technology:client_id"];
-                    o.ClientSecret = Configuration["Authentication:Mastodon:mastodon.technology:client_secret"];
-                    o.SaveTokens = true;
-                })
                 .AddMastodon("botsin.space", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
