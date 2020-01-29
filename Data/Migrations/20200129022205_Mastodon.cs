@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ArtworkInbox.Data.Migrations
 {
@@ -6,6 +7,11 @@ namespace ArtworkInbox.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "MastodonLastRead",
+                table: "UserReadMarkers",
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "UserMastodonTokens",
                 columns: table => new
@@ -37,6 +43,10 @@ namespace ArtworkInbox.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "UserMastodonTokens");
+
+            migrationBuilder.DropColumn(
+                name: "MastodonLastRead",
+                table: "UserReadMarkers");
         }
     }
 }

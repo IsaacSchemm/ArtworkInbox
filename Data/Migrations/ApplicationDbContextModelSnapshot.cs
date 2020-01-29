@@ -142,6 +142,9 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<DateTimeOffset?>("DeviantArtLastRead")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset?>("MastodonLastRead")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset?>("TumblrLastRead")
                         .HasColumnType("datetimeoffset");
 

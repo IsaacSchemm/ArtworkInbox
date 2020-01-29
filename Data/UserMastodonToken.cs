@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MapleFedNet.Common;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtworkInbox.Data {
-    public class UserMastodonToken {
+    public class UserMastodonToken : IMastodonCredentials {
         public int Id { get; set; }
 
         [Required]
@@ -16,5 +17,8 @@ namespace ArtworkInbox.Data {
 
         [Column(TypeName = "varchar(max)")]
         public string AccessToken { get; set; }
+
+        string IMastodonCredentials.Domain => Hostname;
+        string IMastodonCredentials.Token => AccessToken;
     }
 }

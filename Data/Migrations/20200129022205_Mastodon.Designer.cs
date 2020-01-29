@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkInbox.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200129005550_Mastodon")]
+    [Migration("20200129022205_Mastodon")]
     partial class Mastodon
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -142,6 +142,9 @@ namespace ArtworkInbox.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTimeOffset?>("DeviantArtLastRead")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("MastodonLastRead")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("TumblrLastRead")

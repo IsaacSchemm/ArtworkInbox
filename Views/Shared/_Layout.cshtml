@@ -15,6 +15,9 @@
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
+    bool has_mastodon = user != null && await ApplicationDbContext.UserMastodonTokens
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -72,6 +75,16 @@
                                     <a class="dropdown-item" asp-area="" asp-controller="Tumblr" asp-action="Feed">Feed</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="https://www.tumblr.com/inbox">Notifications</a>
+                                </div>
+                            </li>
+                        }
+                        @if (has_mastodon) {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Mastodon
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-tu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Mastodon" asp-action="Feed">Feed</a>
                                 </div>
                             </li>
                         }
