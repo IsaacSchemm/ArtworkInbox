@@ -59,6 +59,7 @@ namespace ArtworkInbox {
                     o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
                     o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
                     o.SaveTokens = true;
+                })
                 .AddOAuth("Weasyl", "Weasyl", o => {
                     o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
                     o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
@@ -85,7 +86,7 @@ namespace ArtworkInbox {
                         },
                         OnRemoteFailure = context => {
                             context.HandleResponse();
-                            context.Response.Redirect("/Home/Error?message=" + Uri.EscapeDataString(context.Failure.Message));
+                            context.Response.Redirect("/Home/Error");
                             return Task.FromResult(0);
                         }
                     };
