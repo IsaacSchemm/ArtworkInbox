@@ -59,6 +59,36 @@ namespace ArtworkInbox {
                     o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
                     o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
                     o.SaveTokens = true;
+                .AddOAuth("Weasyl", "Weasyl", o => {
+                    o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
+                    o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
+                    o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
+                    o.CallbackPath = new PathString("/signin-weasyl");
+
+                    o.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents {
+                        OnCreatingTicket = async context => {
+                            if (context.Options.SaveTokens) {
+                                context.Properties.StoreTokens(new[] {
+                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
+                                });
+                            }
+
+                            var creds = new WeasylFs.WeasylCredentials(context.AccessToken);
+                            var user = await WeasylFs.Endpoints.Whoami.ExecuteAsync(creds);
+                            context.Principal.AddIdentity(new ClaimsIdentity(new[] {
+                                new Claim(ClaimTypes.NameIdentifier, $"{user.userid}"),
+                                new Claim(ClaimTypes.Name, user.login),
+                                new Claim("urn:weasyl:userid", $"{user.userid}"),
+                                new Claim("urn:weasyl:login", user.login),
+                            }));
+                        },
+                        OnRemoteFailure = context => {
+                            context.HandleResponse();
+                            context.Response.Redirect("/Home/Error?message=" + Uri.EscapeDataString(context.Failure.Message));
+                            return Task.FromResult(0);
+                        }
+                    };
                 });
             services.AddSingleton<IDeviantArtAuth>(new DeviantArtAuth(
                 int.Parse(Configuration["Authentication:DeviantArt:ClientId"]),
