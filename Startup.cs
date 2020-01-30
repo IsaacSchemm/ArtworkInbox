@@ -14,6 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DeviantArtFs;
 using Tweetinvi.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace ArtworkInbox {
     public class Startup {
@@ -45,6 +48,37 @@ namespace ArtworkInbox {
                     t.ConsumerKey = Configuration["Authentication:Tumblr:ConsumerKey"];
                     t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
                     t.SaveTokens = true;
+                })
+                .AddOAuth("Weasyl", "Weasyl", o => {
+                    o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
+                    o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
+                    o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
+                    o.CallbackPath = new PathString("/signin-weasyl");
+
+                    o.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents {
+                        OnCreatingTicket = async context => {
+                            if (context.Options.SaveTokens) {
+                                context.Properties.StoreTokens(new[] {
+                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
+                                });
+                            }
+
+                            var creds = new WeasylFs.WeasylCredentials(context.AccessToken);
+                            var user = await WeasylFs.Endpoints.Whoami.ExecuteAsync(creds);
+                            context.Principal.AddIdentity(new ClaimsIdentity(new[] {
+                                new Claim(ClaimTypes.NameIdentifier, $"{user.userid}"),
+                                new Claim(ClaimTypes.Name, user.login),
+                                new Claim("urn:weasyl:userid", $"{user.userid}"),
+                                new Claim("urn:weasyl:login", user.login),
+                            }));
+                        },
+                        OnRemoteFailure = context => {
+                            context.HandleResponse();
+                            context.Response.Redirect("/Home/Error?message=" + Uri.EscapeDataString(context.Failure.Message));
+                            return Task.FromResult(0);
+                        }
+                    };
                 });
             services.AddSingleton<IDeviantArtAuth>(new DeviantArtAuth(
                 int.Parse(Configuration["Authentication:DeviantArt:ClientId"]),
