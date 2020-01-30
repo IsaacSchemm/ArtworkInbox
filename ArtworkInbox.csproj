@@ -36,6 +36,20 @@
     <Compile Remove="Data\Migrations\20200113211711_Weasyl.Designer.cs" />
     <Compile Remove="Data\Migrations\20200126202911_Inkbunny.cs" />
     <Compile Remove="Data\Migrations\20200126202911_Inkbunny.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200128001112_MastodonTokens.cs" />
+    <Compile Remove="Data\Migrations\20200128001112_MastodonTokens.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200128002507_MastodonTokens.cs" />
+    <Compile Remove="Data\Migrations\20200128002507_MastodonTokens.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200128002836_MastodonTokens.cs" />
+    <Compile Remove="Data\Migrations\20200128002836_MastodonTokens.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200128003204_MastodonTokens.cs" />
+    <Compile Remove="Data\Migrations\20200128003204_MastodonTokens.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200129022205_Mastodon.cs" />
+    <Compile Remove="Data\Migrations\20200129022205_Mastodon.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200129025025_Mastodon.cs" />
+    <Compile Remove="Data\Migrations\20200129025025_Mastodon.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200129030345_Mastodon.cs" />
+    <Compile Remove="Data\Migrations\20200129030345_Mastodon.Designer.cs" />
   </ItemGroup>
 
 
@@ -43,6 +57,7 @@
     <PackageReference Include="AspNet.Security.OAuth.DeviantArt" Version="3.0.0" />
     <PackageReference Include="DeviantArtFs" Version="4.0.0" />
     <PackageReference Include="ISchemm.AspNetCore.Authentication.Tumblr" Version="3.1.0" />
+    <PackageReference Include="MapleFedNet" Version="1.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.0" />

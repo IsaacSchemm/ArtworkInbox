@@ -14,9 +14,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DeviantArtFs;
 using Tweetinvi.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace ArtworkInbox {
     public class Startup {
@@ -49,6 +53,12 @@ namespace ArtworkInbox {
                     t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
                     t.SaveTokens = true;
                 })
+                .AddMastodon("botsin.space", o => {
+                    o.Scope.Add("read:statuses");
+                    o.Scope.Add("read:accounts");
+                    o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
+                    o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
+                    o.SaveTokens = true;
                 .AddOAuth("Weasyl", "Weasyl", o => {
                     o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
                     o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];

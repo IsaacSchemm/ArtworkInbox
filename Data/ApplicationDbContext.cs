@@ -16,6 +16,8 @@ namespace ArtworkInbox.Data {
 
         public DbSet<UserTumblrToken> UserTumblrTokens { get; set; }
 
+        public DbSet<UserBotsinSpaceToken> UserBotsinSpaceTokens { get; set; }
+
         public DbSet<UserReadMarker> UserReadMarkers { get; set; }
     }
 }

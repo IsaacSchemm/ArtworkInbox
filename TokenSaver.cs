@@ -71,6 +71,21 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
+            } else if (info.LoginProvider == "botsin.space") {
+                var token = await _context.UserBotsinSpaceTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token == null) {
+                    token = new UserBotsinSpaceToken {
+                        UserId = user.Id
+                    };
+                    _context.UserBotsinSpaceTokens.Add(token);
+                }
+                token.AccessToken = info.AuthenticationTokens
+                    .Where(t => t.Name == "access_token")
+                    .Select(t => t.Value)
+                    .Single();
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -93,6 +108,14 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Tumblr") {
                 var token = await _context.UserTumblrTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
+            } else if (loginProvider == "botsin.space") {
+                var token = await _context.UserBotsinSpaceTokens
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {
