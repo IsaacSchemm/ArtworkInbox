@@ -50,10 +50,10 @@ namespace ArtworkInbox {
                     t.SaveTokens = true;
                 })
                 .AddOAuth("Weasyl", "Weasyl", o => {
-                    o.ClientId = "unused";
-                    o.ClientSecret = "unused";
-                    o.AuthorizationEndpoint = "https://weasyl-api-key-oauth2-wrapper.azurewebsites.net/api/auth";
-                    o.TokenEndpoint = "https://weasyl-api-key-oauth2-wrapper.azurewebsites.net/api/token";
+                    o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
+                    o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
+                    o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
                     o.CallbackPath = new PathString("/signin-weasyl");
 
                     o.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents {
@@ -75,7 +75,7 @@ namespace ArtworkInbox {
                         },
                         OnRemoteFailure = context => {
                             context.HandleResponse();
-                            context.Response.Redirect("/Home/Error?message=" + context.Failure.Message);
+                            context.Response.Redirect("/Home/Error?message=" + Uri.EscapeDataString(context.Failure.Message));
                             return Task.FromResult(0);
                         }
                     };
