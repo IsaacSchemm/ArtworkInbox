@@ -9,6 +9,9 @@
     bool has_deviantart = user != null && await ApplicationDbContext.UserDeviantArtTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
+    bool has_inkbunny = user != null && await ApplicationDbContext.UserInkbunnyTokens
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
     bool has_weasyl = user != null && await ApplicationDbContext.UserWeasylTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
@@ -54,6 +57,18 @@
                                     <a class="dropdown-item" asp-area="" asp-controller="DeviantArt" asp-action="FeedSettings">Settings</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="https://www.deviantart.com/notifications/feedback">Notifications</a>
+                                </div>
+                            </li>
+                        }
+                        @if (has_inkbunny) {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Inkbunny
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-tu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Inkbunny" asp-action="Feed">Feed</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://inkbunny.net/portal.php">Notifications</a>
                                 </div>
                             </li>
                         }
