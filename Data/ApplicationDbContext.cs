@@ -20,6 +20,8 @@ namespace ArtworkInbox.Data {
 
         public DbSet<UserWeasylToken> UserWeasylTokens { get; set; }
 
+        public DbSet<UserInkbunnyToken> UserInkbunnyTokens { get; set; }
+
         public DbSet<UserReadMarker> UserReadMarkers { get; set; }
     }
 }

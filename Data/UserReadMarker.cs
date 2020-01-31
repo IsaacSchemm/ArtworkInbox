@@ -23,5 +23,7 @@ namespace ArtworkInbox.Data {
         public DateTimeOffset? BotsinSpaceLastRead { get; set; }
 
         public DateTimeOffset? WeasylLastRead { get; set; }
+
+        public DateTimeOffset? InkbunnyLastRead { get; set; }
     }
 }
