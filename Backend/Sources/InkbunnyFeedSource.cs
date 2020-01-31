@@ -2,6 +2,7 @@
 using ArtworkInbox.Inkbunny;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
@@ -16,7 +17,8 @@ namespace ArtworkInbox.Backend.Sources {
 
         public override Task<Author> GetAuthenticatedUserAsync() {
             return Task.FromResult(new Author {
-                Username = _username
+                Username = _username,
+                ProfileUrl = $"https://inkbunny.net/{Uri.EscapeDataString(_username)}"
             });
         }
 
