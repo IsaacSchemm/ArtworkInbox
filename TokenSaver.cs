@@ -101,6 +101,25 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
+            } else if (info.LoginProvider == "Inkbunny") {
+                var token = await _context.UserInkbunnyTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token == null) {
+                    token = new UserInkbunnyToken {
+                        UserId = user.Id
+                    };
+                    _context.UserInkbunnyTokens.Add(token);
+                }
+                token.Sid = info.AuthenticationTokens
+                    .Where(t => t.Name == "access_token")
+                    .Select(t => t.Value)
+                    .Single();
+                token.Username = info.Principal.Claims
+                    .Where(t => t.Type == "urn:inkbunny:username")
+                    .Select(t => t.Value)
+                    .Single();
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -139,6 +158,14 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Weasyl") {
                 var token = await _context.UserWeasylTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
+            } else if (loginProvider == "Inkbunny") {
+                var token = await _context.UserInkbunnyTokens
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {

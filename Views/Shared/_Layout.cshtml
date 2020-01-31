@@ -9,6 +9,9 @@
     bool has_deviantart = user != null && await ApplicationDbContext.UserDeviantArtTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
+    bool has_inkbunny = user != null && await ApplicationDbContext.UserInkbunnyTokens
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
     bool has_weasyl = user != null && await ApplicationDbContext.UserWeasylTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
@@ -52,57 +55,42 @@
                                 <div class="dropdown-menu" aria-labelledby="dropdown-da">
                                     <a class="dropdown-item" asp-area="" asp-controller="DeviantArt" asp-action="Feed">Feed</a>
                                     <a class="dropdown-item" asp-area="" asp-controller="DeviantArt" asp-action="FeedSettings">Settings</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="https://www.deviantart.com/notifications/feedback">Notifications</a>
                                 </div>
+                            </li>
+                        }
+                        @if (has_inkbunny) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Inkbunny" asp-action="Feed">
+                                    Inkbunny
+                                </a>
                             </li>
                         }
                         @if (has_weasyl) {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Weasyl" asp-action="Feed">
                                     Weasyl
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-tu">
-                                    <a class="dropdown-item" asp-area="" asp-controller="Weasyl" asp-action="Feed">Feed</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="https://www.weasyl.com/messages/notifications#notifications">Notifications</a>
-                                </div>
                             </li>
                         }
                         @if (has_twitter) {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tw" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Twitter" asp-action="Feed">
                                     Twitter
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-tw">
-                                    <a class="dropdown-item" asp-area="" asp-controller="Twitter" asp-action="Feed">Feed</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="https://www.twitter.com/notifications">Notifications</a>
-                                </div>
                             </li>
                         }
                         @if (has_tumblr) {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Tumblr" asp-action="Feed">
                                     Tumblr
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-tu">
-                                    <a class="dropdown-item" asp-area="" asp-controller="Tumblr" asp-action="Feed">Feed</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="https://www.tumblr.com/inbox">Notifications</a>
-                                </div>
                             </li>
                         }
                         @if (has_botsin_space) {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-tu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="BotsinSpace" asp-action="Feed">
                                     botsin.space
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-tu">
-                                    <a class="dropdown-item" asp-area="" asp-controller="BotsinSpace" asp-action="Feed">Feed</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="https://botsin.space">Notifications</a>
-                                </div>
                             </li>
                         }
                     </ul>
