@@ -21,6 +21,7 @@ using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 
 namespace ArtworkInbox {
     public class Startup {
@@ -66,8 +67,9 @@ namespace ArtworkInbox {
                     o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
                     o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
                     o.CallbackPath = new PathString("/signin-weasyl");
+                    o.SaveTokens = true;
 
-                    o.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents {
+                    o.Events = new OAuthEvents {
                         OnCreatingTicket = async context => {
                             if (context.Options.SaveTokens) {
                                 context.Properties.StoreTokens(new[] {

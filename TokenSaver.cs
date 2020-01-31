@@ -86,6 +86,21 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
+            } else if (info.LoginProvider == "Weasyl") {
+                var token = await _context.UserWeasylTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token == null) {
+                    token = new UserWeasylToken {
+                        UserId = user.Id
+                    };
+                    _context.UserWeasylTokens.Add(token);
+                }
+                token.ApiKey = info.AuthenticationTokens
+                    .Where(t => t.Name == "access_token")
+                    .Select(t => t.Value)
+                    .Single();
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -116,6 +131,14 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "botsin.space") {
                 var token = await _context.UserBotsinSpaceTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
+            } else if (loginProvider == "Weasyl") {
+                var token = await _context.UserWeasylTokens
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {
