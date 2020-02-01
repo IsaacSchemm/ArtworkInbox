@@ -60,27 +60,31 @@ namespace ArtworkInbox.Backend.Sources {
         }
 
         public override async Task<FeedBatch> GetBatchAsync(string cursor) {
-            var client = new InkbunnyClient(_sid);
-            if (cursor == null) {
-                var req = new InkbunnySearchParameters {
-                    UnreadSubmissions = true
-                };
-                var results = await client.SearchAsync(req, get_rid: true);
-                return new FeedBatch {
-                    Cursor = results.page + "☺" + results.rid,
-                    HasMore = results.page < results.pages_count,
-                    FeedItems = Wrangle(results.submissions)
-                };
-            } else {
-                string[] split = cursor.Split("☺");
-                int last_page = int.Parse(split[0]);
-                string rid = split[1];
-                var results = await client.SearchAsync(rid, last_page + 1);
-                return new FeedBatch {
-                    Cursor = results.page + "☺" + results.rid,
-                    HasMore = results.page < results.pages_count,
-                    FeedItems = Wrangle(results.submissions)
-                };
+            try {
+                var client = new InkbunnyClient(_sid);
+                if (cursor == null) {
+                    var req = new InkbunnySearchParameters {
+                        UnreadSubmissions = true
+                    };
+                    var results = await client.SearchAsync(req, get_rid: true);
+                    return new FeedBatch {
+                        Cursor = results.page + "☺" + results.rid,
+                        HasMore = results.page < results.pages_count,
+                        FeedItems = Wrangle(results.submissions)
+                    };
+                } else {
+                    string[] split = cursor.Split("☺");
+                    int last_page = int.Parse(split[0]);
+                    string rid = split[1];
+                    var results = await client.SearchAsync(rid, last_page + 1);
+                    return new FeedBatch {
+                        Cursor = results.page + "☺" + results.rid,
+                        HasMore = results.page < results.pages_count,
+                        FeedItems = Wrangle(results.submissions)
+                    };
+                }
+            } catch (InkbunnyException ex) when (ex.Response.error_code == 2) {
+                throw new NoTokenException();
             }
         }
 

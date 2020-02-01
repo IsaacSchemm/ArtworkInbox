@@ -33,7 +33,7 @@ namespace ArtworkInbox.Inkbunny {
             string json = await sr.ReadToEndAsync();
             var loginResponse = JsonConvert.DeserializeObject<InkbunnyLoginResponse>(json);
             if (loginResponse.error_code != null) {
-                throw new Exception(loginResponse.error_message);
+                throw new InkbunnyException(loginResponse);
             }
             return new InkbunnyClient(loginResponse.sid);
         }
@@ -68,7 +68,7 @@ namespace ArtworkInbox.Inkbunny {
             string json = await sr.ReadToEndAsync();
             var r = JsonConvert.DeserializeObject<InkbunnyResponse>(json);
             if (r.error_code != null) {
-                throw new Exception(r.error_message);
+                throw new InkbunnyException(r);
             }
             return json;
         }

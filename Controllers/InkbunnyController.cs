@@ -29,7 +29,7 @@ namespace ArtworkInbox.Controllers {
         protected override Task<ApplicationUser> GetUserAsync() =>
             _userManager.GetUserAsync(User);
 
-        protected override string GetSiteName() => "Weasyl";
+        protected override string GetSiteName() => "Inkbunny";
 
         protected override async Task<FeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);
