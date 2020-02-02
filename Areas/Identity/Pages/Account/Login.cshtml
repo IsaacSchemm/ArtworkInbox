@@ -5,11 +5,23 @@
     ViewData["Title"] = "Log in";
 }
 
-<h1>@ViewData["Title"]</h1>
 <div class="row">
     <div class="col-md-12">
+        <img align="left"
+             src="/images/mascot-magnifying-glass.png"
+             width="216"
+             height="378"
+             alt="Aimy with a magnifying glass"
+             class="d-none d-lg-block mr-4" />
+        <h1>@ViewData["Title"]</h1>
         <section>
-            <h4>Log in with:</h4>
+            <p>
+                To create your Artwork Inbox account, just attach an account on one of the sites above.
+                Once you've logged in, you can attach your other accounts from the external logins page.
+            </p>
+            <p class="small">
+                If you would like to see your site listed here, file an issue on the Artwork Inbox repository at GitHub.
+            </p>
             <hr />
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
@@ -35,13 +47,6 @@
                     </form>
                 }
             }
-            <p>
-                To create your Artwork Inbox account, just attach an account on one of the sites above.
-                Once you've logged in, you can attach your other accounts from the external logins page.
-            </p>
-            <p class="small">
-                If you would like to see your site listed here, file an issue on the Artwork Inbox repository at GitHub.
-            </p>
         </section>
     </div>
 </div>
