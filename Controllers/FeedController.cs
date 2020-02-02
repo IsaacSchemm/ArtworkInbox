@@ -29,12 +29,32 @@ namespace ArtworkInbox.Controllers {
                 if (user.HideMatureThumbnails)
                     feedSource = new HideMatureThumbnailsFilter(feedSource);
                 return View(await FeedViewModel.BuildAsync(feedSource, cursor, earliest, latest));
+            } catch (System.Text.Json.JsonException) {
+                return JsonError();
+            } catch (Newtonsoft.Json.JsonException) {
+                return JsonError();
+            } catch (FSharp.Json.JsonDeserializationError) {
+                return JsonError();
             } catch (TooManyRequestsException) {
-                return View("TooManyRequests");
+                return TooManyRequests();
             } catch (NoTokenException) {
-                ViewBag.SiteName = GetSiteName();
-                return View("NoToken");
+                return NoToken();
             }
+        }
+
+        public IActionResult JsonError() {
+            ViewBag.SiteName = GetSiteName();
+            return View("JsonError");
+        }
+
+        public IActionResult TooManyRequests() {
+            ViewBag.SiteName = GetSiteName();
+            return View("TooManyRequests");
+        }
+
+        public IActionResult NoToken() {
+            ViewBag.SiteName = GetSiteName();
+            return View("NoToken");
         }
 
         public async Task<IActionResult> MarkAsRead(DateTimeOffset latest) {
