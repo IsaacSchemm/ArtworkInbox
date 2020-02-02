@@ -54,13 +54,6 @@ namespace ArtworkInbox {
                     t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
                     t.SaveTokens = true;
                 })
-                .AddMastodon("botsin.space", o => {
-                    o.Scope.Add("read:statuses");
-                    o.Scope.Add("read:accounts");
-                    o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
-                    o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
-                    o.SaveTokens = true;
-                })
                 .AddOAuth("Weasyl", "Weasyl", o => {
                     o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
                     o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
@@ -125,6 +118,13 @@ namespace ArtworkInbox {
                             return Task.CompletedTask;
                         }
                     };
+                })
+                .AddMastodon("botsin.space", o => {
+                    o.Scope.Add("read:statuses");
+                    o.Scope.Add("read:accounts");
+                    o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
+                    o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
+                    o.SaveTokens = true;
                 });
             services.AddSingleton<IDeviantArtAuth>(new DeviantArtAuth(
                 int.Parse(Configuration["Authentication:DeviantArt:ClientId"]),
