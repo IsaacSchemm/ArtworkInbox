@@ -99,7 +99,7 @@ namespace ArtworkInbox.Backend.Sources {
         }
 
         public async Task<int> GetNotificationsCountAsync() {
-            var ns = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(_token, null, 100);
+            var ns = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(_token, null, 99);
             return ns.Length;
         }
 
