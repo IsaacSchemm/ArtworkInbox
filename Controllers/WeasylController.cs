@@ -31,7 +31,7 @@ namespace ArtworkInbox.Controllers {
 
         protected override string GetSiteName() => "Weasyl";
 
-        protected override async Task<FeedSource> GetFeedSourceAsync() {
+        protected override async Task<IFeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserWeasylTokens
                 .Where(t => t.UserId == userId)

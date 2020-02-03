@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 using Tweetinvi.Models;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class TwitterFeedSource : FeedSource {
+    public class TwitterFeedSource : IFeedSource {
         private readonly ITwitterCredentials _token;
 
         public TwitterFeedSource(ITwitterCredentials token) {
             _token = token;
         }
 
-        public override async Task<Author> GetAuthenticatedUserAsync() {
+        public async Task<Author> GetAuthenticatedUserAsync() {
             var user = await Tweetinvi.Auth.ExecuteOperationWithCredentials(_token, () => {
                 return Tweetinvi.UserAsync.GetAuthenticatedUser();
             });
@@ -62,7 +62,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public override async Task<FeedBatch> GetBatchAsync(string cursor) {
+        public async Task<FeedBatch> GetBatchAsync(string cursor) {
             var parameters = new Tweetinvi.Parameters.HomeTimelineParameters {
                 MaximumNumberOfTweetsToRetrieve = 100
             };
@@ -89,7 +89,7 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        public override string GetNotificationsUrl() => "https://twitter.com/notifications";
-        public override string GetSubmitUrl() => "https://twitter.com/compose/tweet";
+        public string GetNotificationsUrl() => "https://twitter.com/notifications";
+        public string GetSubmitUrl() => "https://twitter.com/compose/tweet";
     }
 }

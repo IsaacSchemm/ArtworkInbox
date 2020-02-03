@@ -37,7 +37,7 @@ namespace ArtworkInbox.Controllers {
 
         protected override string GetSiteName() => "DeviantArt";
 
-        protected override async Task<FeedSource> GetFeedSourceAsync() {
+        protected override async Task<IFeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserDeviantArtTokens
                 .Where(t => t.UserId == userId)

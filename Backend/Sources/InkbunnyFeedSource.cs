@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class InkbunnyFeedSource : FeedSource {
+    public class InkbunnyFeedSource : IFeedSource {
         private readonly string _sid;
         private readonly string _username;
 
@@ -15,7 +15,7 @@ namespace ArtworkInbox.Backend.Sources {
             _username = username;
         }
 
-        public override Task<Author> GetAuthenticatedUserAsync() {
+        public Task<Author> GetAuthenticatedUserAsync() {
             return Task.FromResult(new Author {
                 Username = _username,
                 ProfileUrl = $"https://inkbunny.net/{Uri.EscapeDataString(_username)}"
@@ -59,7 +59,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public override async Task<FeedBatch> GetBatchAsync(string cursor) {
+        public async Task<FeedBatch> GetBatchAsync(string cursor) {
             try {
                 var client = new InkbunnyClient(_sid);
                 if (cursor == null) {
@@ -88,7 +88,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public override string GetNotificationsUrl() => "https://inkbunny.net/portal.php";
-        public override string GetSubmitUrl() => "https://inkbunny.net/filesedit.php?sales=no&wizardmode=yes";
+        public string GetNotificationsUrl() => "https://inkbunny.net/portal.php";
+        public string GetSubmitUrl() => "https://inkbunny.net/filesedit.php?sales=no&wizardmode=yes";
     }
 }

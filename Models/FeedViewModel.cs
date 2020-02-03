@@ -1,4 +1,5 @@
 ﻿using ArtworkInbox.Backend;
+using ArtworkInbox.Backend.Filters;
 using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Backend.Types;
 using System;
@@ -14,10 +15,11 @@ namespace ArtworkInbox.Models {
         public string NotificationsUrl { get; set; }
         public string SubmitUrl { get; set; }
 
-        public static async Task<FeedViewModel> BuildAsync(FeedSource feedSource, string cursor = null, DateTimeOffset? earliest = null, DateTimeOffset? latest = null) {
+        public static async Task<FeedViewModel> BuildAsync(IFeedSource feedSource, IEnumerable<IFeedFilter> filters, string cursor = null, DateTimeOffset? earliest = null, DateTimeOffset? latest = null) {
             return new FeedViewModel {
                 Latest = latest ?? DateTimeOffset.UtcNow,
                 FeedBatch = await feedSource.GetBatchesAsync(new FeedParameters {
+                    Filters = filters,
                     Cursor = cursor,
                     StartAt = earliest ?? DateTimeOffset.MinValue
                 }),

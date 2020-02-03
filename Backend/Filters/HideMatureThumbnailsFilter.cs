@@ -1,13 +1,10 @@
-﻿using ArtworkInbox.Backend.Sources;
-using ArtworkInbox.Backend.Types;
+﻿using ArtworkInbox.Backend.Types;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ArtworkInbox.Backend.Filters {
-    public class HideMatureThumbnailsFilter : FeedFilter {
-        public HideMatureThumbnailsFilter(FeedSource source) : base(source) { }
-
-        protected override IEnumerable<FeedItem> Apply(IEnumerable<FeedItem> feedItems) {
+    public class HideMatureThumbnailsFilter : IFeedFilter {
+        public IEnumerable<FeedItem> Apply(IEnumerable<FeedItem> feedItems) {
             foreach (var i in feedItems) {
                 if (i.MatureContent && i is Artwork a) {
                     yield return new Artwork {
