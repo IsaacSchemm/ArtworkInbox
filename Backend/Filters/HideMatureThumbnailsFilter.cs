@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ArtworkInbox.Backend.Filters {
     public class HideMatureThumbnailsFilter : FeedFilter {
-        public HideMatureThumbnailsFilter(FeedSource source) : base(source) { }
+        public HideMatureThumbnailsFilter(IFeedSource source) : base(source) { }
 
         protected override IEnumerable<FeedItem> Apply(IEnumerable<FeedItem> feedItems) {
             foreach (var i in feedItems) {

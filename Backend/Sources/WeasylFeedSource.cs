@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using WeasylFs;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class WeasylFeedSource : FeedSource {
+    public class WeasylFeedSource : IFeedSource {
         private readonly IWeasylCredentials _token;
 
         public WeasylFeedSource(IWeasylCredentials token) {
             _token = token;
         }
 
-        public override async Task<Author> GetAuthenticatedUserAsync() {
+        public async Task<Author> GetAuthenticatedUserAsync() {
             var user = await WeasylFs.Endpoints.Whoami.ExecuteAsync(_token);
             var avatar = await WeasylFs.Endpoints.UserAvatar.ExecuteAsync(_token, user.login);
             return new Author {
@@ -49,7 +49,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public override async Task<FeedBatch> GetBatchAsync(string cursor) {
+        public async Task<FeedBatch> GetBatchAsync(string cursor) {
             var req = new WeasylFs.Endpoints.MessageSubmissions.Request();
             if (cursor != null)
                 req.NextTime = DateTimeOffset.Parse(cursor);
@@ -62,7 +62,7 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        public override string GetNotificationsUrl() => "https://www.weasyl.com/messages/notifications#notifications";
-        public override string GetSubmitUrl() => "https://www.weasyl.com/submit";
+        public string GetNotificationsUrl() => "https://www.weasyl.com/messages/notifications#notifications";
+        public string GetSubmitUrl() => "https://www.weasyl.com/submit";
     }
 }

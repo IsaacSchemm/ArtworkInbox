@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Filters {
-    public abstract class FeedFilter : FeedSource {
-        private readonly FeedSource _source;
+    public abstract class FeedFilter : IFeedSource {
+        private readonly IFeedSource _source;
 
-        protected FeedFilter(FeedSource source) {
+        protected FeedFilter(IFeedSource source) {
             _source = source;
         }
 
         protected abstract IEnumerable<FeedItem> Apply(IEnumerable<FeedItem> feedItems);
 
-        public override async Task<FeedBatch> GetBatchAsync(string cursor) {
+        public async Task<FeedBatch> GetBatchAsync(string cursor) {
             var batch = await _source.GetBatchAsync(cursor);
             return new FeedBatch {
                 Cursor = batch.Cursor,
@@ -22,13 +22,13 @@ namespace ArtworkInbox.Backend.Filters {
             };
         }
 
-        public override Task<Author> GetAuthenticatedUserAsync() =>
+        public Task<Author> GetAuthenticatedUserAsync() =>
             _source.GetAuthenticatedUserAsync();
 
-        public override string GetNotificationsUrl() =>
+        public string GetNotificationsUrl() =>
             _source.GetNotificationsUrl();
 
-        public override string GetSubmitUrl() =>
+        public string GetSubmitUrl() =>
             _source.GetSubmitUrl();
     }
 }

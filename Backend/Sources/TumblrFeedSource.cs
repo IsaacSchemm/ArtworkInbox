@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class TumblrFeedSource : FeedSource {
+    public class TumblrFeedSource : IFeedSource {
         private readonly TumblrClient _client;
 
         public TumblrFeedSource(TumblrClient client) {
@@ -39,7 +39,7 @@ namespace ArtworkInbox.Backend.Sources {
             public string url;
         }
 
-        public override async Task<Author> GetAuthenticatedUserAsync() {
+        public async Task<Author> GetAuthenticatedUserAsync() {
             var response = await _client.CallApiMethodAsync<UserInfoResponse>(
                 new DontPanic.TumblrSharp.ApiMethod(
                     $"https://api.tumblr.com/v2/user/info",
@@ -169,7 +169,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public override async Task<FeedBatch> GetBatchAsync(string cursor) {
+        public async Task<FeedBatch> GetBatchAsync(string cursor) {
             long offset = 0;
             if (cursor != null && long.TryParse(cursor, out long l))
                 offset = l;
@@ -192,7 +192,7 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        public override string GetNotificationsUrl() => "https://www.tumblr.com/inbox";
-        public override string GetSubmitUrl() => "https://www.tumblr.com/dashboard";
+        public string GetNotificationsUrl() => "https://www.tumblr.com/inbox";
+        public string GetSubmitUrl() => "https://www.tumblr.com/dashboard";
     }
 }

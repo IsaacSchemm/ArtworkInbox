@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class EmptyFeedSource : FeedSource {
-        public override Task<Author> GetAuthenticatedUserAsync() {
+    public class EmptyFeedSource : IFeedSource {
+        public Task<Author> GetAuthenticatedUserAsync() {
             return Task.FromResult(new Author());
         }
 
-        public override Task<FeedBatch> GetBatchAsync(string cursor) {
+        public Task<FeedBatch> GetBatchAsync(string cursor) {
             return Task.FromResult(new FeedBatch {
                 Cursor = null,
                 HasMore = false,
@@ -16,7 +16,7 @@ namespace ArtworkInbox.Backend.Sources {
             });
         }
 
-        public override string GetNotificationsUrl() => "https://www.example.com";
-        public override string GetSubmitUrl() => "https://www.example.org";
+        public string GetNotificationsUrl() => "https://www.example.com";
+        public string GetSubmitUrl() => "https://www.example.org";
     }
 }

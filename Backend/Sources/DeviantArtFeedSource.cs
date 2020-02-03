@@ -6,14 +6,14 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class DeviantArtFeedSource : FeedSource {
+    public class DeviantArtFeedSource : IFeedSource {
         private readonly IDeviantArtAccessToken _token;
 
         public DeviantArtFeedSource(IDeviantArtAccessToken token) {
             _token = token;
         }
 
-        public override async Task<Author> GetAuthenticatedUserAsync() {
+        public async Task<Author> GetAuthenticatedUserAsync() {
             try {
                 var user = await DeviantArtFs.Requests.User.Whoami.ExecuteAsync(_token);
                 return new Author {
@@ -85,7 +85,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public override async Task<FeedBatch> GetBatchAsync(string cursor) {
+        public async Task<FeedBatch> GetBatchAsync(string cursor) {
             try {
                 var page = await DeviantArtFs.Requests.Feed.FeedHome.ExecuteAsync(_token, cursor);
                 return new FeedBatch {
@@ -98,7 +98,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public override string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
-        public override string GetSubmitUrl() => "https://www.deviantart.com/submit";
+        public string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
+        public string GetSubmitUrl() => "https://www.deviantart.com/submit";
     }
 }

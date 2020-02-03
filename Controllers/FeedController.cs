@@ -13,7 +13,7 @@ namespace ArtworkInbox.Controllers {
     public abstract class FeedController : Controller {
         protected abstract Task<ApplicationUser> GetUserAsync();
         protected abstract string GetSiteName();
-        protected abstract Task<FeedSource> GetFeedSourceAsync();
+        protected abstract Task<IFeedSource> GetFeedSourceAsync();
         protected abstract Task<DateTimeOffset> GetLastRead();
         protected abstract Task SetLastRead(DateTimeOffset lastRead);
 

@@ -14,7 +14,7 @@ namespace ArtworkInbox.Models {
         public string NotificationsUrl { get; set; }
         public string SubmitUrl { get; set; }
 
-        public static async Task<FeedViewModel> BuildAsync(FeedSource feedSource, string cursor = null, DateTimeOffset? earliest = null, DateTimeOffset? latest = null) {
+        public static async Task<FeedViewModel> BuildAsync(IFeedSource feedSource, string cursor = null, DateTimeOffset? earliest = null, DateTimeOffset? latest = null) {
             return new FeedViewModel {
                 Latest = latest ?? DateTimeOffset.UtcNow,
                 FeedBatch = await feedSource.GetBatchesAsync(new FeedParameters {

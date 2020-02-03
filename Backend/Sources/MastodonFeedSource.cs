@@ -7,14 +7,14 @@ using System.Net;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class MastodonFeedSource : FeedSource {
+    public class MastodonFeedSource : IFeedSource {
         private readonly IMastodonCredentials _token;
 
         public MastodonFeedSource(IMastodonCredentials token) {
             _token = token;
         }
 
-        public override async Task<Author> GetAuthenticatedUserAsync() {
+        public async Task<Author> GetAuthenticatedUserAsync() {
             var user = await MapleFedNet.Api.Accounts.VerifyCredentials(_token);
             return new Author {
                 Username = user.UserName,
@@ -58,7 +58,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public override async Task<FeedBatch> GetBatchAsync(string cursor) {
+        public async Task<FeedBatch> GetBatchAsync(string cursor) {
             var page = await MapleFedNet.Api.Timelines.Home(_token, max_id: cursor ?? "", limit: 100);
 
             return new FeedBatch {
@@ -70,7 +70,7 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        public override string GetNotificationsUrl() => $"https://{_token.Domain}";
-        public override string GetSubmitUrl() => $"https://{_token.Domain}";
+        public string GetNotificationsUrl() => $"https://{_token.Domain}";
+        public string GetSubmitUrl() => $"https://{_token.Domain}";
     }
 }

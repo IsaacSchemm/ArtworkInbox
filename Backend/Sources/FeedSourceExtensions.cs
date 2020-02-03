@@ -1,18 +1,11 @@
 ﻿using ArtworkInbox.Backend.Types;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public abstract class FeedSource {
-        public abstract Task<Author> GetAuthenticatedUserAsync();
-        public abstract Task<FeedBatch> GetBatchAsync(string cursor);
-
-        public abstract string GetNotificationsUrl();
-        public abstract string GetSubmitUrl();
-
-        public async Task<FeedBatch> GetBatchesAsync(FeedParameters parameters) {
+    public static class FeedSourceExtensions {
+        public static async Task<FeedBatch> GetBatchesAsync(this IFeedSource source, FeedParameters parameters) {
             DateTime start = DateTime.Now;
 
             string cursor = parameters.Cursor;
@@ -24,7 +17,7 @@ namespace ArtworkInbox.Backend.Sources {
                 if (DateTime.Now - start >= parameters.StopAtTime) break;
 
                 try {
-                    var result = await GetBatchAsync(cursor);
+                    var result = await source.GetBatchAsync(cursor);
                     cursor = result.Cursor;
                     hasMore = result.HasMore;
                     foreach (var newItem in result.FeedItems) {
