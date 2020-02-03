@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class DeviantArtFeedSource : IFeedSource {
+    public class DeviantArtFeedSource : IFeedSource, INotificationsSource {
         private readonly IDeviantArtAccessToken _token;
 
         public DeviantArtFeedSource(IDeviantArtAccessToken token) {
@@ -93,6 +93,15 @@ namespace ArtworkInbox.Backend.Sources {
                     HasMore = page.HasMore,
                     FeedItems = Wrangle(page.Items)
                 };
+            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
+                throw new TooManyRequestsException();
+            }
+        }
+
+        public async Task<int> GetNotificationsCountAsync() {
+            try {
+                var ns = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(_token, null, 99);
+                return ns.Length;
             } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
                 throw new TooManyRequestsException();
             }

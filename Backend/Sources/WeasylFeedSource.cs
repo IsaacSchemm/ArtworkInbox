@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WeasylFs;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class WeasylFeedSource : IFeedSource {
+    public class WeasylFeedSource : IFeedSource, INotificationsSource {
         private readonly IWeasylCredentials _token;
 
         public WeasylFeedSource(IWeasylCredentials token) {
@@ -62,7 +62,18 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        public string GetNotificationsUrl() => "https://www.weasyl.com/messages/notifications#notifications";
+        public string GetNotificationsUrl() => "https://www.weasyl.com/messages/notifications";
         public string GetSubmitUrl() => "https://www.weasyl.com/submit";
+
+        public async Task<int> GetNotificationsCountAsync() {
+            var o = await WeasylFs.Endpoints.MessageSummary.ExecuteAsync(_token);
+            return new[] {
+                o.comments,
+                o.journals,
+                o.notifications,
+                //o.submissions,
+                //o.unread_notes
+            }.Sum();
+        }
     }
 }
