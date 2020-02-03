@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ArtworkInbox.Backend;
 using ArtworkInbox.Backend.Filters;
@@ -22,13 +23,16 @@ namespace ArtworkInbox.Controllers {
                 var user = await GetUserAsync();
                 var earliest = await GetLastRead();
                 var feedSource = await GetFeedSourceAsync();
+
+                var filters = new List<IFeedFilter>();
                 if (user.HideReposts)
-                    feedSource = new HideRepostsFilter(feedSource);
+                    filters.Add(new HideRepostsFilter());
                 if (user.HideMature)
-                    feedSource = new HideMatureFilter(feedSource);
+                    filters.Add(new HideMatureFilter());
                 if (user.HideMatureThumbnails)
-                    feedSource = new HideMatureThumbnailsFilter(feedSource);
-                return View(await FeedViewModel.BuildAsync(feedSource, cursor, earliest, latest));
+                    filters.Add(new HideMatureThumbnailsFilter());
+
+                return View(await FeedViewModel.BuildAsync(feedSource, filters, cursor, earliest, latest));
             } catch (System.Text.Json.JsonException) {
                 return JsonError();
             } catch (Newtonsoft.Json.JsonException) {
