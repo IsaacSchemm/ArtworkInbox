@@ -99,8 +99,12 @@ namespace ArtworkInbox.Backend.Sources {
         }
 
         public async Task<int> GetNotificationsCountAsync() {
-            var ns = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(_token, null, 99);
-            return ns.Length;
+            try {
+                var ns = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(_token, null, 99);
+                return ns.Length;
+            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
+                throw new TooManyRequestsException();
+            }
         }
 
         public string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
