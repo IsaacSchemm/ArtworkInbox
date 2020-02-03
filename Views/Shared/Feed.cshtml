@@ -18,7 +18,12 @@
     </h5>
     <a href="@Model.AuthenticatedUser.ProfileUrl" target="_blank">Profile</a>
     &middot;
-    <a href="@Model.NotificationsUrl" target="_blank">Notifications</a>
+    <a href="@Model.NotificationsUrl" target="_blank">
+        Notifications
+        @if (Model.NotificationsCount != null) {
+            @:(@Model.NotificationsCount)
+        }
+    </a>
     &middot;
     <a href="@Model.SubmitUrl" target="_blank">Submit</a>
 </div>

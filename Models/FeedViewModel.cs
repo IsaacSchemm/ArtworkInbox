@@ -12,6 +12,7 @@ namespace ArtworkInbox.Models {
         public DateTimeOffset Latest { get; set; }
         public FeedBatch FeedBatch { get; set; }
         public Author AuthenticatedUser { get; set; }
+        public int? NotificationsCount { get; set; }
         public string NotificationsUrl { get; set; }
         public string SubmitUrl { get; set; }
 
@@ -24,6 +25,9 @@ namespace ArtworkInbox.Models {
                     StartAt = earliest ?? DateTimeOffset.MinValue
                 }),
                 AuthenticatedUser = await feedSource.GetAuthenticatedUserAsync(),
+                NotificationsCount = feedSource is INotificationsSource ns
+                    ? await ns.GetNotificationsCountAsync()
+                    : (int?)null,
                 NotificationsUrl = feedSource.GetNotificationsUrl(),
                 SubmitUrl = feedSource.GetSubmitUrl()
             };
