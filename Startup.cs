@@ -49,13 +49,13 @@ namespace ArtworkInbox {
                 })
                 .AddReddit(o => {
                     o.Scope.Add("read");
-                    o.ClientId = "AUpVVjBj9Jsxyg";
-                    o.ClientSecret = "qi6YoZYGVtYENF4jf_HCadLEomI";
+                    o.ClientId = Configuration["Authentication:Reddit:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Reddit:ClientSecret"];
                     o.SaveTokens = true;
                 })
                 .AddOAuth("Weasyl", "Weasyl", o => {
-                    o.ClientId = Configuration["APPID"];
-                    o.ClientSecret = Configuration["SECRET"];
+                    o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientId"];
                     o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
                     o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
                     o.CallbackPath = new PathString("/signin-weasyl");
@@ -108,6 +108,9 @@ namespace ArtworkInbox {
             services.AddSingleton(new ArtworkInboxTumblrClientFactory(
                 Configuration["Authentication:Tumblr:ConsumerKey"],
                 Configuration["Authentication:Tumblr:ConsumerSecret"]));
+            services.AddSingleton(new ArtworkInboxRedditClientFactory(
+                Configuration["Authentication:Reddit:ClientId"],
+                Configuration["Authentication:Reddit:ClientSecret"]));
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
