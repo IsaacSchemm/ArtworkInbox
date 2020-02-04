@@ -10,7 +10,8 @@ Supported sites:
 * [DeviantArt](https://www.deviantart.com/)
 * [Twitter](https://www.twitter.com)
 * [Tumblr](https://www.tumblr.com)
-* [Weasyl](https://www.weasyl.com) (artwork only, API key required)
+* [Reddit](https://www.reddit.com) (`/new/`)
+* [Weasyl](https://www.weasyl.com) (artwork only; API key required)
 * Mastodon
     * [mastodon.social](https://mastodon.social/)
     * [botsin.space](https://botsin.space/)
