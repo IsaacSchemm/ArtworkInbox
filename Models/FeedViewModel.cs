@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ArtworkInbox.Models {
     public class FeedViewModel {
+        public string Host { get; set; }
         public DateTimeOffset Latest { get; set; }
         public FeedBatch FeedBatch { get; set; }
         public Author AuthenticatedUser { get; set; }
@@ -16,8 +17,9 @@ namespace ArtworkInbox.Models {
         public string NotificationsUrl { get; set; }
         public string SubmitUrl { get; set; }
 
-        public static async Task<FeedViewModel> BuildAsync(IFeedSource feedSource, IEnumerable<IFeedFilter> filters, string cursor = null, DateTimeOffset? earliest = null, DateTimeOffset? latest = null) {
+        public static async Task<FeedViewModel> BuildAsync(string host, IFeedSource feedSource, IEnumerable<IFeedFilter> filters, string cursor = null, DateTimeOffset? earliest = null, DateTimeOffset? latest = null) {
             return new FeedViewModel {
+                Host = host,
                 Latest = latest ?? DateTimeOffset.UtcNow,
                 FeedBatch = await feedSource.GetBatchesAsync(new FeedParameters {
                     Filters = filters,

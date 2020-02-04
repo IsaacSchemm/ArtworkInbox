@@ -11,18 +11,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkInbox.Controllers {
     [Authorize]
-    public abstract class FeedController : Controller {
+    public abstract class MultiFeedController : Controller {
         protected abstract Task<ApplicationUser> GetUserAsync();
         protected abstract string GetSiteName();
-        protected abstract Task<IFeedSource> GetFeedSourceAsync();
-        protected abstract Task<DateTimeOffset> GetLastRead();
-        protected abstract Task SetLastRead(DateTimeOffset lastRead);
+        protected abstract Task<IFeedSource> GetFeedSourceAsync(string host);
+        protected abstract Task<DateTimeOffset> GetLastRead(string host);
+        protected abstract Task SetLastRead(string host, DateTimeOffset lastRead);
 
-        public async Task<IActionResult> Feed(string cursor = null, DateTimeOffset? latest = null) {
+        public async Task<IActionResult> Feed(string host = null, string cursor = null, DateTimeOffset? latest = null) {
             try {
                 var user = await GetUserAsync();
-                var earliest = await GetLastRead();
-                var feedSource = await GetFeedSourceAsync();
+                var earliest = await GetLastRead(host);
+                var feedSource = await GetFeedSourceAsync(host);
 
                 var filters = new List<IFeedFilter>();
                 if (user.HideReposts)
@@ -32,7 +32,7 @@ namespace ArtworkInbox.Controllers {
                 if (user.HideMatureThumbnails)
                     filters.Add(new HideMatureThumbnailsFilter());
 
-                return View(await FeedViewModel.BuildAsync(feedSource, filters, cursor, earliest, latest));
+                return View(await FeedViewModel.BuildAsync(host, feedSource, filters, cursor, earliest, latest));
             } catch (System.Text.Json.JsonException) {
                 return JsonError();
             } catch (Newtonsoft.Json.JsonException) {
@@ -61,9 +61,20 @@ namespace ArtworkInbox.Controllers {
             return View("NoToken");
         }
 
-        public async Task<IActionResult> MarkAsRead(DateTimeOffset latest) {
-            await SetLastRead(latest);
-            return RedirectToAction(nameof(Feed));
+        public async Task<IActionResult> MarkAsRead(DateTimeOffset latest, string host = null) {
+            await SetLastRead(host, latest);
+            return RedirectToAction(nameof(Feed), new { host });
         }
+    }
+
+    public abstract class FeedController : MultiFeedController {
+        protected abstract Task<IFeedSource> GetFeedSourceAsync();
+        protected override Task<IFeedSource> GetFeedSourceAsync(string _) => GetFeedSourceAsync();
+
+        protected abstract Task<DateTimeOffset> GetLastRead();
+        protected override Task<DateTimeOffset> GetLastRead(string _) => GetLastRead();
+
+        protected abstract Task SetLastRead(DateTimeOffset lastRead);
+        protected override Task SetLastRead(string _, DateTimeOffset lastRead) => SetLastRead(lastRead);
     }
 }
