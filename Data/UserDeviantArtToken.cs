@@ -20,5 +20,7 @@ namespace ArtworkInbox.Data {
 
         [Column(TypeName = "varchar(max)")]
         public string RefreshToken { get; set; }
+
+        public DateTimeOffset? LastRead { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtworkInbox.Data {
@@ -11,5 +12,7 @@ namespace ArtworkInbox.Data {
 
         [Column(TypeName = "varchar(max)")]
         public string ApiKey { get; set; }
+
+        public DateTimeOffset? LastRead { get; set; }
     }
 }

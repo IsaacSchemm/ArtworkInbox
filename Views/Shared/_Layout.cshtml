@@ -21,9 +21,11 @@
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
-    bool has_botsin_space = user != null && await ApplicationDbContext.UserBotsinSpaceTokens
-        .Where(x => x.UserId == user.Id)
-        .AnyAsync();
+    var mastodon_tokens = user == null
+        ? Enumerable.Empty<UserMastodonToken>()
+        : await ApplicationDbContext.UserMastodonTokens
+            .Where(x => x.UserId == user.Id)
+            .ToListAsync();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -86,10 +88,10 @@
                                 </a>
                             </li>
                         }
-                        @if (has_botsin_space) {
+                        @foreach (var t in mastodon_tokens) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="BotsinSpace" asp-action="Feed">
-                                    botsin.space
+                                <a class="nav-link text-dark" href="/Mastodon/Feed?host=@Uri.EscapeDataString(t.Host)">
+                                    @t.Host
                                 </a>
                             </li>
                         }

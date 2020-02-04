@@ -12,6 +12,9 @@ Supported sites:
 * [Tumblr](https://www.tumblr.com)
 * [Weasyl](https://www.weasyl.com) (artwork only, API key required)
 * [Inkbunny](https://www.inkbunny.net) (artwork only, API access must be turned on)
-* The Mastodon instance [botsin.space](https://botsin.space/)
+* Mastodon
+    * [mastodon.art](https://mastodon.art/)
+    * [mastodon.social](https://mastodon.social/)
+    * [botsin.space](https://botsin.space/)
 
 Note: clearing your feed items from within this app does not actually clear them from your feed - it just hides them from this app's view.

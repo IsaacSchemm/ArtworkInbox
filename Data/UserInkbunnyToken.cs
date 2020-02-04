@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtworkInbox.Data {
@@ -14,5 +15,7 @@ namespace ArtworkInbox.Data {
 
         [Required]
         public string Username { get; set; }
+
+        public DateTimeOffset? LastRead { get; set; }
     }
 }
