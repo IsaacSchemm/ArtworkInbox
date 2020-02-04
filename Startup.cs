@@ -79,13 +79,6 @@ namespace ArtworkInbox {
                         }
                     };
                 })
-                .AddMastodon("mastodon.art", o => {
-                    o.Scope.Add("read:statuses");
-                    o.Scope.Add("read:accounts");
-                    o.ClientId = Configuration["Authentication:Mastodon:mastodon.art:client_id"];
-                    o.ClientSecret = Configuration["Authentication:Mastodon:mastodon.art:client_secret"];
-                    o.SaveTokens = true;
-                })
                 .AddMastodon("mastodon.social", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
