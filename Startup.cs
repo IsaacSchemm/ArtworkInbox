@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using ArtworkInbox.Data;
 using Microsoft.Extensions.Configuration;
@@ -15,10 +12,6 @@ using Microsoft.Extensions.Hosting;
 using DeviantArtFs;
 using Tweetinvi.Models;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
-using System.Text.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -118,6 +111,20 @@ namespace ArtworkInbox {
                             return Task.CompletedTask;
                         }
                     };
+                })
+                .AddMastodon("mastodon.art", o => {
+                    o.Scope.Add("read:statuses");
+                    o.Scope.Add("read:accounts");
+                    o.ClientId = Configuration["Authentication:Mastodon:mastodon.art:client_id"];
+                    o.ClientSecret = Configuration["Authentication:Mastodon:mastodon.art:client_secret"];
+                    o.SaveTokens = true;
+                })
+                .AddMastodon("mastodon.social", o => {
+                    o.Scope.Add("read:statuses");
+                    o.Scope.Add("read:accounts");
+                    o.ClientId = Configuration["Authentication:Mastodon:mastodon.social:client_id"];
+                    o.ClientSecret = Configuration["Authentication:Mastodon:mastodon.social:client_secret"];
+                    o.SaveTokens = true;
                 })
                 .AddMastodon("botsin.space", o => {
                     o.Scope.Add("read:statuses");
