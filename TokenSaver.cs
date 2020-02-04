@@ -71,7 +71,7 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
-            } else if (new[] { "botsin.space" }.Contains(info.LoginProvider)) {
+            } else if (new[] { "mastodon.art", "mastodon.social", "botsin.space" }.Contains(info.LoginProvider)) {
                 var token = await _context.UserMastodonTokens
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
@@ -149,7 +149,7 @@ namespace ArtworkInbox {
                     _context.Remove(token);
                     await _context.SaveChangesAsync();
                 }
-            } else if (new[] { "botsin.space" }.Contains(loginProvider)) {
+            } else if (new[] { "mastodon.art", "mastodon.social", "botsin.space" }.Contains(loginProvider)) {
                 var tokens = await _context.UserMastodonTokens
                     .Where(t => t.UserId == user.Id)
                     .Where(t => t.Host == loginProvider)
