@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Manage your external logins";
     ViewData["ActivePage"] = ManageNavPages.ExternalLogins;
+
+    string[] mainProviders = new[] { "DeviantArt", "Twitter", "Tumblr" };
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
@@ -43,10 +45,20 @@
     <form id="link-login-form" asp-page-handler="LinkLogin" method="post" class="form-horizontal">
         <div id="socialLoginList">
             <p>
-                @foreach (var provider in Model.OtherLogins)
+                @foreach (var provider in Model.OtherLogins.Where(x => mainProviders.Contains(x.Name)))
                 {
                     <button id="link-login-button" type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
                 }
+                <span class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="otherProviders" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Other
+                    </button>
+                    <span class="dropdown-menu" aria-labelledby="otherProviders">
+                        @foreach (var provider in Model.OtherLogins.Where(x => !mainProviders.Contains(x.Name))) {
+                            <button type="submit" class="btn btn-link" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                        }
+                    </span>
+                </span>
             </p>
         </div>
     </form>
