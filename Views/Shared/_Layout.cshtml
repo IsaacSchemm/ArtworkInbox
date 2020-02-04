@@ -18,6 +18,9 @@
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
+    bool has_reddit = user != null && await ApplicationDbContext.UserRedditTokens
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
     var mastodon_tokens = user == null
         ? Enumerable.Empty<UserMastodonToken>()
         : await ApplicationDbContext.UserMastodonTokens
@@ -68,6 +71,13 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Tumblr" asp-action="Feed">
                                     Tumblr
+                                </a>
+                            </li>
+                        }
+                        @if (has_reddit) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Reddit" asp-action="Feed">
+                                    Reddit
                                 </a>
                             </li>
                         }

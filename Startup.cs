@@ -47,9 +47,15 @@ namespace ArtworkInbox {
                     t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
                     t.SaveTokens = true;
                 })
+                .AddReddit(o => {
+                    o.Scope.Add("read");
+                    o.ClientId = "AUpVVjBj9Jsxyg";
+                    o.ClientSecret = "qi6YoZYGVtYENF4jf_HCadLEomI";
+                    o.SaveTokens = true;
+                })
                 .AddOAuth("Weasyl", "Weasyl", o => {
-                    o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
+                    o.ClientId = Configuration["APPID"];
+                    o.ClientSecret = Configuration["SECRET"];
                     o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
                     o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
                     o.CallbackPath = new PathString("/signin-weasyl");
