@@ -21,7 +21,8 @@
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
-    bool has_botsin_space = user != null && await ApplicationDbContext.UserBotsinSpaceTokens
+    bool has_botsin_space = user != null && await ApplicationDbContext.UserMastodonTokens
+        .Where(x => x.Host == "botsin.space")
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
 }

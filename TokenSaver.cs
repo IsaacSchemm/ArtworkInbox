@@ -71,15 +71,16 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
-            } else if (info.LoginProvider == "botsin.space") {
-                var token = await _context.UserBotsinSpaceTokens
+            } else if (new[] { "botsin.space" }.Contains(info.LoginProvider)) {
+                var token = await _context.UserMastodonTokens
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token == null) {
-                    token = new UserBotsinSpaceToken {
-                        UserId = user.Id
+                    token = new UserMastodonToken {
+                        UserId = user.Id,
+                        Host = info.LoginProvider
                     };
-                    _context.UserBotsinSpaceTokens.Add(token);
+                    _context.UserMastodonTokens.Add(token);
                 }
                 token.AccessToken = info.AuthenticationTokens
                     .Where(t => t.Name == "access_token")
@@ -148,12 +149,13 @@ namespace ArtworkInbox {
                     _context.Remove(token);
                     await _context.SaveChangesAsync();
                 }
-            } else if (loginProvider == "botsin.space") {
-                var token = await _context.UserBotsinSpaceTokens
+            } else if (new[] { "botsin.space" }.Contains(loginProvider)) {
+                var tokens = await _context.UserMastodonTokens
                     .Where(t => t.UserId == user.Id)
-                    .SingleOrDefaultAsync();
-                if (token != null) {
-                    _context.Remove(token);
+                    .Where(t => t.Host == loginProvider)
+                    .ToListAsync();
+                if (tokens.Any()) {
+                    _context.RemoveRange(tokens);
                     await _context.SaveChangesAsync();
                 }
             } else if (loginProvider == "Weasyl") {

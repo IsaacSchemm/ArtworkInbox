@@ -20,6 +20,7 @@ namespace ArtworkInbox.Data {
 
         public DateTimeOffset? TumblrLastRead { get; set; }
 
+        [Obsolete]
         public DateTimeOffset? BotsinSpaceLastRead { get; set; }
 
         public DateTimeOffset? WeasylLastRead { get; set; }

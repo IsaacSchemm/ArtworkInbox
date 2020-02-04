@@ -32,7 +32,8 @@ namespace ArtworkInbox.Controllers {
 
         protected override async Task<IFeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);
-            var dbToken = await _context.UserBotsinSpaceTokens
+            var dbToken = await _context.UserMastodonTokens
+                .Where(t => t.Host == GetSiteName())
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
@@ -42,27 +43,22 @@ namespace ArtworkInbox.Controllers {
 
         protected override async Task<DateTimeOffset> GetLastRead() {
             var userId = _userManager.GetUserId(User);
-            var dt = await _context.UserReadMarkers
+            var dt = await _context.UserMastodonTokens
+                .Where(t => t.Host == GetSiteName())
                 .Where(t => t.UserId == userId)
-                .Select(t => t.BotsinSpaceLastRead)
+                .Select(t => t.LastRead)
                 .SingleOrDefaultAsync();
             return dt ?? DateTimeOffset.MinValue;
         }
 
         protected override async Task SetLastRead(DateTimeOffset lastRead) {
             var userId = _userManager.GetUserId(User);
-            var o = await _context.UserReadMarkers
+            var o = await _context.UserMastodonTokens
+                .Where(t => t.Host == GetSiteName())
                 .Where(t => t.UserId == userId)
-                .SingleOrDefaultAsync();
+                .SingleAsync();
 
-            if (o == null) {
-                o = new UserReadMarker {
-                    UserId = userId
-                };
-                _context.UserReadMarkers.Add(o);
-            }
-
-            o.BotsinSpaceLastRead = lastRead;
+            o.LastRead = lastRead;
             await _context.SaveChangesAsync();
         }
     }
