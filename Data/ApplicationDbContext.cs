@@ -25,6 +25,7 @@ namespace ArtworkInbox.Data {
 
         public DbSet<UserInkbunnyToken> UserInkbunnyTokens { get; set; }
 
+        [Obsolete]
         public DbSet<UserReadMarker> UserReadMarkers { get; set; }
     }
 }

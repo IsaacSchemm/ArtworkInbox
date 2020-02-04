@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkInbox.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200203235642_Mastodon")]
-    partial class Mastodon
+    [Migration("20200204003051_Generalization")]
+    partial class Generalization
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -116,6 +116,9 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<string>("AccessToken")
                         .HasColumnType("varchar(max)");
 
+                    b.Property<DateTimeOffset?>("LastRead")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("RefreshToken")
                         .HasColumnType("varchar(max)");
 
@@ -128,6 +131,9 @@ namespace ArtworkInbox.Data.Migrations
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset?>("LastRead")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Sid")
                         .IsRequired()
@@ -209,6 +215,9 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<string>("AccessTokenSecret")
                         .HasColumnType("varchar(max)");
 
+                    b.Property<DateTimeOffset?>("LastRead")
+                        .HasColumnType("datetimeoffset");
+
                     b.HasKey("UserId");
 
                     b.ToTable("UserTumblrTokens");
@@ -225,6 +234,9 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<string>("AccessTokenSecret")
                         .HasColumnType("varchar(max)");
 
+                    b.Property<DateTimeOffset?>("LastRead")
+                        .HasColumnType("datetimeoffset");
+
                     b.HasKey("UserId");
 
                     b.ToTable("UserTwitterTokens");
@@ -237,6 +249,9 @@ namespace ArtworkInbox.Data.Migrations
 
                     b.Property<string>("ApiKey")
                         .HasColumnType("varchar(max)");
+
+                    b.Property<DateTimeOffset?>("LastRead")
+                        .HasColumnType("datetimeoffset");
 
                     b.HasKey("UserId");
 

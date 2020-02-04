@@ -3,10 +3,35 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ArtworkInbox.Data.Migrations
 {
-    public partial class Mastodon : Migration
+    public partial class Generalization : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "LastRead",
+                table: "UserWeasylTokens",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "LastRead",
+                table: "UserTwitterTokens",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "LastRead",
+                table: "UserTumblrTokens",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "LastRead",
+                table: "UserInkbunnyTokens",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "LastRead",
+                table: "UserDeviantArtTokens",
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "UserMastodonTokens",
                 columns: table => new
@@ -39,6 +64,26 @@ namespace ArtworkInbox.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "UserMastodonTokens");
+
+            migrationBuilder.DropColumn(
+                name: "LastRead",
+                table: "UserWeasylTokens");
+
+            migrationBuilder.DropColumn(
+                name: "LastRead",
+                table: "UserTwitterTokens");
+
+            migrationBuilder.DropColumn(
+                name: "LastRead",
+                table: "UserTumblrTokens");
+
+            migrationBuilder.DropColumn(
+                name: "LastRead",
+                table: "UserInkbunnyTokens");
+
+            migrationBuilder.DropColumn(
+                name: "LastRead",
+                table: "UserDeviantArtTokens");
         }
     }
 }
