@@ -60,20 +60,6 @@
                                 </div>
                             </li>
                         }
-                        @if (has_inkbunny) {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Inkbunny" asp-action="Feed">
-                                    Inkbunny
-                                </a>
-                            </li>
-                        }
-                        @if (has_weasyl) {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Weasyl" asp-action="Feed">
-                                    Weasyl
-                                </a>
-                            </li>
-                        }
                         @if (has_twitter) {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Twitter" asp-action="Feed">
@@ -85,6 +71,20 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Tumblr" asp-action="Feed">
                                     Tumblr
+                                </a>
+                            </li>
+                        }
+                        @if (has_inkbunny) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Inkbunny" asp-action="Feed">
+                                    Inkbunny
+                                </a>
+                            </li>
+                        }
+                        @if (has_weasyl) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Weasyl" asp-action="Feed">
+                                    Weasyl
                                 </a>
                             </li>
                         }
