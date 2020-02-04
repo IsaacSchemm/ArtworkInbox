@@ -47,6 +47,12 @@ namespace ArtworkInbox {
                     t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
                     t.SaveTokens = true;
                 })
+                .AddReddit(o => {
+                    o.Scope.Add("read");
+                    o.ClientId = Configuration["Authentication:Reddit:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Reddit:ClientSecret"];
+                    o.SaveTokens = true;
+                })
                 .AddOAuth("Weasyl", "Weasyl", o => {
                     o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
                     o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
@@ -102,6 +108,9 @@ namespace ArtworkInbox {
             services.AddSingleton(new ArtworkInboxTumblrClientFactory(
                 Configuration["Authentication:Tumblr:ConsumerKey"],
                 Configuration["Authentication:Tumblr:ConsumerSecret"]));
+            services.AddSingleton(new ArtworkInboxRedditClientFactory(
+                Configuration["Authentication:Reddit:ClientId"],
+                Configuration["Authentication:Reddit:ClientSecret"]));
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();

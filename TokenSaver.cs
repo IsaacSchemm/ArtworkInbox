@@ -71,6 +71,25 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
+            } else if (info.LoginProvider == "Reddit") {
+                var token = await _context.UserRedditTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token == null) {
+                    token = new UserRedditToken {
+                        UserId = user.Id
+                    };
+                    _context.UserRedditTokens.Add(token);
+                }
+                token.AccessToken = info.AuthenticationTokens
+                    .Where(t => t.Name == "access_token")
+                    .Select(t => t.Value)
+                    .Single();
+                token.RefreshToken = info.AuthenticationTokens
+                    .Where(t => t.Name == "refresh_token")
+                    .Select(t => t.Value)
+                    .Single();
+                await _context.SaveChangesAsync();
             } else if (new[] { "mastodon.social", "botsin.space" }.Contains(info.LoginProvider)) {
                 var token = await _context.UserMastodonTokens
                     .Where(t => t.UserId == user.Id)
@@ -124,6 +143,14 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Tumblr") {
                 var token = await _context.UserTumblrTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
+            } else if (loginProvider == "Reddit") {
+                var token = await _context.UserRedditTokens
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {
