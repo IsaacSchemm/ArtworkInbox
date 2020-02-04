@@ -55,7 +55,7 @@ namespace ArtworkInbox {
                 })
                 .AddOAuth("Weasyl", "Weasyl", o => {
                     o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
                     o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
                     o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
                     o.CallbackPath = new PathString("/signin-weasyl");
