@@ -9,9 +9,6 @@
     bool has_deviantart = user != null && await ApplicationDbContext.UserDeviantArtTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
-    bool has_inkbunny = user != null && await ApplicationDbContext.UserInkbunnyTokens
-        .Where(x => x.UserId == user.Id)
-        .AnyAsync();
     bool has_weasyl = user != null && await ApplicationDbContext.UserWeasylTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
@@ -71,13 +68,6 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Tumblr" asp-action="Feed">
                                     Tumblr
-                                </a>
-                            </li>
-                        }
-                        @if (has_inkbunny) {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Inkbunny" asp-action="Feed">
-                                    Inkbunny
                                 </a>
                             </li>
                         }

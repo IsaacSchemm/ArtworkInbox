@@ -79,39 +79,6 @@ namespace ArtworkInbox {
                         }
                     };
                 })
-                .AddOAuth("Inkbunny", "Inkbunny", o => {
-                    o.ClientId = Configuration["Authentication:Inkbunny:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Inkbunny:ClientSecret"];
-                    o.AuthorizationEndpoint = "https://artworkinbox-inkbunny-oauth.azurewebsites.net/api/auth";
-                    o.TokenEndpoint = "https://artworkinbox-inkbunny-oauth.azurewebsites.net/api/token";
-                    o.CallbackPath = new PathString("/signin-inkbunny");
-                    o.SaveTokens = true;
-
-                    o.Events = new OAuthEvents {
-                        OnCreatingTicket = context => {
-                            if (context.Options.SaveTokens) {
-                                context.Properties.StoreTokens(new[] {
-                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
-                                });
-                            }
-
-                            string user_id = context.TokenResponse.Response.RootElement.GetString("user_id");
-                            string username = context.TokenResponse.Response.RootElement.GetString("username");
-                            context.Principal.AddIdentity(new ClaimsIdentity(new[] {
-                                new Claim(ClaimTypes.NameIdentifier, user_id),
-                                new Claim(ClaimTypes.Name, username),
-                                new Claim("urn:inkbunny:user_id", user_id),
-                                new Claim("urn:inkbunny:username", username),
-                            }));
-                            return Task.CompletedTask;
-                        },
-                        OnRemoteFailure = context => {
-                            context.HandleResponse();
-                            context.Response.Redirect("/Home/Error");
-                            return Task.CompletedTask;
-                        }
-                    };
-                })
                 .AddMastodon("mastodon.art", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");

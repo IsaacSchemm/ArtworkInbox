@@ -11,7 +11,6 @@ Supported sites:
 * [Twitter](https://www.twitter.com)
 * [Tumblr](https://www.tumblr.com)
 * [Weasyl](https://www.weasyl.com) (artwork only, API key required)
-* [Inkbunny](https://www.inkbunny.net) (artwork only, API access must be turned on)
 * Mastodon
     * [mastodon.art](https://mastodon.art/)
     * [mastodon.social](https://mastodon.social/)
