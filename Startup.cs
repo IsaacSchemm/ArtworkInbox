@@ -85,6 +85,39 @@ namespace ArtworkInbox {
                         }
                     };
                 })
+                .AddOAuth("Inoreader", "Inoreader", o => {
+                    o.ClientId = Configuration["Authentication:Inoreader:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Inoreader:ClientSecret"];
+                    o.AuthorizationEndpoint = "https://www.inoreader.com/oauth2/auth";
+                    o.TokenEndpoint = "https://www.inoreader.com/oauth2/token";
+                    o.CallbackPath = new PathString("/signin-inoreader");
+                    o.SaveTokens = true;
+
+                    o.Events = new OAuthEvents {
+                        OnCreatingTicket = async context => {
+                            if (context.Options.SaveTokens) {
+                                context.Properties.StoreTokens(new[] {
+                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
+                                });
+                            }
+
+                            var client = new Inoreader.Proxy(o.ClientId, o.ClientSecret);
+                            client.Authenticate(context.AccessToken);
+                            var user = client.GetUserInfo();
+                            context.Principal.AddIdentity(new ClaimsIdentity(new[] {
+                                new Claim(ClaimTypes.NameIdentifier, $"{user.UserId}"),
+                                new Claim(ClaimTypes.Name, user.UserName),
+                                new Claim("urn:inoreader:userid", $"{user.UserId}"),
+                                new Claim("urn:inoreader:login", user.UserName),
+                            }));
+                        },
+                        OnRemoteFailure = context => {
+                            context.HandleResponse();
+                            context.Response.Redirect("/Home/Error");
+                            return Task.FromResult(0);
+                        }
+                    };
+                })
                 .AddMastodon("mastodon.social", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
