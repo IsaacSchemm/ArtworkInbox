@@ -108,7 +108,7 @@ namespace ArtworkInbox {
             services.AddSingleton(new ArtworkInboxTumblrClientFactory(
                 Configuration["Authentication:Tumblr:ConsumerKey"],
                 Configuration["Authentication:Tumblr:ConsumerSecret"]));
-            services.AddSingleton(new ArtworkInboxRedditClientFactory(
+            services.AddSingleton(new ArtworkInboxRedditCredentials(
                 Configuration["Authentication:Reddit:ClientId"],
                 Configuration["Authentication:Reddit:ClientSecret"]));
             services.AddDefaultIdentity<ApplicationUser>()

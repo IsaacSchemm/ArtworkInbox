@@ -14,11 +14,13 @@ namespace ArtworkInbox.Controllers {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
+        private readonly ArtworkInboxRedditCredentials _credentials;
 
-        public RedditController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger) {
+        public RedditController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, ArtworkInboxRedditCredentials credentials) {
             _userManager = userManager;
             _context = context;
             _logger = logger;
+            _credentials = credentials;
         }
 
         public IActionResult Index() {
@@ -37,7 +39,11 @@ namespace ArtworkInbox.Controllers {
                 .SingleOrDefaultAsync();
             if (dbToken == null)
                 throw new NoTokenException();
-            var client = new Reddit.RedditClient("APPID", dbToken.RefreshToken, "SECRET", dbToken.AccessToken, "ArtowkrInbox/0.0 (https://artworkinbox.azurewebsites.net)");
+            var client = new Reddit.RedditClient(_credentials.AppId, dbToken.RefreshToken, _credentials.AppSecret, dbToken.AccessToken, "ArtowkrInbox/0.0 (https://artworkinbox.azurewebsites.net)");
+            client.Models.OAuthCredentials.TokenUpdated += (o, e) => {
+                dbToken.AccessToken = e.AccessToken;
+                _context.SaveChanges();
+            };
             return new RedditFeedSource(client);
         }
 
