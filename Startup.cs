@@ -41,54 +41,6 @@ namespace ArtworkInbox {
                     d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
                     d.SaveTokens = true;
                 })
-                .AddTwitter(t => {
-                    t.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
-                    t.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
-                    t.SaveTokens = true;
-                })
-                .AddTumblr(t => {
-                    t.ConsumerKey = Configuration["Authentication:Tumblr:ConsumerKey"];
-                    t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
-                    t.SaveTokens = true;
-                })
-                .AddReddit(o => {
-                    o.Scope.Add("read");
-                    o.ClientId = Configuration["Authentication:Reddit:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Reddit:ClientSecret"];
-                    o.SaveTokens = true;
-                })
-                .AddOAuth("Weasyl", "Weasyl", o => {
-                    o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
-                    o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
-                    o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
-                    o.CallbackPath = new PathString("/signin-weasyl");
-                    o.SaveTokens = true;
-
-                    o.Events = new OAuthEvents {
-                        OnCreatingTicket = async context => {
-                            if (context.Options.SaveTokens) {
-                                context.Properties.StoreTokens(new[] {
-                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
-                                });
-                            }
-
-                            var creds = new WeasylFs.WeasylCredentials(context.AccessToken);
-                            var user = await WeasylFs.Endpoints.Whoami.ExecuteAsync(creds);
-                            context.Principal.AddIdentity(new ClaimsIdentity(new[] {
-                                new Claim(ClaimTypes.NameIdentifier, $"{user.userid}"),
-                                new Claim(ClaimTypes.Name, user.login),
-                                new Claim("urn:weasyl:userid", $"{user.userid}"),
-                                new Claim("urn:weasyl:login", user.login),
-                            }));
-                        },
-                        OnRemoteFailure = context => {
-                            context.HandleResponse();
-                            context.Response.Redirect("/Home/Error");
-                            return Task.FromResult(0);
-                        }
-                    };
-                })
                 .AddOAuth("Inoreader", "Inoreader", o => {
                     o.ClientId = Configuration["Authentication:Inoreader:AppId"];
                     o.ClientSecret = Configuration["Authentication:Inoreader:AppKey"];
@@ -114,6 +66,54 @@ namespace ArtworkInbox {
                                 new Claim(ClaimTypes.Name, user.userName),
                                 new Claim("urn:inoreader:userid", $"{user.userId}"),
                                 new Claim("urn:inoreader:username", user.userName),
+                            }));
+                        },
+                        OnRemoteFailure = context => {
+                            context.HandleResponse();
+                            context.Response.Redirect("/Home/Error");
+                            return Task.FromResult(0);
+                        }
+                    };
+                })
+                .AddReddit(o => {
+                    o.Scope.Add("read");
+                    o.ClientId = Configuration["Authentication:Reddit:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Reddit:ClientSecret"];
+                    o.SaveTokens = true;
+                })
+                .AddTumblr(t => {
+                    t.ConsumerKey = Configuration["Authentication:Tumblr:ConsumerKey"];
+                    t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
+                    t.SaveTokens = true;
+                })
+                .AddTwitter(t => {
+                    t.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
+                    t.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                    t.SaveTokens = true;
+                })
+                .AddOAuth("Weasyl", "Weasyl", o => {
+                    o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
+                    o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
+                    o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
+                    o.CallbackPath = new PathString("/signin-weasyl");
+                    o.SaveTokens = true;
+
+                    o.Events = new OAuthEvents {
+                        OnCreatingTicket = async context => {
+                            if (context.Options.SaveTokens) {
+                                context.Properties.StoreTokens(new[] {
+                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
+                                });
+                            }
+
+                            var creds = new WeasylFs.WeasylCredentials(context.AccessToken);
+                            var user = await WeasylFs.Endpoints.Whoami.ExecuteAsync(creds);
+                            context.Principal.AddIdentity(new ClaimsIdentity(new[] {
+                                new Claim(ClaimTypes.NameIdentifier, $"{user.userid}"),
+                                new Claim(ClaimTypes.Name, user.login),
+                                new Claim("urn:weasyl:userid", $"{user.userid}"),
+                                new Claim("urn:weasyl:login", user.login),
                             }));
                         },
                         OnRemoteFailure = context => {

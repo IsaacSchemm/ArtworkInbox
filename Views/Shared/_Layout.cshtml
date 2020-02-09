@@ -63,10 +63,21 @@
                                 </div>
                             </li>
                         }
-                        @if (has_twitter) {
+                        @if (has_inoreader) {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-ino" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Inoreader
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-ino">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Inoreader" asp-action="Feed">Feed</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Inoreader" asp-action="Settings">Settings</a>
+                                </div>
+                            </li>
+                        }
+                        @if (has_reddit) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Twitter" asp-action="Feed">
-                                    Twitter
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Reddit" asp-action="Feed">
+                                    Reddit
                                 </a>
                             </li>
                         }
@@ -77,10 +88,10 @@
                                 </a>
                             </li>
                         }
-                        @if (has_reddit) {
+                        @if (has_twitter) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Reddit" asp-action="Feed">
-                                    Reddit
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Twitter" asp-action="Feed">
+                                    Twitter
                                 </a>
                             </li>
                         }
@@ -89,17 +100,6 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Weasyl" asp-action="Feed">
                                     Weasyl
                                 </a>
-                            </li>
-                        }
-                        @if (has_inoreader) {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-ino" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Inoreader
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-ino">
-                                    <a class="dropdown-item" asp-area="" asp-controller="Inoreader" asp-action="Feed">Feed</a>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Inoreader" asp-action="Settings">Settings</a>
-                                </div>
                             </li>
                         }
                         @foreach (var t in mastodon_tokens) {
