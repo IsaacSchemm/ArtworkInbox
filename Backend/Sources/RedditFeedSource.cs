@@ -18,13 +18,13 @@ namespace ArtworkInbox.Backend.Sources {
             _client = client;
         }
 
-        public async Task<Author> GetAuthenticatedUserAsync() {
+        public Task<Author> GetAuthenticatedUserAsync() {
             var response = _client.Account.GetMe();
-            return new Author {
+            return Task.FromResult(new Author {
                 AvatarUrl = response.IconImg,
                 ProfileUrl = $"https://www.reddit.com/user/{Uri.EscapeDataString(response.Name)}/",
                 Username = response.Name
-            };
+            });
         }
 
         private static readonly Uri REDDIT = new Uri("https://www.reddit.com");
@@ -58,18 +58,18 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public async Task<FeedBatch> GetBatchAsync(string cursor) {
+        public Task<FeedBatch> GetBatchAsync(string cursor) {
             long offset = 0;
             if (cursor != null && long.TryParse(cursor, out long l))
                 offset = l;
 
             var posts = _client.Subreddit().Posts.GetNew(after: cursor ?? "");
 
-            return new FeedBatch {
+            return Task.FromResult(new FeedBatch {
                 Cursor = posts.Select(x => x.Fullname).DefaultIfEmpty(cursor).Last(),
                 HasMore = posts.Any(),
                 FeedItems = Wrangle(posts)
-            };
+            });
         }
 
         public string GetNotificationsUrl() => "https://www.reddit.com/message/inbox/";
