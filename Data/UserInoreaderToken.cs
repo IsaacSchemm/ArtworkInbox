@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtworkInbox.Data {
-    public class UserInoreaderToken : InoreaderFs.Auth.OAuth.IRefreshToken {
+    public class UserInoreaderToken {
         [Key]
         public string UserId { get; set; }
 

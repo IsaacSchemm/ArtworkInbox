@@ -18,6 +18,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace ArtworkInbox {
     public class Startup {
+        private class InoreaderTempToken : InoreaderFs.Auth.OAuth.IAccessToken {
+            public string AccessToken { get; set; }
+        }
+
         public Startup(IConfiguration configuration) {
             Configuration = configuration;
         }
@@ -102,7 +106,7 @@ namespace ArtworkInbox {
                                 });
                             }
 
-                            var token = new UserInoreaderToken { AccessToken = context.AccessToken };
+                            var token = new InoreaderTempToken { AccessToken = context.AccessToken };
                             var credentials = InoreaderFs.Auth.Credentials.NewOAuth(token);
                             var user = await InoreaderFs.Endpoints.UserInfo.ExecuteAsync(credentials);
                             context.Principal.AddIdentity(new ClaimsIdentity(new[] {
@@ -145,6 +149,9 @@ namespace ArtworkInbox {
             services.AddSingleton(new ArtworkInboxRedditCredentials(
                 Configuration["Authentication:Reddit:ClientId"],
                 Configuration["Authentication:Reddit:ClientSecret"]));
+            services.AddSingleton(new InoreaderFs.Auth.App(
+                Configuration["Authentication:Inoreader:AppId"],
+                Configuration["Authentication:Inoreader:AppKey"]));
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();

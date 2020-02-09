@@ -14,11 +14,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ArtworkInbox.Controllers {
     public class InoreaderController : FeedController {
+        private readonly InoreaderFs.Auth.App _app;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
 
-        public InoreaderController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger) {
+        public InoreaderController(InoreaderFs.Auth.App app, UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger) {
+            _app = app;
             _userManager = userManager;
             _context = context;
             _logger = logger;
@@ -40,7 +42,7 @@ namespace ArtworkInbox.Controllers {
                 .SingleOrDefaultAsync();
             if (dbToken == null)
                 throw new NoTokenException();
-            var token = dbToken;
+            var token = new InoreaderTokenWrapper(_app, _context, dbToken);
             return new InoreaderFeedSource(InoreaderFs.Auth.Credentials.NewOAuth(token));
         }
 
