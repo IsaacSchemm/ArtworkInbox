@@ -40,6 +40,11 @@ namespace ArtworkInbox.Models {
             .GroupBy(d => d.Author.Username)
             .OrderByDescending(g => g.Select(x => x.Timestamp).Max());
 
+        public IEnumerable<IGrouping<string, JournalEntry>> JournalsByUser =>
+            FeedBatch.JournalEntries
+            .GroupBy(s => s.Author.Username)
+            .OrderByDescending(g => g.Select(x => x.Timestamp).Max());
+
         public IEnumerable<IGrouping<string, StatusUpdate>> StatusesByUser =>
             FeedBatch.StatusUpdates
             .GroupBy(s => s.Author.Username)
