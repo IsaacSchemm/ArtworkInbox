@@ -45,6 +45,11 @@ namespace ArtworkInbox.Models {
             .GroupBy(s => s.Author.Username)
             .OrderByDescending(g => g.Select(x => x.Timestamp).Max());
 
+        public IEnumerable<IGrouping<string, BlogPost>> BlogPostsByUser =>
+            FeedBatch.BlogPosts
+            .GroupBy(s => s.Author.Username)
+            .OrderByDescending(g => g.Select(x => x.Timestamp).Max());
+
         public IEnumerable<IGrouping<string, StatusUpdate>> StatusesByUser =>
             FeedBatch.StatusUpdates
             .GroupBy(s => s.Author.Username)
@@ -54,6 +59,7 @@ namespace ArtworkInbox.Models {
             FeedBatch.FeedItems
             .Except(FeedBatch.Artworks)
             .Except(FeedBatch.JournalEntries)
+            .Except(FeedBatch.BlogPosts)
             .Except(FeedBatch.StatusUpdates);
     }
 }

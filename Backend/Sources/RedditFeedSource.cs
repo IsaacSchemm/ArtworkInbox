@@ -47,7 +47,7 @@ namespace ArtworkInbox.Backend.Sources {
                         Title = p.Title
                     };
                 } else {
-                    yield return new StatusUpdate {
+                    yield return new BlogPost {
                         Author = new Author { Username = $"/r/{p.Subreddit}" },
                         Html = p.Title,
                         LinkUrl = new Uri(REDDIT, p.Permalink).AbsoluteUri,

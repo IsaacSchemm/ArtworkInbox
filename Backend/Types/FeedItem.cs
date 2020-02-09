@@ -55,6 +55,7 @@ namespace ArtworkInbox.Backend.Types {
 
     public class JournalEntry : TextFeedItem { }
     public class StatusUpdate : TextFeedItem { }
+    public class BlogPost : TextFeedItem { }
 
     public class CustomFeedItem : FeedItem {
         public string Description { get; set; }

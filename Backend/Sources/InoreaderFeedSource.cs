@@ -57,7 +57,7 @@ namespace ArtworkInbox.Backend.Sources {
                         };
                     }
                 } else {
-                    yield return new JournalEntry {
+                    yield return new BlogPost {
                         Author = new Author {
                             Username = f.origin.title
                         },

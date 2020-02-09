@@ -24,6 +24,14 @@ namespace ArtworkInbox.Backend {
             }
         }
 
+        public IEnumerable<BlogPost> BlogPosts {
+            get {
+                foreach (var item in FeedItems)
+                    if (item is BlogPost o)
+                        yield return o;
+            }
+        }
+
         public IEnumerable<StatusUpdate> StatusUpdates {
             get {
                 foreach (var item in FeedItems)

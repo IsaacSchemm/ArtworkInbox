@@ -85,6 +85,22 @@
     <hr />
 }
 
+@if (Model.BlogPostsByUser.Any()) {
+    <h1>Blog Posts</h1>
+    @foreach (var g in Model.BlogPostsByUser) {
+        <p class="font-weight-bold">@g.Key</p>
+        foreach (var s in g) {
+            <p style="white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis">
+                <a href="@s.LinkUrl">
+                    <strong>@s.Author.Username:</strong>
+                </a>
+                <span class="html-to-convert">@s.Excerpt</span>
+            </p>
+        }
+    }
+    <hr />
+}
+
 @if (Model.StatusesByUser.Any()) {
     <h1>Status Updates</h1>
     @foreach (var g in Model.StatusesByUser) {
