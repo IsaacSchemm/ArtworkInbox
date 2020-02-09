@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkInbox.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200209163442_Inoreader")]
+    [Migration("20200209220844_Inoreader")]
     partial class Inoreader
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -122,8 +122,14 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<string>("AccessToken")
                         .HasColumnType("varchar(max)");
 
+                    b.Property<bool>("AllAsText")
+                        .HasColumnType("bit");
+
                     b.Property<DateTimeOffset?>("LastRead")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("ReadOnly")
+                        .HasColumnType("bit");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("varchar(max)");

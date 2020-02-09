@@ -14,7 +14,9 @@ namespace ArtworkInbox.Data.Migrations
                     UserId = table.Column<string>(nullable: false),
                     AccessToken = table.Column<string>(type: "varchar(max)", nullable: true),
                     RefreshToken = table.Column<string>(type: "varchar(max)", nullable: true),
-                    LastRead = table.Column<DateTimeOffset>(nullable: true)
+                    LastRead = table.Column<DateTimeOffset>(nullable: true),
+                    ReadOnly = table.Column<bool>(nullable: false),
+                    AllAsText = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

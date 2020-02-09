@@ -17,5 +17,9 @@ namespace ArtworkInbox.Data {
         public string RefreshToken { get; set; }
 
         public DateTimeOffset? LastRead { get; set; }
+
+        public bool ReadOnly { get; set; }
+
+        public bool AllAsText { get; set; }
     }
 }
