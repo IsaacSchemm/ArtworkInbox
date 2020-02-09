@@ -121,6 +121,25 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
+            } else if (info.LoginProvider == "Inoreader") {
+                var token = await _context.UserInoreaderTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token == null) {
+                    token = new UserInoreaderToken {
+                        UserId = user.Id
+                    };
+                    _context.UserInoreaderTokens.Add(token);
+                }
+                token.AccessToken = info.AuthenticationTokens
+                    .Where(t => t.Name == "access_token")
+                    .Select(t => t.Value)
+                    .Single();
+                token.RefreshToken = info.AuthenticationTokens
+                    .Where(t => t.Name == "refresh_token")
+                    .Select(t => t.Value)
+                    .Single();
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -168,6 +187,14 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Weasyl") {
                 var token = await _context.UserWeasylTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
+            } else if (loginProvider == "Inoreader") {
+                var token = await _context.UserInoreaderTokens
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {

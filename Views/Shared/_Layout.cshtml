@@ -21,6 +21,9 @@
     bool has_reddit = user != null && await ApplicationDbContext.UserRedditTokens
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
+    bool has_inoreader = user != null && await ApplicationDbContext.UserInoreaderTokens
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
     var mastodon_tokens = user == null
         ? Enumerable.Empty<UserMastodonToken>()
         : await ApplicationDbContext.UserMastodonTokens
@@ -85,6 +88,13 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Weasyl" asp-action="Feed">
                                     Weasyl
+                                </a>
+                            </li>
+                        }
+                        @if (has_inoreader) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Inoreader" asp-action="Feed">
+                                    Inoreader
                                 </a>
                             </li>
                         }

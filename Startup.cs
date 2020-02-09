@@ -86,8 +86,8 @@ namespace ArtworkInbox {
                     };
                 })
                 .AddOAuth("Inoreader", "Inoreader", o => {
-                    o.ClientId = Configuration["Authentication:Inoreader:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Inoreader:ClientSecret"];
+                    o.ClientId = Configuration["Authentication:Inoreader:AppId"];
+                    o.ClientSecret = Configuration["Authentication:Inoreader:AppKey"];
                     o.AuthorizationEndpoint = "https://www.inoreader.com/oauth2/auth";
                     o.TokenEndpoint = "https://www.inoreader.com/oauth2/token";
                     o.CallbackPath = new PathString("/signin-inoreader");
@@ -97,18 +97,19 @@ namespace ArtworkInbox {
                         OnCreatingTicket = async context => {
                             if (context.Options.SaveTokens) {
                                 context.Properties.StoreTokens(new[] {
-                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
+                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken },
+                                    new AuthenticationToken { Name = "refresh_token", Value = context.RefreshToken }
                                 });
                             }
 
-                            var client = new Inoreader.Proxy(o.ClientId, o.ClientSecret);
-                            client.Authenticate(context.AccessToken);
-                            var user = client.GetUserInfo();
+                            var token = new UserInoreaderToken { AccessToken = context.AccessToken };
+                            var credentials = InoreaderFs.Auth.Credentials.NewOAuth(token);
+                            var user = await InoreaderFs.Endpoints.UserInfo.ExecuteAsync(credentials);
                             context.Principal.AddIdentity(new ClaimsIdentity(new[] {
-                                new Claim(ClaimTypes.NameIdentifier, $"{user.UserId}"),
-                                new Claim(ClaimTypes.Name, user.UserName),
-                                new Claim("urn:inoreader:userid", $"{user.UserId}"),
-                                new Claim("urn:inoreader:login", user.UserName),
+                                new Claim(ClaimTypes.NameIdentifier, $"{user.userId}"),
+                                new Claim(ClaimTypes.Name, user.userName),
+                                new Claim("urn:inoreader:userid", $"{user.userId}"),
+                                new Claim("urn:inoreader:username", user.userName),
                             }));
                         },
                         OnRemoteFailure = context => {

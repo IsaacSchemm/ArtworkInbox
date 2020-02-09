@@ -96,13 +96,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account {
                 ReturnUrl = returnUrl;
                 LoginProvider = info.LoginProvider;
                 Input = new InputModel {
-                    UserName =
-                        info.Principal.FindFirstValue("urn:twitter:screenname")
-                        ?? info.Principal.FindFirstValue("urn:mastodon:botsin.space:username")
-                        ?? info.Principal.FindFirstValue("urn:weasyl:login")
-                        ?? info.Principal.FindFirstValue("urn:inkbunny:username")
-                        ?? info.Principal.FindFirstValue(TumblrConstants.Claims.Username)
-                        ?? info.Principal.FindFirstValue(DeviantArtAuthenticationConstants.Claims.Username)
+                    UserName = info.Principal.FindFirstValue(ClaimTypes.Name)
                 };
                 return Page();
             }
