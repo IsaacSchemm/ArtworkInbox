@@ -43,7 +43,10 @@ namespace ArtworkInbox.Controllers {
             if (dbToken == null)
                 throw new NoTokenException();
             var token = new InoreaderTokenWrapper(_app, _context, dbToken);
-            return new InoreaderFeedSource(InoreaderFs.Auth.Credentials.NewOAuth(token));
+            return new InoreaderFeedSource(
+                InoreaderFs.Auth.Credentials.NewOAuth(token),
+                allAsText: dbToken.AllAsText,
+                unreadOnly: dbToken.UnreadOnly);
         }
 
         protected override async Task<DateTimeOffset> GetLastRead() {
@@ -63,6 +66,34 @@ namespace ArtworkInbox.Controllers {
 
             o.LastRead = lastRead;
             await _context.SaveChangesAsync();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Settings() {
+            var userId = _userManager.GetUserId(User);
+            var dbToken = await _context.UserInoreaderTokens
+                .Where(t => t.UserId == userId)
+                .SingleOrDefaultAsync();
+            if (dbToken == null)
+                return View("NoToken");
+            return View(new InoreaderSettingsViewModel {
+                AllAsText = dbToken.AllAsText,
+                UnreadOnly = dbToken.UnreadOnly
+            });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Settings(InoreaderSettingsViewModel model) {
+            var userId = _userManager.GetUserId(User);
+            var dbToken = await _context.UserInoreaderTokens
+                .Where(t => t.UserId == userId)
+                .SingleOrDefaultAsync();
+            if (dbToken == null)
+                return View("NoToken");
+            dbToken.AllAsText = model.AllAsText;
+            dbToken.UnreadOnly = model.UnreadOnly;
+            await _context.SaveChangesAsync();
+            return View(model);
         }
     }
 }

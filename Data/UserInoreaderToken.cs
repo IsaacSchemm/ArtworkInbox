@@ -18,8 +18,8 @@ namespace ArtworkInbox.Data {
 
         public DateTimeOffset? LastRead { get; set; }
 
-        public bool ReadOnly { get; set; }
-
         public bool AllAsText { get; set; }
+
+        public bool UnreadOnly { get; set; }
     }
 }

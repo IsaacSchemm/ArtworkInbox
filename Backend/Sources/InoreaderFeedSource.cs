@@ -3,35 +3,41 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
     public class InoreaderFeedSource : IFeedSource {
         private readonly InoreaderFs.Auth.Credentials _credentials;
+        private readonly bool _allAsText;
+        private readonly bool _unreadOnly;
 
-        public InoreaderFeedSource(InoreaderFs.Auth.Credentials credentials) {
+        public InoreaderFeedSource(InoreaderFs.Auth.Credentials credentials, bool allAsText = false, bool unreadOnly = false) {
             _credentials = credentials;
+            _allAsText = allAsText;
+            _unreadOnly = unreadOnly;
         }
 
         public async Task<Author> GetAuthenticatedUserAsync() {
-            try {
-                var user = await InoreaderFs.Endpoints.UserInfo.ExecuteAsync(_credentials);
-                return new Author {
-                    Username = user.userName
-                };
-            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
-                throw new TooManyRequestsException();
-            }
+            var user = await InoreaderFs.Endpoints.UserInfo.ExecuteAsync(_credentials);
+            return new Author {
+                Username = user.userName
+            };
         }
 
-        private static IEnumerable<string> GetImageUrls(string html) {
-            var matches = System.Text.RegularExpressions.Regex.Matches(html, @"https?:\/\/[^'""]+\.(png|jpe?g|gif)");
+        private static readonly Regex IMAGE_URL = new Regex(@"https?:\/\/[^'""]+\.(png|jpe?g|gif)");
+
+        private IEnumerable<string> GetImageUrls(string html) {
+            if (_allAsText)
+                yield break;
+
+            var matches = IMAGE_URL.Matches(html);
             for (int i = 0; i < matches.Count; i++) {
                 yield return matches[i].Value;
             }
         }
 
-        private static IEnumerable<FeedItem> Wrangle(IEnumerable<InoreaderFs.Endpoints.StreamContents.Item> feedItems) {
+        private IEnumerable<FeedItem> Wrangle(IEnumerable<InoreaderFs.Endpoints.StreamContents.Item> feedItems) {
             foreach (var f in feedItems) {
                 var images = GetImageUrls(f.summary.content);
                 if (images.Any()) {
@@ -66,6 +72,7 @@ namespace ArtworkInbox.Backend.Sources {
         public async Task<FeedBatch> GetBatchAsync(string cursor) {
             var page = await InoreaderFs.Endpoints.StreamContents.ExecuteAsync(_credentials, new InoreaderFs.Endpoints.StreamContents.Request {
                 Continuation = cursor,
+                ExcludeRead = _unreadOnly,
                 Order = InoreaderFs.Endpoints.StreamContents.Order.NewestFirst,
                 Number = 100
             });

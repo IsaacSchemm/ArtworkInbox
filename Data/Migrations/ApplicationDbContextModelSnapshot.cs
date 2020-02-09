@@ -126,11 +126,11 @@ namespace ArtworkInbox.Data.Migrations
                     b.Property<DateTimeOffset?>("LastRead")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("ReadOnly")
-                        .HasColumnType("bit");
-
                     b.Property<string>("RefreshToken")
                         .HasColumnType("varchar(max)");
+
+                    b.Property<bool>("UnreadOnly")
+                        .HasColumnType("bit");
 
                     b.HasKey("UserId");
 

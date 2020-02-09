@@ -54,6 +54,8 @@
     <Compile Remove="Data\Migrations\20200203235642_Mastodon.Designer.cs" />
     <Compile Remove="Data\Migrations\20200209163442_Inoreader.cs" />
     <Compile Remove="Data\Migrations\20200209163442_Inoreader.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200209220844_Inoreader.cs" />
+    <Compile Remove="Data\Migrations\20200209220844_Inoreader.Designer.cs" />
   </ItemGroup>
 
 
