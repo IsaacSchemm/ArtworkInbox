@@ -19,10 +19,14 @@ namespace ArtworkInbox.Backend.Sources {
         }
 
         public async Task<Author> GetAuthenticatedUserAsync() {
-            var user = await InoreaderFs.Endpoints.UserInfo.ExecuteAsync(_credentials);
-            return new Author {
-                Username = user.userName
-            };
+            try {
+                var user = await InoreaderFs.Endpoints.UserInfo.ExecuteAsync(_credentials);
+                return new Author {
+                    Username = user.userName
+                };
+            } catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.TooManyRequests) {
+                throw new TooManyRequestsException();
+            }
         }
 
         private static readonly Regex IMAGE_URL = new Regex(@"https?:\/\/[^'""]+\.(png|jpe?g|gif)");
@@ -70,17 +74,21 @@ namespace ArtworkInbox.Backend.Sources {
         }
 
         public async Task<FeedBatch> GetBatchAsync(string cursor) {
-            var page = await InoreaderFs.Endpoints.StreamContents.ExecuteAsync(_credentials, new InoreaderFs.Endpoints.StreamContents.Request {
-                Continuation = cursor,
-                ExcludeRead = _unreadOnly,
-                Order = InoreaderFs.Endpoints.StreamContents.Order.NewestFirst,
-                Number = 100
-            });
-            return new FeedBatch {
-                Cursor = page.GetContinuation(),
-                HasMore = page.GetContinuation() != null,
-                FeedItems = Wrangle(page.items)
-            };
+            try {
+                var page = await InoreaderFs.Endpoints.StreamContents.ExecuteAsync(_credentials, new InoreaderFs.Endpoints.StreamContents.Request {
+                    Continuation = cursor,
+                    ExcludeRead = _unreadOnly,
+                    Order = InoreaderFs.Endpoints.StreamContents.Order.NewestFirst,
+                    Number = 100
+                });
+                return new FeedBatch {
+                    Cursor = page.GetContinuation(),
+                    HasMore = page.GetContinuation() != null,
+                    FeedItems = Wrangle(page.items)
+                };
+            } catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.TooManyRequests) {
+                throw new TooManyRequestsException();
+            }
         }
 
         public string GetNotificationsUrl() => null;
