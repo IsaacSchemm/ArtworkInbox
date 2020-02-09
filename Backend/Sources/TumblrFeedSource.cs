@@ -158,7 +158,7 @@ namespace ArtworkInbox.Backend.Sources {
                         Username = p.blog.name,
                         ProfileUrl = $"https://{p.blog.name}.tumblr.com"
                     };
-                    yield return new StatusUpdate {
+                    yield return new JournalEntry {
                         Author = author,
                         Html = WebUtility.HtmlEncode(p.summary),
                         LinkUrl = p.post_url,
