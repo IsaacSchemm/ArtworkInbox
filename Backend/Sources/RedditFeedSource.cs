@@ -31,7 +31,7 @@ namespace ArtworkInbox.Backend.Sources {
 
         private IEnumerable<FeedItem> Wrangle(IEnumerable<Post> posts) {
             foreach (var p in posts) {
-                if (p is LinkPost l && l.Thumbnail != null) {
+                if (p is LinkPost l && l.Thumbnail != null && l.Thumbnail != "default") {
                     yield return new Artwork {
                         Author = new Author { Username = $"/r/{p.Subreddit}" },
                         Thumbnails = new Thumbnail[] {
