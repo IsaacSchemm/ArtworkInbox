@@ -137,8 +137,8 @@ namespace ArtworkInbox {
                     o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
                     o.SaveTokens = true;
                 });
-            services.AddSingleton<IDeviantArtAuth>(new DeviantArtAuth(
-                int.Parse(Configuration["Authentication:DeviantArt:ClientId"]),
+            services.AddSingleton<DeviantArtApp>(new DeviantArtApp(
+                Configuration["Authentication:DeviantArt:ClientId"],
                 Configuration["Authentication:DeviantArt:ClientSecret"]));
             services.AddSingleton<IConsumerCredentials>(new ConsumerCredentials(
                 Configuration["Authentication:Twitter:ConsumerKey"],

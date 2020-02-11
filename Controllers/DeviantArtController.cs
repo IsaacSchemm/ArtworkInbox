@@ -8,7 +8,6 @@ using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Data;
 using ArtworkInbox.Models;
 using DeviantArtFs;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,13 +18,13 @@ namespace ArtworkInbox.Controllers {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
-        private readonly IDeviantArtAuth _auth;
+        private readonly DeviantArtApp _app;
 
-        public DeviantArtController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, IDeviantArtAuth auth) {
+        public DeviantArtController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, DeviantArtApp app) {
             _userManager = userManager;
             _context = context;
             _logger = logger;
-            _auth = auth;
+            _app = app;
         }
 
         public IActionResult Index() {
@@ -44,7 +43,7 @@ namespace ArtworkInbox.Controllers {
                 .SingleOrDefaultAsync();
             if (dbToken == null)
                 throw new NoTokenException();
-            var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
+            var token = new DeviantArtTokenWrapper(_app, _context, dbToken);
             return new DeviantArtFeedSource(token);
         }
 
@@ -75,15 +74,15 @@ namespace ArtworkInbox.Controllers {
                 .SingleOrDefaultAsync();
             if (dbToken == null)
                 return View("NoToken");
-            var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
+            var token = new DeviantArtTokenWrapper(_app, _context, dbToken);
             var feedSettings = await DeviantArtFs.Requests.Feed.FeedSettings.ExecuteAsync(token);
             return View(new DeviantArtFeedSettingsViewModel {
-                Statuses = feedSettings.Include.Statuses,
-                Deviations = feedSettings.Include.Deviations,
-                Journals = feedSettings.Include.Journals,
-                GroupDeviations = feedSettings.Include.GroupDeviations,
-                Collections = feedSettings.Include.Collections,
-                Misc = feedSettings.Include.Misc,
+                Statuses = feedSettings.include.statuses,
+                Deviations = feedSettings.include.deviations,
+                Journals = feedSettings.include.journals,
+                GroupDeviations = feedSettings.include.group_deviations,
+                Collections = feedSettings.include.collections,
+                Misc = feedSettings.include.misc,
             });
         }
 
@@ -95,7 +94,7 @@ namespace ArtworkInbox.Controllers {
                 .SingleOrDefaultAsync();
             if (dbToken == null)
                 return View("NoToken");
-            var token = new DeviantArtTokenWrapper(_auth, _context, dbToken);
+            var token = new DeviantArtTokenWrapper(_app, _context, dbToken);
             await DeviantArtFs.Requests.Feed.FeedSettingsUpdate.ExecuteAsync(token, new DeviantArtFs.Requests.Feed.FeedSettingsUpdateRequest {
                 Statuses = model.Statuses,
                 Deviations = model.Deviations,

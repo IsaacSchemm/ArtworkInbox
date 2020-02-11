@@ -1,6 +1,5 @@
 ﻿using ArtworkInbox.Data;
 using DeviantArtFs;
-using Microsoft.AspNetCore.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +10,10 @@ namespace ArtworkInbox {
         private readonly ApplicationDbContext _context;
         private readonly UserDeviantArtToken _token;
 
-        public IDeviantArtAuth DeviantArtAuth { get; }
+        public DeviantArtApp App { get; }
 
-        public DeviantArtTokenWrapper(IDeviantArtAuth auth, ApplicationDbContext context, UserDeviantArtToken token) {
-            DeviantArtAuth = auth ?? throw new ArgumentNullException(nameof(auth));
+        public DeviantArtTokenWrapper(DeviantArtApp app, ApplicationDbContext context, UserDeviantArtToken token) {
+            App = app ?? throw new ArgumentNullException(nameof(app));
             _context = context;
             _token = token;
         }
