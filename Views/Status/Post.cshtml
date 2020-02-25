@@ -1,0 +1,33 @@
+﻿@model ArtworkInbox.Models.StatusPostedModel
+@{
+    ViewData["Title"] = "Status Posted";
+    int i = 0;
+}
+
+@if (Model.Uris.Any()) {
+    <h1>Posted</h1>
+
+    <ul>
+        @foreach (Uri uri in Model.Uris) {
+            <li>
+                <a href="@uri" target="_blank">@uri</a>
+            </li>
+        }
+    </ul>
+}
+
+@if (Model.Errors.Any()) {
+    <h1>Errors</h1>
+
+    <ul>
+        @foreach (string error in Model.Errors) {
+            <li>
+                @error
+            </li>
+        }
+    </ul>
+}
+
+<a asp-controller="Status" asp-action="Index" class="btn btn-secondary">
+    Return
+</a>
