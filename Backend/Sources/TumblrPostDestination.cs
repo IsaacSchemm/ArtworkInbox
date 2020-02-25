@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
     public class TumblrPostDestination : IPostDestination {
@@ -14,8 +15,10 @@ namespace ArtworkInbox.Backend.Sources {
             return Task.FromResult(_blog.url);
         }
 
-        public async Task PostStatusAsync(string text) {
-            await _feedSource.PostStatusAsync(text, _blog.name);
+        public async Task<Uri> PostStatusAsync(string text) {
+            var result = await _feedSource.PostStatusAsync(text, _blog.name);
+            var baseUri = new Uri(await GetProfileUrlAsync());
+            return new Uri(baseUri, $"/post/{result.PostId}");
         }
     }
 }

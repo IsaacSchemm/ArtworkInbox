@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class DeviantArtFeedSource : IFeedSource, INotificationsSource {
+    public class DeviantArtFeedSource : IFeedSource, INotificationsSource, IPostDestination {
         private readonly IDeviantArtAccessToken _token;
 
         public DeviantArtFeedSource(IDeviantArtAccessToken token) {
@@ -25,6 +25,11 @@ namespace ArtworkInbox.Backend.Sources {
             } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
                 throw new TooManyRequestsException();
             }
+        }
+
+        public async Task<string> GetProfileUrlAsync() {
+            var user = await GetAuthenticatedUserAsync();
+            return user.ProfileUrl;
         }
 
         private static IEnumerable<FeedItem> Wrangle(IEnumerable<DeviantArtFeedItem> feedItems) {
@@ -111,6 +116,21 @@ namespace ArtworkInbox.Backend.Sources {
             try {
                 var ns = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(_token, null, 99);
                 return ns.Length;
+            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
+                throw new TooManyRequestsException();
+            }
+        }
+
+        public async Task<Uri> PostStatusAsync(string text) {
+            try {
+                string html = System.Net.WebUtility.HtmlEncode(text);
+                var guid = await DeviantArtFs.Requests.User.StatusPost.ExecuteAsync(
+                    _token,
+                    new DeviantArtFs.Requests.User.StatusPostRequest(html));
+                var status = await DeviantArtFs.Requests.User.StatusById.ExecuteAsync(
+                    _token,
+                    guid);
+                return new Uri(status.url.OrNull() ?? throw new Exception("DeviantArt status not posted / not found"));
             } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
                 throw new TooManyRequestsException();
             }

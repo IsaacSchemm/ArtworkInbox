@@ -202,9 +202,9 @@ namespace ArtworkInbox.Backend.Sources {
             return response.user.blogs;
         }
 
-        public async Task PostStatusAsync(string text, string blogName) {
+        public async Task<PostCreationInfo> PostStatusAsync(string text, string blogName) {
             string html = WebUtility.HtmlEncode(text);
-            await _client.CreatePostAsync(blogName, DontPanic.TumblrSharp.PostData.CreateText(html));
+            return await _client.CreatePostAsync(blogName, DontPanic.TumblrSharp.PostData.CreateText(html));
         }
 
         public async Task<IEnumerable<TumblrPostDestination>> GetPostDestinationsAsync() {
