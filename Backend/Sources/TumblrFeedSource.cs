@@ -192,6 +192,28 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
+        public async Task<IEnumerable<Blog>> GetBlogsAsync() {
+            var response = await _client.CallApiMethodAsync<UserInfoResponse>(
+                new DontPanic.TumblrSharp.ApiMethod(
+                    $"https://api.tumblr.com/v2/user/info",
+                    _client.OAuthToken,
+                    System.Net.Http.HttpMethod.Get),
+                CancellationToken.None);
+            return response.user.blogs;
+        }
+
+        public async Task PostStatusAsync(string text, string blogName) {
+            string html = WebUtility.HtmlEncode(text);
+            await _client.CreatePostAsync(blogName, DontPanic.TumblrSharp.PostData.CreateText(html));
+        }
+
+        public async Task<IEnumerable<TumblrPostDestination>> GetPostDestinationsAsync() {
+            var blogs = await GetBlogsAsync();
+            return blogs
+                .Select(x => new TumblrPostDestination(this, x))
+                .ToList();
+        }
+
         public string GetNotificationsUrl() => "https://www.tumblr.com/inbox";
         public string GetSubmitUrl() => "https://www.tumblr.com/dashboard";
     }
