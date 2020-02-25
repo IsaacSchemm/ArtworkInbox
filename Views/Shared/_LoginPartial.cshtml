@@ -7,6 +7,9 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
+        <a  class="nav-link text-dark" asp-controller="Status" asp-action="Index">Post Status</a>
+    </li>
+    <li class="nav-item">
         <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Profile</a>
     </li>
     <li class="nav-item">

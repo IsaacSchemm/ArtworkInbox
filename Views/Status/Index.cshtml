@@ -1,0 +1,28 @@
+﻿@model IEnumerable<ArtworkInbox.Backend.Sources.IPostDestination>
+@{
+    ViewData["Title"] = "Index";
+    int i = 0;
+}
+
+<form method="post" asp-controller="Status" asp-action="Post">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <textarea class="form-control" name="statusText"></textarea>
+                </div>
+                <input type="submit" class="btn btn-primary mb-2" value="Post" />
+            </div>
+            <div class="col-md-6">
+                @foreach (var d in Model) {
+                    i++;
+                    string url = await d.GetProfileUrlAsync();
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" name="profileUrls" value="@url" id="chk@(i)">
+                        <label class="form-check-label" for="chk@(i)">@url</label>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</form>
