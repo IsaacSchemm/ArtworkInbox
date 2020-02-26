@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Tweetinvi.Models;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class TwitterFeedSource : IFeedSource {
+    public class TwitterFeedSource : IFeedSource, IPostDestination {
         private readonly ITwitterCredentials _token;
 
         public TwitterFeedSource(ITwitterCredentials token) {
@@ -24,6 +24,11 @@ namespace ArtworkInbox.Backend.Sources {
                 AvatarUrl = user.ProfileImageUrl,
                 ProfileUrl = $"https://twitter.com/{Uri.EscapeDataString(user.ScreenName)}"
             };
+        }
+
+        public async Task<string> GetProfileUrlAsync() {
+            var user = await GetAuthenticatedUserAsync();
+            return user.ProfileUrl;
         }
 
         private static IEnumerable<FeedItem> Wrangle(IEnumerable<ITweet> tweets) {
@@ -87,6 +92,13 @@ namespace ArtworkInbox.Backend.Sources {
                 HasMore = page.Count() > 0,
                 FeedItems = Wrangle(page)
             };
+        }
+
+        public async Task<Uri> PostStatusAsync(string text) {
+            var tweet = await Tweetinvi.Auth.ExecuteOperationWithCredentials(_token, () => {
+                return Tweetinvi.TweetAsync.PublishTweet(text);
+            });
+            return new Uri(tweet.Url);
         }
 
         public string GetNotificationsUrl() => "https://twitter.com/notifications";

@@ -10,6 +10,7 @@ using DeviantArtFs;
 using Microsoft.EntityFrameworkCore;
 using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Models;
+using Tweetinvi.Models;
 
 namespace ArtworkInbox.Controllers {
     public class StatusController : Controller {
@@ -18,13 +19,15 @@ namespace ArtworkInbox.Controllers {
         private readonly ILogger<HomeController> _logger;
         private readonly DeviantArtApp _app;
         private readonly ArtworkInboxTumblrClientFactory _factory;
+        private readonly IConsumerCredentials _consumerCredentials;
 
-        public StatusController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, DeviantArtApp app, ArtworkInboxTumblrClientFactory factory) {
+        public StatusController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, DeviantArtApp app, ArtworkInboxTumblrClientFactory factory, IConsumerCredentials consumerCredentials) {
             _userManager = userManager;
             _context = context;
             _logger = logger;
             _app = app;
             _factory = factory;
+            _consumerCredentials = consumerCredentials;
         }
 
         private async IAsyncEnumerable<IPostDestination> GetPostDestinationsAsync() {
@@ -44,6 +47,18 @@ namespace ArtworkInbox.Controllers {
                 foreach (var p in await new TumblrFeedSource(_factory.Create(t)).GetPostDestinationsAsync()) {
                     yield return p;
                 }
+            }
+
+            var twitterTokens = await _context.UserTwitterTokens
+                .Where(t => t.UserId == userId)
+                .ToListAsync();
+            foreach (var t in twitterTokens) {
+                var credentials = new TwitterCredentials(
+                    _consumerCredentials.ConsumerKey,
+                    _consumerCredentials.ConsumerSecret,
+                    t.AccessToken,
+                    t.AccessTokenSecret);
+                yield return new TwitterFeedSource(credentials);
             }
         }
 
