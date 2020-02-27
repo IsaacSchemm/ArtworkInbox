@@ -37,6 +37,7 @@ namespace ArtworkInbox {
             services.AddAuthentication()
                 .AddDeviantArt(d => {
                     d.Scope.Add("feed");
+                    d.Scope.Add("browse");
                     d.Scope.Add("user.manage");
                     d.ClientId = Configuration["Authentication:DeviantArt:ClientId"];
                     d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
@@ -127,6 +128,7 @@ namespace ArtworkInbox {
                 .AddMastodon("mastodon.social", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
+                    o.Scope.Add("write:statuses");
                     o.ClientId = Configuration["Authentication:Mastodon:mastodon.social:client_id"];
                     o.ClientSecret = Configuration["Authentication:Mastodon:mastodon.social:client_secret"];
                     o.SaveTokens = true;
@@ -139,7 +141,7 @@ namespace ArtworkInbox {
                     o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
                     o.SaveTokens = true;
                 });
-            services.AddSingleton<DeviantArtApp>(new DeviantArtApp(
+            services.AddSingleton(new DeviantArtApp(
                 Configuration["Authentication:DeviantArt:ClientId"],
                 Configuration["Authentication:DeviantArt:ClientSecret"]));
             services.AddSingleton<IConsumerCredentials>(new ConsumerCredentials(
