@@ -60,6 +60,13 @@ namespace ArtworkInbox.Controllers {
                     t.AccessTokenSecret);
                 yield return new TwitterFeedSource(credentials);
             }
+
+            var mastodonTokens = await _context.UserMastodonTokens
+                .Where(t => t.UserId == userId)
+                .ToListAsync();
+            foreach (var t in mastodonTokens) {
+                yield return new MastodonFeedSource(t);
+            }
         }
 
         private async IAsyncEnumerable<IPostDestination> GetSelectedPostDestinationsAsync(string[] profileUrls) {

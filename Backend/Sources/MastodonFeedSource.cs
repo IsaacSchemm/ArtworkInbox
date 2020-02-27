@@ -1,13 +1,14 @@
 ﻿using ArtworkInbox.Backend.Types;
 using MapleFedNet.Common;
 using MapleFedNet.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class MastodonFeedSource : IFeedSource {
+    public class MastodonFeedSource : IFeedSource, IPostDestination {
         private readonly IMastodonCredentials _token;
 
         public MastodonFeedSource(IMastodonCredentials token) {
@@ -21,6 +22,11 @@ namespace ArtworkInbox.Backend.Sources {
                 AvatarUrl = user.AvatarUrl,
                 ProfileUrl = user.ProfileUrl
             };
+        }
+
+        public async Task<string> GetProfileUrlAsync() {
+            var author = await GetAuthenticatedUserAsync();
+            return author.ProfileUrl;
         }
 
         private static IEnumerable<FeedItem> Wrangle(IEnumerable<Status> statuses) {
@@ -68,6 +74,11 @@ namespace ArtworkInbox.Backend.Sources {
                 HasMore = page.Count() > 0,
                 FeedItems = Wrangle(page)
             };
+        }
+
+        public async Task<Uri> PostStatusAsync(string text) {
+            var s = await MapleFedNet.Api.Statuses.Posting(_token, text);
+            return new Uri(s.Uri);
         }
 
         public string GetNotificationsUrl() => $"https://{_token.Domain}";
