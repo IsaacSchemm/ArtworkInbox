@@ -38,7 +38,7 @@ namespace ArtworkInbox.Backend.Sources {
                     yield return new Artwork {
                         Author = author,
                         Timestamp = t.CreatedAt,
-                        LinkUrl = t.Url,
+                        LinkUrl = t.RetweetedTweet?.Url ?? t.Url,
                         Thumbnails = media.Sizes
                             .Where(x => x.Value.Resize == "fit")
                             .Select(x => new Thumbnail {
@@ -54,7 +54,7 @@ namespace ArtworkInbox.Backend.Sources {
                     yield return new StatusUpdate {
                         Author = author,
                         Timestamp = t.CreatedAt,
-                        LinkUrl = t.Url,
+                        LinkUrl = t.RetweetedTweet?.Url ?? t.Url,
                         Html = WebUtility.HtmlEncode(WebUtility.HtmlDecode(t.FullText ?? t.Text)),
                         RepostedFrom = t.RetweetedTweet?.CreatedBy?.ScreenName
                     };

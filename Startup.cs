@@ -160,7 +160,7 @@ namespace ArtworkInbox {
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-            if (env.IsDevelopment()) {
+            if (env.IsDevelopment() || DateTime.UtcNow < new DateTime(2020, 2, 14, 4, 0, 0, DateTimeKind.Utc)) {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             } else {
