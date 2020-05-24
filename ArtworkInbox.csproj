@@ -85,7 +85,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\ArtworkInbox.FurAffinity\ArtworkInbox.FurAffinity.fsproj" />
+    <ProjectReference Include="FurAffinity\ArtworkInbox.FurAffinity.fsproj" />
   </ItemGroup>
 
 </Project>

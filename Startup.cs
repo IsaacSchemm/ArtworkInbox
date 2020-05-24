@@ -142,7 +142,7 @@ namespace ArtworkInbox {
                                 });
                             }
 
-                            var notifications = await FurAffinity.Notifications.GetSubmissionsAsync(context.AccessToken, 0);
+                            var notifications = await FurAffinity.Notifications.GetSubmissionsAsync(context.AccessToken, sfw: true, from: 0);
                             context.Principal.AddIdentity(new ClaimsIdentity(new[] {
                                 new Claim(ClaimTypes.NameIdentifier, $"{notifications.current_user.profile_name}"),
                                 new Claim(ClaimTypes.Name, notifications.current_user.name),
