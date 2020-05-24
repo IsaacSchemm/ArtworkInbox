@@ -18,14 +18,15 @@ namespace ArtworkInbox.Models {
         public string SubmitUrl { get; set; }
 
         public static async Task<FeedViewModel> BuildAsync(string host, IFeedSource feedSource, IEnumerable<IFeedFilter> filters, string cursor = null, DateTimeOffset? earliest = null, DateTimeOffset? latest = null) {
+            var batch = await feedSource.GetBatchesAsync(new FeedParameters {
+                Filters = filters,
+                Cursor = cursor,
+                StartAt = earliest ?? DateTimeOffset.MinValue
+            });
             return new FeedViewModel {
                 Host = host,
-                Latest = latest ?? DateTimeOffset.UtcNow,
-                FeedBatch = await feedSource.GetBatchesAsync(new FeedParameters {
-                    Filters = filters,
-                    Cursor = cursor,
-                    StartAt = earliest ?? DateTimeOffset.MinValue
-                }),
+                Latest = latest ?? batch.FeedItems.Select(x => x.Timestamp).DefaultIfEmpty(DateTimeOffset.MinValue).First(),
+                FeedBatch = batch,
                 AuthenticatedUser = await feedSource.GetAuthenticatedUserAsync(),
                 NotificationsCount = feedSource is INotificationsSource ns
                     ? await ns.GetNotificationsCountAsync()

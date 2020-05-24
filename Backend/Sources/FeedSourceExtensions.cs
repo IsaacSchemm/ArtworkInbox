@@ -28,7 +28,7 @@ namespace ArtworkInbox.Backend.Sources {
                         feedItems = filter.Apply(feedItems);
 
                     foreach (var newItem in feedItems) {
-                        if (newItem.Timestamp < parameters.StartAt) {
+                        if (newItem.Timestamp <= parameters.StartAt) {
                             hasMore = false;
                             break;
                         } else {

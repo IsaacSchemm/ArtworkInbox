@@ -54,6 +54,7 @@ namespace ArtworkInbox.Backend.Sources {
                             Url = x.thumbnail
                         }
                     },
+                    Timestamp = new DateTimeOffset(x.id, TimeSpan.Zero),
                     Title = x.title
                 })
             };
