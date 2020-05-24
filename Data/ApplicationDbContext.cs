@@ -23,5 +23,7 @@ namespace ArtworkInbox.Data {
         public DbSet<UserRedditToken> UserRedditTokens { get; set; }
 
         public DbSet<UserInoreaderToken> UserInoreaderTokens { get; set; }
+
+        public DbSet<UserFurAffinityToken> UserFurAffinityTokens { get; set; }
     }
 }

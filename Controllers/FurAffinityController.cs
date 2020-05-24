@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using ArtworkInbox.Backend;
 using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ArtworkInbox.Controllers {
@@ -28,15 +31,32 @@ namespace ArtworkInbox.Controllers {
         protected override string GetSiteName() => "FurAffinity";
 
         protected override async Task<IFeedSource> GetFeedSourceAsync() {
-            return new FurAffinityFeedSource("a=afcfaa2e-06f8-4f83-90f4-4dfdf7df93f0; b=6afd3cf9-8de9-4938-b9eb-2a39771337cf");
+            var userId = _userManager.GetUserId(User);
+            var dbToken = await _context.UserFurAffinityTokens
+                .Where(t => t.UserId == userId)
+                .SingleOrDefaultAsync();
+            if (dbToken == null)
+                throw new NoTokenException();
+            return new FurAffinityFeedSource(dbToken.FA_COOKIE);
         }
 
         protected override async Task<DateTimeOffset> GetLastRead() {
-            return DateTimeOffset.MinValue;
+            var userId = _userManager.GetUserId(User);
+            var dt = await _context.UserFurAffinityTokens
+                .Where(t => t.UserId == userId)
+                .Select(t => t.LastRead)
+                .SingleOrDefaultAsync();
+            return dt ?? DateTimeOffset.MinValue;
         }
 
         protected override async Task SetLastRead(DateTimeOffset lastRead) {
-            throw new NotImplementedException();
+            var userId = _userManager.GetUserId(User);
+            var o = await _context.UserFurAffinityTokens
+                .Where(t => t.UserId == userId)
+                .SingleAsync();
+
+            o.LastRead = lastRead;
+            await _context.SaveChangesAsync();
         }
     }
 }

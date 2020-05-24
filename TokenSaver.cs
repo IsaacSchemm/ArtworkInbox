@@ -140,6 +140,21 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
+            } else if (info.LoginProvider == "FurAffinity") {
+                var token = await _context.UserFurAffinityTokens
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token == null) {
+                    token = new UserFurAffinityToken {
+                        UserId = user.Id
+                    };
+                    _context.UserFurAffinityTokens.Add(token);
+                }
+                token.FA_COOKIE = info.AuthenticationTokens
+                    .Where(t => t.Name == "access_token")
+                    .Select(t => t.Value)
+                    .Single();
+                await _context.SaveChangesAsync();
             }
         }
 
