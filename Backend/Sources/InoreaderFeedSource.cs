@@ -1,6 +1,8 @@
 ﻿using ArtworkInbox.Backend.Types;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -88,6 +90,16 @@ namespace ArtworkInbox.Backend.Sources {
                 };
             } catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.TooManyRequests) {
                 throw new TooManyRequestsException();
+            } catch (WebException ex) when (ex.Response.ContentType == "application/json") {
+                string json;
+                using (var sr = new StreamReader(ex.Response.GetResponseStream())) {
+                    json = await sr.ReadToEndAsync();
+                }
+                var obj = JsonConvert.DeserializeAnonymousType(json, new { error = "" });
+                if (obj.error == "invalid_grant")
+                    throw new NoTokenException();
+                else
+                    throw;
             }
         }
 
