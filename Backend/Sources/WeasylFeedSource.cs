@@ -33,8 +33,6 @@ namespace ArtworkInbox.Backend.Sources {
 
         private static IEnumerable<FeedItem> Wrangle(IEnumerable<WeasylSubmission> submissions) {
             foreach (var s in submissions) {
-                if (s.type != "submission")
-                    throw new NotImplementedException();
                 yield return new Artwork {
                     Author = new Author {
                         Username = s.owner,
@@ -42,6 +40,7 @@ namespace ArtworkInbox.Backend.Sources {
                     },
                     LinkUrl = s.link,
                     MatureContent = s.rating != "general",
+                    RepostedFrom = s.type == "usercollect" ? "another user" : null,
                     Thumbnails = GetThumbnails(s),
                     Timestamp = s.posted_at,
                     Title = s.title
