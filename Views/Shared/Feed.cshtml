@@ -7,6 +7,16 @@
     h1 {
         margin-bottom: 1rem;
     }
+    img.feed-image {
+        width: 150px;
+        height: 150px;
+    }
+    @@supports (object-fit: contain) {
+        img.feed-image {
+            width: 100%;
+            object-fit: contain;
+        }
+    }
 </style>
 
 <div>
@@ -55,7 +65,7 @@
                              srcset="@d.Srcset"
                              alt=""
                              referrerpolicy="no-referrer"
-                             style="width: 100%; height: 150px; object-fit: contain" />
+                             class="feed-image" />
                         @if (d.RepostedFrom != null) {
                             @:Reposted from @d.RepostedFrom
                             <br />
