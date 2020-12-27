@@ -31,13 +31,7 @@ namespace ArtworkInbox {
 
         public IConfiguration Configuration { get; }
 
-        private string GetConfigurationSetting(string path) {
-            IConfiguration conf = Configuration;
-            Queue<string> split = new Queue<string>(path.Split(':'));
-            while (split.Count > 1)
-                conf = conf.GetSection(split.Dequeue());
-            return conf[split.Single()];
-        }
+        private string GetConfigurationSetting(string path) => Configuration[path] ?? Configuration[path.Replace(":", "__")];
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
