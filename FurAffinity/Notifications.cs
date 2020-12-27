@@ -30,7 +30,7 @@ namespace ArtworkInbox.FurAffinity {
         }
 
         public static async Task<Submissions> GetSubmissionsAsync(string fa_cookie, bool sfw, int from) {
-            var req = WebRequest.CreateHttp($"https://faexport.spangle.org.uk/notifications/submissions.json?{(sfw ? "sfw=1" : "")}&from={from}");
+            var req = WebRequest.CreateHttp($"https://artworkinbox-faexport.azurewebsites.net/notifications/submissions.json?{(sfw ? "sfw=1" : "")}&from={from}");
             req.UserAgent = "ArtworkInbox/0.1 (https://github.com/IsaacSchemm/ArtworkInbox)";
             req.Headers.Set("FA_COOKIE", fa_cookie);
             using var resp = await req.GetResponseAsync();
@@ -77,7 +77,7 @@ namespace ArtworkInbox.FurAffinity {
         }
 
         public static async Task<Others> GetOthersAsync(string fa_cookie) {
-            var req = WebRequest.CreateHttp($"https://faexport.spangle.org.uk/notifications/others.json");
+            var req = WebRequest.CreateHttp($"https://artworkinbox-faexport.azurewebsites.net/notifications/others.json");
             req.UserAgent = "ArtworkInbox/0.1 (https://github.com/IsaacSchemm/ArtworkInbox)";
             req.Headers.Set("FA_COOKIE", fa_cookie);
             using var resp = await req.GetResponseAsync();
