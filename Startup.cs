@@ -31,7 +31,7 @@ namespace ArtworkInbox {
 
         public IConfiguration Configuration { get; }
 
-        private string GetConfigurationSetting(string path) => Configuration[path] ?? Configuration[path.Replace(":", "__")];
+        private string GetConfigurationSetting(string path) => Configuration[path] ?? Configuration[path.Replace(":", "__")] ?? throw new Exception($"Configuration item {path} not found");
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
