@@ -15,9 +15,9 @@ namespace ArtworkInbox.Controllers {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
-        private readonly IConsumerCredentials _consumerCredentials;
+        private readonly IReadOnlyConsumerCredentials _consumerCredentials;
 
-        public TwitterController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, IConsumerCredentials consumerCredentials) {
+        public TwitterController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, IReadOnlyConsumerCredentials consumerCredentials) {
             _userManager = userManager;
             _context = context;
             _logger = logger;

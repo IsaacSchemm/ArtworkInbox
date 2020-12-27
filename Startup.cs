@@ -173,10 +173,10 @@ namespace ArtworkInbox {
                     o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
                     o.SaveTokens = true;
                 });
-            services.AddSingleton<DeviantArtApp>(new DeviantArtApp(
+            services.AddSingleton(new DeviantArtApp(
                 Configuration["Authentication:DeviantArt:ClientId"],
                 Configuration["Authentication:DeviantArt:ClientSecret"]));
-            services.AddSingleton<IConsumerCredentials>(new ConsumerCredentials(
+            services.AddSingleton<IReadOnlyConsumerCredentials>(new ReadOnlyConsumerCredentials(
                 Configuration["Authentication:Twitter:ConsumerKey"],
                 Configuration["Authentication:Twitter:ConsumerSecret"]));
             services.AddSingleton(new ArtworkInboxTumblrClientFactory(

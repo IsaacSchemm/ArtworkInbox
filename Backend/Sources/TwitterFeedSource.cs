@@ -1,24 +1,23 @@
 ﻿using ArtworkInbox.Backend.Types;
-using DeviantArtFs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Tweetinvi;
+using Tweetinvi.Exceptions;
 using Tweetinvi.Models;
 
 namespace ArtworkInbox.Backend.Sources {
     public class TwitterFeedSource : IFeedSource {
-        private readonly ITwitterCredentials _token;
+        private readonly TwitterClient _client;
 
-        public TwitterFeedSource(ITwitterCredentials token) {
-            _token = token;
+        public TwitterFeedSource(IReadOnlyTwitterCredentials token) {
+            _client = new TwitterClient(token);
         }
 
         public async Task<Author> GetAuthenticatedUserAsync() {
-            var user = await Tweetinvi.Auth.ExecuteOperationWithCredentials(_token, () => {
-                return Tweetinvi.UserAsync.GetAuthenticatedUser();
-            });
+            var user = await _client.Users.GetAuthenticatedUserAsync();
             return new Author {
                 Username = $"@{user.ScreenName}",
                 AvatarUrl = user.ProfileImageUrl,
@@ -63,30 +62,25 @@ namespace ArtworkInbox.Backend.Sources {
         }
 
         public async Task<FeedBatch> GetBatchAsync(string cursor) {
-            var parameters = new Tweetinvi.Parameters.HomeTimelineParameters {
-                MaximumNumberOfTweetsToRetrieve = 100
+            var parameters = new Tweetinvi.Parameters.GetHomeTimelineParameters {
+                PageSize = 100
             };
             if (cursor != null && long.TryParse(cursor, out long l))
                 parameters.MaxId = l - 1;
 
-            var page = await Tweetinvi.Auth.ExecuteOperationWithCredentials(_token, () => {
-                return Tweetinvi.TimelineAsync.GetHomeTimeline(parameters);
-            });
-            if (page == null) {
-                var ex = Tweetinvi.ExceptionHandler.GetLastException();
-                if (ex.StatusCode == 429)
-                    throw new TooManyRequestsException();
-                else
-                    throw new Exception("Could not load tweets", ex as Tweetinvi.Exceptions.TwitterException);
-            }
+            try {
+                var page = await _client.Timelines.GetHomeTimelineAsync(parameters);
 
-            return new FeedBatch {
-                Cursor = page.Any()
-                    ? $"{page.Select(x => x.Id).Min()}"
-                    : cursor,
-                HasMore = page.Count() > 0,
-                FeedItems = Wrangle(page)
-            };
+                return new FeedBatch {
+                    Cursor = page.Any()
+                        ? $"{page.Select(x => x.Id).Min()}"
+                        : cursor,
+                    HasMore = page.Length > 0,
+                    FeedItems = Wrangle(page)
+                };
+            } catch (TwitterException ex) when (ex.StatusCode == 429) {
+                throw new TooManyRequestsException();
+            }
         }
 
         public string GetNotificationsUrl() => "https://twitter.com/notifications";
