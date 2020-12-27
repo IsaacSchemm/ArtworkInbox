@@ -53,7 +53,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
 
             [JsonIgnore]
-            public DateTimeOffset SkipUntilOlderThan {
+            public DateTimeOffset SkipUntilThisOld {
                 get {
                     return new DateTimeOffset(long.Parse(t), TimeSpan.Zero);
                 }
@@ -104,18 +104,18 @@ namespace ArtworkInbox.Backend.Sources {
             System.Diagnostics.Debug.WriteLine("--------");
             System.Diagnostics.Debug.WriteLine(string.Join(", ", batches));
             System.Diagnostics.Debug.WriteLine("--------");
-            while (batches.All(x => x.Stack.Any())) {
+            while (batches.Any() && batches.All(x => x.Stack.Any())) {
                 var batch_with_newest_item = batches
                     .OrderByDescending(x => x.Stack.Peek().Timestamp)
                     .First();
                 var item = batch_with_newest_item.Stack.Pop();
 
-                if (item.Timestamp < fc.SkipUntilOlderThan) {
+                if (item.Timestamp <= fc.SkipUntilThisOld) {
                     System.Diagnostics.Debug.WriteLine(string.Join(", ", batches));
                     items.Add(item);
                     if (!batch_with_newest_item.Stack.Any()) {
                         fc.SetState(batch_with_newest_item.SourceTrackerName, batch_with_newest_item.NextCursor);
-                        fc.SkipUntilOlderThan = item.Timestamp;
+                        fc.SkipUntilThisOld = item.Timestamp;
                         return new FeedBatch {
                             FeedItems = items,
                             Cursor = JsonConvert.SerializeObject(fc),
