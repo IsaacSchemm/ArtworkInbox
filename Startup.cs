@@ -31,6 +31,14 @@ namespace ArtworkInbox {
 
         public IConfiguration Configuration { get; }
 
+        private string GetConfigurationSetting(string path) {
+            IConfiguration conf = Configuration;
+            Queue<string> split = new Queue<string>(path.Split(':'));
+            while (split.Count > 1)
+                conf = conf.GetSection(split.Dequeue());
+            return conf[split.Single()];
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -41,13 +49,13 @@ namespace ArtworkInbox {
                 .AddDeviantArt(d => {
                     d.Scope.Add("browse");
                     d.Scope.Add("message");
-                    d.ClientId = Configuration["Authentication:DeviantArt:ClientId"];
-                    d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
+                    d.ClientId = GetConfigurationSetting("Authentication:DeviantArt:ClientId");
+                    d.ClientSecret = GetConfigurationSetting("Authentication:DeviantArt:ClientSecret");
                     d.SaveTokens = true;
                 })
                 .AddOAuth("Inoreader", "Inoreader", o => {
-                    o.ClientId = Configuration["Authentication:Inoreader:AppId"];
-                    o.ClientSecret = Configuration["Authentication:Inoreader:AppKey"];
+                    o.ClientId = GetConfigurationSetting("Authentication:Inoreader:AppId");
+                    o.ClientSecret = GetConfigurationSetting("Authentication:Inoreader:AppKey");
                     o.AuthorizationEndpoint = "https://www.inoreader.com/oauth2/auth";
                     o.TokenEndpoint = "https://www.inoreader.com/oauth2/token";
                     o.CallbackPath = new PathString("/signin-inoreader");
@@ -81,23 +89,23 @@ namespace ArtworkInbox {
                 })
                 .AddReddit(o => {
                     o.Scope.Add("read");
-                    o.ClientId = Configuration["Authentication:Reddit:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Reddit:ClientSecret"];
+                    o.ClientId = GetConfigurationSetting("Authentication:Reddit:ClientId");
+                    o.ClientSecret = GetConfigurationSetting("Authentication:Reddit:ClientSecret");
                     o.SaveTokens = true;
                 })
                 .AddTumblr(t => {
-                    t.ConsumerKey = Configuration["Authentication:Tumblr:ConsumerKey"];
-                    t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
+                    t.ConsumerKey = GetConfigurationSetting("Authentication:Tumblr:ConsumerKey");
+                    t.ConsumerSecret = GetConfigurationSetting("Authentication:Tumblr:ConsumerSecret");
                     t.SaveTokens = true;
                 })
                 .AddTwitter(t => {
-                    t.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
-                    t.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                    t.ConsumerKey = GetConfigurationSetting("Authentication:Twitter:ConsumerKey");
+                    t.ConsumerSecret = GetConfigurationSetting("Authentication:Twitter:ConsumerSecret");
                     t.SaveTokens = true;
                 })
                 .AddOAuth("Weasyl", "Weasyl", o => {
-                    o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
+                    o.ClientId = GetConfigurationSetting("Authentication:Weasyl:ClientId");
+                    o.ClientSecret = GetConfigurationSetting("Authentication:Weasyl:ClientSecret");
                     o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
                     o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
                     o.CallbackPath = new PathString("/signin-weasyl");
@@ -128,8 +136,8 @@ namespace ArtworkInbox {
                     };
                 })
                 .AddOAuth("FurAffinity", "FurAffinity", o => {
-                    o.ClientId = Configuration["Authentication:FurAffinity:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:FurAffinity:ClientSecret"];
+                    o.ClientId = GetConfigurationSetting("Authentication:FurAffinity:ClientId");
+                    o.ClientSecret = GetConfigurationSetting("Authentication:FurAffinity:ClientSecret");
                     o.AuthorizationEndpoint = "https://artworkinbox-furaffinity-oauth.azurewebsites.net/api/auth";
                     o.TokenEndpoint = "https://artworkinbox-furaffinity-oauth.azurewebsites.net/api/token";
                     o.CallbackPath = new PathString("/signin-furaffinity");
@@ -162,32 +170,32 @@ namespace ArtworkInbox {
                 .AddMastodon("mastodon.social", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
-                    o.ClientId = Configuration["Authentication:Mastodon:mastodon.social:client_id"];
-                    o.ClientSecret = Configuration["Authentication:Mastodon:mastodon.social:client_secret"];
+                    o.ClientId = GetConfigurationSetting("Authentication:Mastodon:mastodon.social:client_id");
+                    o.ClientSecret = GetConfigurationSetting("Authentication:Mastodon:mastodon.social:client_secret");
                     o.SaveTokens = true;
                 })
                 .AddMastodon("botsin.space", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
-                    o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
-                    o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
+                    o.ClientId = GetConfigurationSetting("Authentication:Mastodon:botsin.space:client_id");
+                    o.ClientSecret = GetConfigurationSetting("Authentication:Mastodon:botsin.space:client_secret");
                     o.SaveTokens = true;
                 });
             services.AddSingleton(new DeviantArtApp(
-                Configuration["Authentication:DeviantArt:ClientId"],
-                Configuration["Authentication:DeviantArt:ClientSecret"]));
+                GetConfigurationSetting("Authentication:DeviantArt:ClientId"),
+                GetConfigurationSetting("Authentication:DeviantArt:ClientSecret")));
             services.AddSingleton<IReadOnlyConsumerCredentials>(new ReadOnlyConsumerCredentials(
-                Configuration["Authentication:Twitter:ConsumerKey"],
-                Configuration["Authentication:Twitter:ConsumerSecret"]));
+                GetConfigurationSetting("Authentication:Twitter:ConsumerKey"),
+                GetConfigurationSetting("Authentication:Twitter:ConsumerSecret")));
             services.AddSingleton(new ArtworkInboxTumblrClientFactory(
-                Configuration["Authentication:Tumblr:ConsumerKey"],
-                Configuration["Authentication:Tumblr:ConsumerSecret"]));
+                GetConfigurationSetting("Authentication:Tumblr:ConsumerKey"),
+                GetConfigurationSetting("Authentication:Tumblr:ConsumerSecret")));
             services.AddSingleton(new ArtworkInboxRedditCredentials(
-                Configuration["Authentication:Reddit:ClientId"],
-                Configuration["Authentication:Reddit:ClientSecret"]));
+                GetConfigurationSetting("Authentication:Reddit:ClientId"),
+                GetConfigurationSetting("Authentication:Reddit:ClientSecret")));
             services.AddSingleton(new InoreaderFs.Auth.App(
-                Configuration["Authentication:Inoreader:AppId"],
-                Configuration["Authentication:Inoreader:AppKey"]));
+                GetConfigurationSetting("Authentication:Inoreader:AppId"),
+                GetConfigurationSetting("Authentication:Inoreader:AppKey")));
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
