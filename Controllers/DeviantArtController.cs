@@ -44,7 +44,11 @@ namespace ArtworkInbox.Controllers {
             if (dbToken == null)
                 throw new NoTokenException();
             var token = new DeviantArtTokenWrapper(_app, _context, dbToken);
-            return new DeviantArtFeedSource(token);
+            return new CompositeFeedSource(new IFeedSource[] {
+                new DeviantArtDeviationFeedSource(token),
+                new DeviantArtMessagesFeedSource(token),
+                new DeviantArtPostFeedSource(token)
+            });
         }
 
         protected override async Task<DateTimeOffset> GetLastRead() {
