@@ -65,45 +65,5 @@ namespace ArtworkInbox.Controllers {
             o.LastRead = lastRead;
             await _context.SaveChangesAsync();
         }
-
-        [HttpGet]
-        public async Task<IActionResult> FeedSettings() {
-            var userId = _userManager.GetUserId(User);
-            var dbToken = await _context.UserDeviantArtTokens
-                .Where(t => t.UserId == userId)
-                .SingleOrDefaultAsync();
-            if (dbToken == null)
-                return View("NoToken");
-            var token = new DeviantArtTokenWrapper(_app, _context, dbToken);
-            var feedSettings = await DeviantArtFs.Requests.Feed.FeedSettings.ExecuteAsync(token);
-            return View(new DeviantArtFeedSettingsViewModel {
-                Statuses = feedSettings.include.statuses,
-                Deviations = feedSettings.include.deviations,
-                Journals = feedSettings.include.journals,
-                GroupDeviations = feedSettings.include.group_deviations,
-                Collections = feedSettings.include.collections,
-                Misc = feedSettings.include.misc,
-            });
-        }
-
-        [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> FeedSettings(DeviantArtFeedSettingsViewModel model) {
-            var userId = _userManager.GetUserId(User);
-            var dbToken = await _context.UserDeviantArtTokens
-                .Where(t => t.UserId == userId)
-                .SingleOrDefaultAsync();
-            if (dbToken == null)
-                return View("NoToken");
-            var token = new DeviantArtTokenWrapper(_app, _context, dbToken);
-            await DeviantArtFs.Requests.Feed.FeedSettingsUpdate.ExecuteAsync(token, new DeviantArtFs.Requests.Feed.FeedSettingsUpdateRequest {
-                Statuses = model.Statuses,
-                Deviations = model.Deviations,
-                Journals = model.Journals,
-                GroupDeviations = model.GroupDeviations,
-                Collections = model.Collections,
-                Misc = model.Misc
-            });
-            return View(model);
-        }
     }
 }

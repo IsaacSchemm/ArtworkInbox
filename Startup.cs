@@ -39,7 +39,8 @@ namespace ArtworkInbox {
                     o => o.EnableRetryOnFailure()));
             services.AddAuthentication()
                 .AddDeviantArt(d => {
-                    d.Scope.Add("feed");
+                    d.Scope.Add("browse");
+                    d.Scope.Add("message");
                     d.ClientId = Configuration["Authentication:DeviantArt:ClientId"];
                     d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
                     d.SaveTokens = true;

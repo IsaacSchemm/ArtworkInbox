@@ -1,119 +1,117 @@
 ﻿using ArtworkInbox.Backend.Types;
 using DeviantArtFs;
 using DeviantArtFs.Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class DeviantArtFeedSource : IFeedSource, INotificationsSource {
-        private readonly IDeviantArtAccessToken _token;
+    public class DeviantArtFeedSource : IFeedSource {
+        private readonly DeviantArtDeviationFeedSource _deviations;
+        private readonly DeviantArtMessagesFeedSource _messages;
+        private readonly DeviantArtPostFeedSource _posts;
 
         public DeviantArtFeedSource(IDeviantArtAccessToken token) {
-            _token = token;
+            _deviations = new DeviantArtDeviationFeedSource(token);
+            _messages = new DeviantArtMessagesFeedSource(token);
+            _posts = new DeviantArtPostFeedSource(token);
         }
 
         public async Task<Author> GetAuthenticatedUserAsync() {
-            try {
-                var user = await DeviantArtFs.Requests.User.Whoami.ExecuteAsync(_token);
-                return new Author {
-                    Username = user.username,
-                    AvatarUrl = user.usericon,
-                    ProfileUrl = $"https://www.deviantart.com/{Uri.EscapeDataString(user.username)}"
-                };
-            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
-                throw new TooManyRequestsException();
-            }
+            return await _deviations.GetAuthenticatedUserAsync();
         }
 
-        private static IEnumerable<FeedItem> Wrangle(IEnumerable<DeviantArtFeedItem> feedItems) {
-            foreach (var f in feedItems) {
-                var author = new Author {
-                    Username = f.by_user.username,
-                    AvatarUrl = f.by_user.usericon,
-                    ProfileUrl = $"https://www.deviantart.com/{Uri.EscapeDataString(f.by_user.username)}"
-                };
-                switch (f.type) {
-                    case "deviation_submitted":
-                        foreach (var d in f.deviations.OrEmpty().Where(x => !x.is_deleted))
-                            yield return new Artwork {
-                                Author = author,
-                                Timestamp = f.ts,
-                                Title = d.title.OrNull() ?? "",
-                                Thumbnails = d.thumbs.OrEmpty().Select(x => new Thumbnail {
-                                    Url = x.src,
-                                    Width = x.width,
-                                    Height = x.height
-                                }),
-                                LinkUrl = d.url.OrNull(),
-                                MatureContent = d.is_mature.OrNull() == true
-                            };
-                        break;
-                    case "journal_submitted":
-                        foreach (var d in f.deviations.OrEmpty().Where(x => !x.is_deleted))
-                            yield return new JournalEntry {
-                                Author = author,
-                                Timestamp = f.ts,
-                                Html = d.excerpt.OrNull() ?? "",
-                                LinkUrl = d.url.OrNull() ?? ""
-                            };
-                        break;
-                    case "status":
-                        var status = f.status.OrNull();
-                        if (status != null && !status.is_deleted)
-                            yield return new StatusUpdate {
-                                Author = author,
-                                Timestamp = f.ts,
-                                Html = status.body.OrNull() ?? "",
-                                LinkUrl = status.url.OrNull() ?? ""
-                            };
-                        break;
-                    case "username_change":
-                        yield return new CustomFeedItem {
-                            Author = author,
-                            Timestamp = f.ts,
-                            Description = $"{f.formerly.OrNull()} has changed their username to {f.by_user.username}"
-                        };
-                        break;
-                    case "collection_update":
-                        yield return new CustomFeedItem {
-                            Author = author,
-                            Timestamp = f.ts,
-                            Description = $"{f.by_user.username} has added {f.added_count.OrNull()} deviations to the collection {f.collection.OrNull().name}"
-                        };
-                        break;
-                    default:
-                        yield return new CustomFeedItem {
-                            Author = author,
-                            Timestamp = f.ts,
-                            Description = $"Unknown feed item of type {f.type}"
-                        };
-                        break;
+        public record DeviantArtFeedCursor {
+            public string d_cursor;
+            public bool d_done;
+            public string m_cursor;
+            public bool m_done;
+            public string p_cursor;
+            public bool p_done;
+            public string t;
+
+            [JsonIgnore]
+            public DateTimeOffset SkipUntilOlderThan {
+                get {
+                    return new DateTimeOffset(long.Parse(t), TimeSpan.Zero);
+                }
+                set {
+                    t = value.UtcDateTime.Ticks.ToString();
                 }
             }
         }
 
-        public async Task<FeedBatch> GetBatchAsync(string cursor) {
-            try {
-                var page = await DeviantArtFs.Requests.Feed.FeedHome.ExecuteAsync(_token, cursor);
-                return new FeedBatch {
-                    Cursor = page.cursor,
-                    HasMore = page.has_more,
-                    FeedItems = Wrangle(page.items)
-                };
-            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
-                throw new TooManyRequestsException();
+        public class BatchBeingProcessed {
+            public string Name;
+            public Stack<FeedItem> Stack;
+            public DeviantArtFeedCursor NextCursor;
+
+            public override string ToString() {
+                return $"{Name} ({Stack.Count})";
             }
         }
 
-        public async Task<int> GetNotificationsCountAsync() {
-            try {
-                var ns = await DeviantArtFs.Requests.Feed.FeedNotifications.ToArrayAsync(_token, null, 99);
-                return ns.Length;
-            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
-                throw new TooManyRequestsException();
+        public async Task<FeedBatch> GetBatchAsync(string cursor) {
+            DeviantArtFeedCursor fc = cursor == null
+                ? new DeviantArtFeedCursor {
+                    d_cursor = null,
+                    d_done = false,
+                    m_cursor = null,
+                    m_done = false,
+                    p_cursor = null,
+                    p_done = false,
+                    SkipUntilOlderThan = DateTimeOffset.MaxValue
+                }
+                : JsonConvert.DeserializeObject<DeviantArtFeedCursor>(cursor);
+            var batches = new List<BatchBeingProcessed>();
+            if (!fc.d_done) {
+                var batch = await _deviations.GetBatchAsync(fc.d_cursor);
+                batches.Add(new BatchBeingProcessed {
+                    Name = "Deviations",
+                    Stack = new Stack<FeedItem>(batch.FeedItems.OrderBy(x => x.Timestamp)),
+                    NextCursor = fc with { d_cursor = batch.Cursor, d_done = !batch.HasMore }
+                });
             }
+            if (!fc.m_done) {
+                var batch = await _messages.GetBatchAsync(fc.m_cursor);
+                batches.Add(new BatchBeingProcessed {
+                    Name = "Messages",
+                    Stack = new Stack<FeedItem>(batch.FeedItems.OrderBy(x => x.Timestamp)),
+                    NextCursor = fc with { m_cursor = batch.Cursor, m_done = !batch.HasMore }
+                });
+            }
+            if (!fc.p_done) {
+                var batch = await _posts.GetBatchAsync(fc.p_cursor);
+                batches.Add(new BatchBeingProcessed {
+                    Name = "Posts",
+                    Stack = new Stack<FeedItem>(batch.FeedItems.OrderBy(x => x.Timestamp)),
+                    NextCursor = fc with { p_cursor = batch.Cursor, p_done = !batch.HasMore }
+                });
+            }
+            var items = new List<FeedItem>();
+            System.Diagnostics.Debug.WriteLine("--------");
+            while (batches.All(x => x.Stack.Any())) {
+                System.Diagnostics.Debug.WriteLine(string.Join(", ", batches));
+                var batch_with_newest_item = batches.OrderByDescending(x => x.Stack.Peek().Timestamp).First();
+                var item = batch_with_newest_item.Stack.Pop();
+                if (item.Timestamp < fc.SkipUntilOlderThan) {
+                    items.Add(item);
+                    if (!batch_with_newest_item.Stack.Any()) {
+                        return new FeedBatch {
+                            FeedItems = items,
+                            Cursor = JsonConvert.SerializeObject(batch_with_newest_item.NextCursor with { SkipUntilOlderThan = item.Timestamp }),
+                            HasMore = true
+                        };
+                    }
+                }
+            }
+            return new FeedBatch {
+                FeedItems = items,
+                Cursor = cursor,
+                HasMore = false
+            };
         }
 
         public string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
