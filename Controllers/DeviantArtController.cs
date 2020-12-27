@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using ArtworkInbox.Backend;
 using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Data;
-using ArtworkInbox.Models;
 using DeviantArtFs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -44,11 +41,7 @@ namespace ArtworkInbox.Controllers {
             if (dbToken == null)
                 throw new NoTokenException();
             var token = new DeviantArtTokenWrapper(_app, _context, dbToken);
-            return new CompositeFeedSource(new IFeedSource[] {
-                new DeviantArtDeviationFeedSource(token),
-                new DeviantArtMessagesFeedSource(token),
-                new DeviantArtPostFeedSource(token)
-            });
+            return new DeviantArtFeedSource(token);
         }
 
         protected override async Task<DateTimeOffset> GetLastRead() {
