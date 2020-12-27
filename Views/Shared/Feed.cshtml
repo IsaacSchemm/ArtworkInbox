@@ -135,7 +135,7 @@
 
 @if (Model.FeedBatch.Cursor != null && Model.FeedBatch.HasMore) {
     <p>
-        <a class="btn btn-primary" href="Feed?host=@Model.Host&cursor=@Model.FeedBatch.Cursor&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+        <a class="btn btn-primary" href="Feed?host=@Model.Host&cursor=@Uri.EscapeDataString(Model.FeedBatch.Cursor)&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
             Next page &raquo;
         </a>
     </p>

@@ -1,5 +1,4 @@
 ﻿using ArtworkInbox.Backend.Types;
-using DeviantArtFs;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,92 +7,77 @@ using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
     public class CompositeFeedSource : IFeedSource {
-        public class SourceTracker {
-            public IFeedSource Source { get; set; }
-            public string Name { get; set; }
+        private class SourceTracker {
+            public IFeedSource Source { get; init; }
+            public string Name { get; init; }
             public string LastCursor { get; set; }
             public FeedBatch LastBatch { get; set; }
         }
 
-        private readonly SourceTracker[] _sourceTracker;
-
-        public CompositeFeedSource(IEnumerable<IFeedSource> feedSources) {
-            _sourceTracker = feedSources.Select((x, i) => new SourceTracker {
-                Source = x,
-                Name = $"s{i}",
-                LastCursor = null,
-                LastBatch = null
-            }).ToArray();
+        private class BatchBeingProcessed {
+            public string SourceTrackerName { get; init; }
+            public Stack<FeedItem> Stack { get; init; }
+            public SerializableTrackerState NextTrackerState { get; init; }
         }
 
-        public async Task<Author> GetAuthenticatedUserAsync() {
-            return await _sourceTracker.First().Source.GetAuthenticatedUserAsync();
-        }
-
-        public class IndividualState {
+        private class SerializableTrackerState {
             [JsonProperty("c")]
             public string Cursor { get; set; }
             [JsonProperty("m")]
             public bool HasMore { get; set; }
         }
 
-        public class CombinedState {
-            public Dictionary<string, IndividualState> s = new Dictionary<string, IndividualState>();
-
-            public string t = $"{DateTimeOffset.MaxValue.Ticks}";
-
-            public IndividualState GetState(string sourceTrackerName) {
-                return s.TryGetValue(sourceTrackerName, out IndividualState state)
-                    ? state
-                    : new IndividualState { Cursor = null, HasMore = true };
-            }
-
-            public void SetState(string sourceTrackerName, IndividualState state) {
-                s[sourceTrackerName] = state;
-            }
-
-            [JsonIgnore]
-            public DateTimeOffset SkipUntilThisOld {
-                get {
-                    return new DateTimeOffset(long.Parse(t), TimeSpan.Zero);
-                }
-                set {
-                    t = value.UtcDateTime.Ticks.ToString();
-                }
-            }
+        private class SerializableState {
+            [JsonProperty("s")]
+            public Dictionary<string, SerializableTrackerState> TrackerStates = new Dictionary<string, SerializableTrackerState>();
+            [JsonProperty("t")]
+            public DateTimeOffset SkipUntilThisOld { get; set; } = DateTimeOffset.MaxValue;
         }
 
-        public class BatchBeingProcessed {
-            public string SourceTrackerName;
-            public Stack<FeedItem> Stack;
-            public IndividualState NextCursor;
+        private readonly SourceTracker[] _sourceTrackers;
 
-            public override string ToString() {
-                return $"{SourceTrackerName} ({Stack.Count})";
-            }
+        public IEnumerable<IFeedSource> Sources => _sourceTrackers.Select(t => t.Source);
+        public IFeedSource PrimarySource => Sources.First();
+
+        public bool EnableCache = true;
+
+        public CompositeFeedSource(IEnumerable<IFeedSource> feedSources) {
+            _sourceTrackers = feedSources
+                .DefaultIfEmpty(new EmptyFeedSource())
+                .Select((source, index) => new SourceTracker {
+                    Source = source,
+                    Name = $"s{index}",
+                    LastBatch = null
+                }).ToArray();
         }
+
+        public Task<Author> GetAuthenticatedUserAsync() => PrimarySource.GetAuthenticatedUserAsync();
 
         public async Task<FeedBatch> GetBatchAsync(string cursor) {
-            CombinedState fc = cursor == null
-                ? new CombinedState()
-                : JsonConvert.DeserializeObject<CombinedState>(cursor);
+            SerializableState combinedState = cursor == null
+                ? new SerializableState()
+                : JsonConvert.DeserializeObject<SerializableState>(cursor);
 
             var batches = new List<BatchBeingProcessed>();
-            foreach (var sourceTracker in _sourceTracker) {
-                var individual_cursor = fc.GetState(sourceTracker.Name);
-                if (individual_cursor.HasMore) {
+            foreach (var sourceTracker in _sourceTrackers) {
+                var trackerState = combinedState.TrackerStates.TryGetValue(sourceTracker.Name, out SerializableTrackerState t)
+                    ? t
+                    : new SerializableTrackerState { Cursor = null, HasMore = true };
+                if (trackerState.HasMore) {
                     FeedBatch batch;
-                    if (sourceTracker.LastBatch != null && sourceTracker.LastCursor == individual_cursor.Cursor)
+                    if (sourceTracker.LastBatch != null && sourceTracker.LastCursor == trackerState.Cursor)
                         batch = sourceTracker.LastBatch;
                     else {
-                        batch = await sourceTracker.Source.GetBatchAsync(individual_cursor.Cursor);
-                        sourceTracker.LastBatch = batch;
-                        sourceTracker.LastCursor = individual_cursor.Cursor;
+                        batch = await sourceTracker.Source.GetBatchAsync(trackerState.Cursor);
+                        if (EnableCache) {
+                            sourceTracker.LastCursor = trackerState.Cursor;
+                            sourceTracker.LastBatch = batch;
+                        }
                     }
                     batches.Add(new BatchBeingProcessed {
                         SourceTrackerName = sourceTracker.Name,
                         Stack = new Stack<FeedItem>(batch.FeedItems.OrderBy(x => x.Timestamp)),
-                        NextCursor = new IndividualState {
+                        NextTrackerState = new SerializableTrackerState {
                             Cursor = batch.Cursor,
                             HasMore = batch.HasMore
                         }
@@ -108,14 +92,14 @@ namespace ArtworkInbox.Backend.Sources {
                     .First();
                 var item = batch_with_newest_item.Stack.Pop();
 
-                if (item.Timestamp <= fc.SkipUntilThisOld) {
+                if (item.Timestamp <= combinedState.SkipUntilThisOld) {
                     items.Add(item);
                     if (!batch_with_newest_item.Stack.Any()) {
-                        fc.SetState(batch_with_newest_item.SourceTrackerName, batch_with_newest_item.NextCursor);
-                        fc.SkipUntilThisOld = item.Timestamp;
+                        combinedState.TrackerStates[batch_with_newest_item.SourceTrackerName] = batch_with_newest_item.NextTrackerState;
+                        combinedState.SkipUntilThisOld = item.Timestamp;
                         return new FeedBatch {
                             FeedItems = items,
-                            Cursor = JsonConvert.SerializeObject(fc),
+                            Cursor = JsonConvert.SerializeObject(combinedState),
                             HasMore = true
                         };
                     }
@@ -129,7 +113,7 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        public string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
-        public string GetSubmitUrl() => "https://www.deviantart.com/submit";
+        public string GetNotificationsUrl() => PrimarySource.GetNotificationsUrl();
+        public string GetSubmitUrl() => PrimarySource.GetSubmitUrl();
     }
 }

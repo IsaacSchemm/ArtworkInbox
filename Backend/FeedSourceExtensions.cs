@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ArtworkInbox.Backend.Sources {
+namespace ArtworkInbox.Backend {
     public static class FeedSourceExtensions {
         public static async Task<FeedBatch> GetBatchesAsync(this IFeedSource source, FeedParameters parameters) {
             DateTime start = DateTime.Now;
