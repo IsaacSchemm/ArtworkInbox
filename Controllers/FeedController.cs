@@ -32,7 +32,7 @@ namespace ArtworkInbox.Controllers {
                 if (user.HideMatureThumbnails)
                     filters.Add(new HideMatureThumbnailsFilter());
 
-                return View(await FeedViewModel.BuildAsync(host, feedSource, filters, cursor, earliest, latest));
+                return View(await FeedViewModel.BuildAsync(host, feedSource, filters, cursor, earliest, latest, StopAtCount));
             } catch (System.Text.Json.JsonException) {
                 return JsonError();
             } catch (Newtonsoft.Json.JsonException) {

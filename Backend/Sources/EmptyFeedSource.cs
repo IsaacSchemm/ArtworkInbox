@@ -16,7 +16,7 @@ namespace ArtworkInbox.Backend.Sources {
             });
         }
 
-        public string GetNotificationsUrl() => "https://www.example.com";
-        public string GetSubmitUrl() => "https://www.example.org";
+        public string GetNotificationsUrl() => null;
+        public string GetSubmitUrl() => null;
     }
 }

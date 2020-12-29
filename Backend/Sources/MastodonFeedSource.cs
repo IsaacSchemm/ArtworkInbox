@@ -10,6 +10,8 @@ namespace ArtworkInbox.Backend.Sources {
     public class MastodonFeedSource : IFeedSource {
         private readonly IMastodonCredentials _token;
 
+        public bool IgnoreMedia { get; set; } = false;
+
         public MastodonFeedSource(IMastodonCredentials token) {
             _token = token;
         }
@@ -23,14 +25,16 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        private static IEnumerable<FeedItem> Wrangle(IEnumerable<Status> statuses) {
+        private IEnumerable<FeedItem> Wrangle(IEnumerable<Status> statuses) {
             foreach (var s in statuses) {
                 var author = new Author {
                     Username = s.Account.UserName,
                     AvatarUrl = s.Account.AvatarUrl,
                     ProfileUrl = s.Account.ProfileUrl
                 };
-                var photos = s.MediaAttachments.Where(x => x.Type == "image");
+                var photos = IgnoreMedia
+                    ? Enumerable.Empty<Attachment>()
+                    : s.MediaAttachments.Where(x => x.Type == "image");
                 foreach (var media in photos) {
                     yield return new Artwork {
                         Author = author,

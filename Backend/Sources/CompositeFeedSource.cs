@@ -86,8 +86,9 @@ namespace ArtworkInbox.Backend.Sources {
             }
 
             var items = new List<FeedItem>();
-            while (batches.Any() && batches.All(x => x.Stack.Any())) {
+            while (batches.Any(x => x.Stack.Any())) {
                 var batch_with_newest_item = batches
+                    .Where(x => x.Stack.Any())
                     .OrderByDescending(x => x.Stack.Peek().Timestamp)
                     .First();
                 var item = batch_with_newest_item.Stack.Pop();

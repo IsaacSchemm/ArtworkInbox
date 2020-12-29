@@ -12,6 +12,8 @@ namespace ArtworkInbox.Backend.Sources {
     public class TwitterFeedSource : IFeedSource {
         private readonly TwitterClient _client;
 
+        public bool IgnoreMedia { get; set; } = false;
+
         public TwitterFeedSource(IReadOnlyTwitterCredentials token) {
             _client = new TwitterClient(token);
         }
@@ -25,14 +27,16 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        private static IEnumerable<FeedItem> Wrangle(IEnumerable<ITweet> tweets) {
+        private IEnumerable<FeedItem> Wrangle(IEnumerable<ITweet> tweets) {
             foreach (var t in tweets) {
                 var author = new Author {
                     Username = $"@{t.CreatedBy.ScreenName}",
                     AvatarUrl = t.CreatedBy.ProfileImageUrl,
                     ProfileUrl = $"https://twitter.com/{Uri.EscapeDataString(t.CreatedBy.ScreenName)}"
                 };
-                var photos = t.Media.Where(m => m.MediaType == "photo");
+                var photos = IgnoreMedia
+                    ? Enumerable.Empty<Tweetinvi.Models.Entities.IMediaEntity>()
+                    : t.Media.Where(m => m.MediaType == "photo");
                 foreach (var media in photos) {
                     yield return new Artwork {
                         Author = author,

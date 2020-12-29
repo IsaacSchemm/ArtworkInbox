@@ -9,6 +9,9 @@ namespace ArtworkInbox.Backend.Sources {
     public class DeviantArtPostFeedSource : IFeedSource {
         private readonly IDeviantArtAccessToken _token;
 
+        public bool IncludeJournals { get; set; } = true;
+        public bool IncludeStatuses { get; set; } = true;
+
         public DeviantArtPostFeedSource(IDeviantArtAccessToken token) {
             _token = token;
         }
@@ -26,9 +29,9 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        private static IEnumerable<FeedItem> Wrangle(IEnumerable<DeviantArtPost> posts) {
+        private IEnumerable<FeedItem> Wrangle(IEnumerable<DeviantArtPost> posts) {
             foreach (var p in posts) {
-                if (p.journal.OrNull() is Deviation d) {
+                if (p.journal.OrNull() is Deviation d && IncludeJournals) {
                     yield return new JournalEntry {
                         Author = d.author.OrNull() is DeviantArtUser a
                             ? new Author {
@@ -45,7 +48,7 @@ namespace ArtworkInbox.Backend.Sources {
                         LinkUrl = d.url.OrNull() ?? ""
                     };
                 }
-                if (p.status.OrNull() is DeviantArtStatus s) {
+                if (p.status.OrNull() is DeviantArtStatus s && IncludeStatuses) {
                     yield return new StatusUpdate {
                         Author = s.author.OrNull() is DeviantArtUser a
                             ? new Author {
