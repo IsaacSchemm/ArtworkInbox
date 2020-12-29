@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,9 +13,6 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using System.Net;
-using System.IO;
-using Newtonsoft.Json;
 
 namespace ArtworkInbox {
     public class Startup {
@@ -94,70 +89,6 @@ namespace ArtworkInbox {
                     t.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
                     t.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
                     t.SaveTokens = true;
-                })
-                .AddOAuth("Weasyl", "Weasyl", o => {
-                    o.ClientId = Configuration["Authentication:Weasyl:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Weasyl:ClientSecret"];
-                    o.AuthorizationEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/auth";
-                    o.TokenEndpoint = "https://artworkinbox-weasyl-oauth.azurewebsites.net/api/token";
-                    o.CallbackPath = new PathString("/signin-weasyl");
-                    o.SaveTokens = true;
-
-                    o.Events = new OAuthEvents {
-                        OnCreatingTicket = async context => {
-                            if (context.Options.SaveTokens) {
-                                context.Properties.StoreTokens(new[] {
-                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
-                                });
-                            }
-
-                            var creds = new WeasylFs.WeasylCredentials(context.AccessToken);
-                            var user = await WeasylFs.Endpoints.Whoami.ExecuteAsync(creds);
-                            context.Principal.AddIdentity(new ClaimsIdentity(new[] {
-                                new Claim(ClaimTypes.NameIdentifier, $"{user.userid}"),
-                                new Claim(ClaimTypes.Name, user.login),
-                                new Claim("urn:weasyl:userid", $"{user.userid}"),
-                                new Claim("urn:weasyl:login", user.login),
-                            }));
-                        },
-                        OnRemoteFailure = context => {
-                            context.HandleResponse();
-                            context.Response.Redirect("/Home/Error");
-                            return Task.FromResult(0);
-                        }
-                    };
-                })
-                .AddOAuth("FurAffinity", "FurAffinity", o => {
-                    o.ClientId = Configuration["Authentication:FurAffinity:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:FurAffinity:ClientSecret"];
-                    o.AuthorizationEndpoint = "https://artworkinbox-furaffinity-oauth.azurewebsites.net/api/auth";
-                    o.TokenEndpoint = "https://artworkinbox-furaffinity-oauth.azurewebsites.net/api/token";
-                    o.CallbackPath = new PathString("/signin-furaffinity");
-                    o.SaveTokens = true;
-
-                    o.Events = new OAuthEvents {
-                        OnCreatingTicket = async context => {
-                            if (context.Options.SaveTokens) {
-                                context.Properties.StoreTokens(new[] {
-                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken }
-                                });
-                            }
-
-                            var notifications = await FurAffinity.Notifications.GetSubmissionsAsync(context.AccessToken, sfw: true, from: 0);
-                            context.Principal.AddIdentity(new ClaimsIdentity(new[] {
-                                new Claim(ClaimTypes.NameIdentifier, $"{notifications.current_user.profile_name}"),
-                                new Claim(ClaimTypes.Name, notifications.current_user.name),
-                                new Claim("urn:furaffinity:name", notifications.current_user.name),
-                                new Claim("urn:furaffinity:profile", notifications.current_user.profile),
-                                new Claim("urn:furaffinity:profile_name", notifications.current_user.profile_name)
-                            }));
-                        },
-                        OnRemoteFailure = context => {
-                            context.HandleResponse();
-                            context.Response.Redirect("/Home/Error");
-                            return Task.FromResult(0);
-                        }
-                    };
                 })
                 .AddMastodon("mastodon.social", o => {
                     o.Scope.Add("read:statuses");
