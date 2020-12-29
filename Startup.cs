@@ -36,6 +36,7 @@ namespace ArtworkInbox {
                 .AddDeviantArt(d => {
                     d.Scope.Add("browse");
                     d.Scope.Add("message");
+                    d.Scope.Add("user.manage");
                     d.ClientId = Configuration["Authentication:DeviantArt:ClientId"];
                     d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
                     d.SaveTokens = true;
@@ -93,6 +94,7 @@ namespace ArtworkInbox {
                 .AddMastodon("mastodon.social", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
+                    o.Scope.Add("write:statuses");
                     o.ClientId = Configuration["Authentication:Mastodon:mastodon.social:client_id"];
                     o.ClientSecret = Configuration["Authentication:Mastodon:mastodon.social:client_secret"];
                     o.SaveTokens = true;
@@ -100,6 +102,7 @@ namespace ArtworkInbox {
                 .AddMastodon("botsin.space", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
+                    o.Scope.Add("write:statuses");
                     o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
                     o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
                     o.SaveTokens = true;

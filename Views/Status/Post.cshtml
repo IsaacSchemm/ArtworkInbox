@@ -1,0 +1,26 @@
+﻿@model ArtworkInbox.Models.PostStatusModel
+@{
+    ViewData["Title"] = "Post";
+}
+
+@using (Html.BeginForm()) 
+{ 
+    @Html.AntiForgeryToken()
+
+    @for (var i = 0; i < Model.Sites.Count; i++)
+    {
+        <div>
+            <label>
+                @Html.HiddenFor(x => x.Sites[i].Host)
+                @Html.CheckBoxFor(x => x.Sites[i].Checked)
+                @Html.DisplayFor(x => x.Sites[i].Host)
+            </label>
+        </div>
+    }
+    <label>
+        @Html.DisplayFor(x => x.Text)
+        @Html.TextAreaFor(x => x.Text, new { @class = "form-control" })
+    </label>
+    <br />
+    <input type="submit" class="btn btn-primary" value="Post" />
+}
