@@ -31,7 +31,7 @@ namespace ArtworkInbox.Controllers {
 
         protected override Task<ApplicationUser> GetUserAsync() => _userManager.GetUserAsync(User);
 
-        protected override string GetSiteName() => "Status Updates";
+        protected override string GetSiteName() => "Status Feed (Twitter / Mastodon / DeviantArt)";
 
         protected override async Task<IFeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);

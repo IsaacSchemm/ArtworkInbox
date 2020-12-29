@@ -1,22 +1,7 @@
 ﻿@model ArtworkInbox.Models.FeedViewModel
 @{
-    ViewData["Title"] = "Feed";
+    ViewData["Title"] = "Status Feed (Twitter / Mastodon / DeviantArt)";
 }
-
-<style type="text/css">
-    h1 {
-        margin-bottom: 1rem;
-    }
-    img.feed-image {
-        height: 150px;
-    }
-    @@supports (object-fit: contain) {
-        img.feed-image {
-            width: 100%;
-            object-fit: contain;
-        }
-    }
-</style>
 
 <div>
     <h5 class="card-title">
@@ -41,7 +26,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 offset-md-3">
             @if (Model.FeedBatch.HasMore) {
                 <div class="alert alert-primary">
                     Showing the @Model.FeedBatch.FeedItems.Count() most recent items.
@@ -58,30 +43,6 @@
             @if (Model.StatusesByUser.Any()) {
                 <h1>Status Updates</h1>
                 @foreach (var s in Model.StatusesByUser.SelectMany(g => g).OrderByDescending(s => s.Timestamp)) {
-                    @*<div style="clear: both; border-bottom: 1px dashed currentColor; margin-bottom: 1em">
-                        <div style="display: flex; flex-direction: row">
-                            <div style="flex: 0 0 auto">
-                                <a href="@s.LinkUrl">
-                                    <img src="@s.Author.AvatarUrl" width="50" height="50" alt="" sty />
-                                </a>
-                            </div>
-                            <div style="flex: 1 1 auto; line-height: 50px; text-align: left">
-                                <a href="@s.LinkUrl">
-                                    @s.Author.Username
-                                </a>
-                            </div>
-                            <div style="flex: 0 0 auto; text-align: right" class="small">
-                                <a href="@s.LinkUrl">
-                                    @s.Timestamp.UtcDateTime.ToShortDateString()
-                                    <br />
-                                    @s.Timestamp.UtcDateTime.ToLongTimeString() UTC
-                                </a>
-                            </div>
-                        </div>
-                        <p>
-                            <span class="html-to-convert">@s.Excerpt</span>
-                        </p>
-                    </div>*@
                     <div style="clear: both; border-bottom: 1px dashed currentColor; margin-bottom: 1em">
                         <div style="float: right; text-align: right" class="small">
                             <a href="@s.LinkUrl" target="_blank">
