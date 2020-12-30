@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ArtworkInbox.FurAffinity {
     public class Notifications {
-        public const string FAExportHost = "faexport.spangle.org.uk";
+        public const string FAExportHost = "artworkinbox-faexport.azurewebsites.net";
 
         public record CurrentUser {
             public string name;
