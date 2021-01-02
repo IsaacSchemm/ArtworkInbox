@@ -33,6 +33,7 @@ namespace ArtworkInbox.Controllers {
         protected override async Task<IFeedSource> GetFeedSourceAsync(string host) {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserMastodonTokens
+                .AsQueryable()
                 .Where(t => t.Host == host)
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
@@ -44,6 +45,7 @@ namespace ArtworkInbox.Controllers {
         protected override async Task<DateTimeOffset> GetLastRead(string host) {
             var userId = _userManager.GetUserId(User);
             var dt = await _context.UserMastodonTokens
+                .AsQueryable()
                 .Where(t => t.Host == host)
                 .Where(t => t.UserId == userId)
                 .Select(t => t.LastRead)
@@ -54,6 +56,7 @@ namespace ArtworkInbox.Controllers {
         protected override async Task SetLastRead(string host, DateTimeOffset lastRead) {
             var userId = _userManager.GetUserId(User);
             var o = await _context.UserMastodonTokens
+                .AsQueryable()
                 .Where(t => t.Host == host)
                 .Where(t => t.UserId == userId)
                 .SingleAsync();

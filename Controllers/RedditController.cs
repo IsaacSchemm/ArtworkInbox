@@ -35,6 +35,7 @@ namespace ArtworkInbox.Controllers {
         protected override async Task<IFeedSource> GetFeedSourceAsync() {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserRedditTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
@@ -50,6 +51,7 @@ namespace ArtworkInbox.Controllers {
         protected override async Task<DateTimeOffset> GetLastRead() {
             var userId = _userManager.GetUserId(User);
             var dt = await _context.UserRedditTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .Select(t => t.LastRead)
                 .SingleOrDefaultAsync();
@@ -59,6 +61,7 @@ namespace ArtworkInbox.Controllers {
         protected override async Task SetLastRead(DateTimeOffset lastRead) {
             var userId = _userManager.GetUserId(User);
             var o = await _context.UserRedditTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .SingleAsync();
 

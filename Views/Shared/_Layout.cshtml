@@ -7,29 +7,37 @@
     var user = await UserManager.GetUserAsync(User);
 
     bool has_deviantart = user != null && await ApplicationDbContext.UserDeviantArtTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_weasyl = user != null && await ApplicationDbContext.UserWeasylTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_twitter = user != null && await ApplicationDbContext.UserTwitterTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_reddit = user != null && await ApplicationDbContext.UserRedditTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_inoreader = user != null && await ApplicationDbContext.UserInoreaderTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_furaffinity = user != null && await ApplicationDbContext.UserFurAffinityTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     var mastodon_tokens = user == null
         ? Enumerable.Empty<UserMastodonToken>()
         : await ApplicationDbContext.UserMastodonTokens
+            .AsQueryable()
             .Where(x => x.UserId == user.Id)
             .ToListAsync();
 }

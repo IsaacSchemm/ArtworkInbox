@@ -41,6 +41,7 @@ namespace ArtworkInbox.Controllers {
             };
 
             var twitter_rows = await _context.UserTwitterTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
             foreach (var dbToken in twitter_rows) {
@@ -53,6 +54,7 @@ namespace ArtworkInbox.Controllers {
             }
 
             var deviantArt_rows = await _context.UserDeviantArtTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
             foreach (var dbToken in deviantArt_rows) {
@@ -61,6 +63,7 @@ namespace ArtworkInbox.Controllers {
             }
 
             var mastodon_rows = await _context.UserMastodonTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
             foreach (var dbToken in mastodon_rows) {

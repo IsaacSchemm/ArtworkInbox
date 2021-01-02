@@ -16,6 +16,7 @@ namespace ArtworkInbox {
         public async Task UpdateTokensAsync(IdentityUser user, ExternalLoginInfo info) {
             if (info.LoginProvider == "DeviantArt") {
                 var token = await _context.UserDeviantArtTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token == null) {
@@ -35,6 +36,7 @@ namespace ArtworkInbox {
                 await _context.SaveChangesAsync();
             } else if (info.LoginProvider == "Twitter") {
                 var token = await _context.UserTwitterTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token == null) {
@@ -54,6 +56,7 @@ namespace ArtworkInbox {
                 await _context.SaveChangesAsync();
             } else if (info.LoginProvider == "Tumblr") {
                 var token = await _context.UserTumblrTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token == null) {
@@ -73,6 +76,7 @@ namespace ArtworkInbox {
                 await _context.SaveChangesAsync();
             } else if (info.LoginProvider == "Reddit") {
                 var token = await _context.UserRedditTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token == null) {
@@ -92,6 +96,7 @@ namespace ArtworkInbox {
                 await _context.SaveChangesAsync();
             } else if (new[] { "mastodon.social", "botsin.space" }.Contains(info.LoginProvider)) {
                 var token = await _context.UserMastodonTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token == null) {
@@ -108,6 +113,7 @@ namespace ArtworkInbox {
                 await _context.SaveChangesAsync();
             } else if (info.LoginProvider == "Weasyl") {
                 var token = await _context.UserWeasylTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token == null) {
@@ -123,6 +129,7 @@ namespace ArtworkInbox {
                 await _context.SaveChangesAsync();
             } else if (info.LoginProvider == "Inoreader") {
                 var token = await _context.UserInoreaderTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token == null) {
@@ -142,6 +149,7 @@ namespace ArtworkInbox {
                 await _context.SaveChangesAsync();
             } else if (info.LoginProvider == "FurAffinity") {
                 var token = await _context.UserFurAffinityTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token == null) {
@@ -161,6 +169,7 @@ namespace ArtworkInbox {
         public async Task RemoveTokensAsync(ApplicationUser user, string loginProvider) {
             if (loginProvider == "DeviantArt") {
                 var token = await _context.UserDeviantArtTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {
@@ -169,6 +178,7 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Twitter") {
                 var token = await _context.UserTwitterTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {
@@ -177,6 +187,7 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Tumblr") {
                 var token = await _context.UserTumblrTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {
@@ -185,6 +196,7 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Reddit") {
                 var token = await _context.UserRedditTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {
@@ -193,6 +205,7 @@ namespace ArtworkInbox {
                 }
             } else if (new[] { "mastodon.social", "botsin.space" }.Contains(loginProvider)) {
                 var tokens = await _context.UserMastodonTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .Where(t => t.Host == loginProvider)
                     .ToListAsync();
@@ -202,6 +215,7 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Weasyl") {
                 var token = await _context.UserWeasylTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {
@@ -210,6 +224,7 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Inoreader") {
                 var token = await _context.UserInoreaderTokens
+                    .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
                 if (token != null) {
