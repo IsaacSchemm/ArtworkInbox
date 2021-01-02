@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class TumblrFeedSource : IFeedSource {
+    public class TumblrFeedSource : ISource {
         private readonly TumblrClient _client;
 
         public TumblrFeedSource(TumblrClient client) {
@@ -144,55 +144,52 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        private static IEnumerable<FeedItem> Wrangle(IEnumerable<Post> posts) {
-            foreach (var p in posts) {
-                if (p.type != "blocks")
-                    throw new NotImplementedException();
+        public string GetNotificationsUrl() => "https://www.tumblr.com/inbox";
+        public string GetSubmitUrl() => "https://www.tumblr.com/dashboard";
 
-                var photos = WranglePhotos(p);
-                foreach (var x in photos)
-                    yield return x;
+        public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
+            long offset = 0;
+            while (true) {
+                var response = await _client.CallApiMethodAsync<Dashboard>(
+                    new DontPanic.TumblrSharp.ApiMethod(
+                        $"https://api.tumblr.com/v2/user/dashboard",
+                        _client.OAuthToken,
+                        System.Net.Http.HttpMethod.Get,
+                        new DontPanic.TumblrSharp.MethodParameterSet {
+                            { "npf", "true" },
+                            { "offset", offset }
+                        }),
+                    CancellationToken.None);
+                if (!response.posts.Any())
+                    break;
 
-                if (!photos.Any()) {
-                    var author = new Author {
-                        Username = p.blog.name,
-                        ProfileUrl = $"https://{p.blog.name}.tumblr.com"
-                    };
-                    yield return new BlogPost {
-                        Author = author,
-                        Html = WebUtility.HtmlEncode(p.summary),
-                        LinkUrl = p.post_url,
-                        RepostedFrom = p.trail.Select(x => x.blog.name).DefaultIfEmpty(null).Last(),
-                        Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp)
-                    };
+                foreach (var p in response.posts) {
+                    if (p.type != "blocks")
+                        throw new NotImplementedException();
+
+                    var photos = WranglePhotos(p);
+                    foreach (var x in photos)
+                        yield return x;
+
+                    if (!photos.Any()) {
+                        var author = new Author {
+                            Username = p.blog.name,
+                            ProfileUrl = $"https://{p.blog.name}.tumblr.com"
+                        };
+                        yield return new BlogPost {
+                            Author = author,
+                            Html = WebUtility.HtmlEncode(p.summary),
+                            LinkUrl = p.post_url,
+                            RepostedFrom = p.trail.Select(x => x.blog.name).DefaultIfEmpty(null).Last(),
+                            Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp)
+                        };
+                    }
                 }
+
+                offset += response.posts.Count();
             }
         }
 
-        public async Task<FeedBatch> GetBatchAsync(string cursor) {
-            long offset = 0;
-            if (cursor != null && long.TryParse(cursor, out long l))
-                offset = l;
-
-            var response = await _client.CallApiMethodAsync<Dashboard>(
-                new DontPanic.TumblrSharp.ApiMethod(
-                    $"https://api.tumblr.com/v2/user/dashboard",
-                    _client.OAuthToken,
-                    System.Net.Http.HttpMethod.Get,
-                    new DontPanic.TumblrSharp.MethodParameterSet {
-                        { "npf", "true" },
-                        { "offset", offset }
-                    }),
-                CancellationToken.None);
-
-            return new FeedBatch {
-                Cursor = $"{offset + response.posts.Count()}",
-                HasMore = response.posts.Any(),
-                FeedItems = Wrangle(response.posts)
-            };
-        }
-
-        public string GetNotificationsUrl() => "https://www.tumblr.com/inbox";
-        public string GetSubmitUrl() => "https://www.tumblr.com/dashboard";
+        public IAsyncEnumerable<string> GetNotificationsAsync() => AsyncEnumerable.Empty<string>();
     }
 }
