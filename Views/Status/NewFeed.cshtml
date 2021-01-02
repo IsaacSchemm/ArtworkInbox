@@ -1,4 +1,4 @@
-﻿@model ArtworkInbox.Models.FeedViewModel
+﻿@model ArtworkInbox.Models.SourceViewModel
 @{
     ViewData["Title"] = "Status Feed (Twitter / Mastodon / DeviantArt)";
 }
@@ -27,14 +27,14 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            @if (Model.FeedBatch.HasMore) {
+            @if (Model.HasMore) {
                 <div class="alert alert-primary">
-                    Showing the @Model.FeedBatch.FeedItems.Count() most recent items.
+                    Showing the @Model.FeedItems.Count() most recent items.
                     <br />
                 </div>
             }
 
-            @if (!Model.FeedBatch.FeedItems.Any()) {
+            @if (!Model.FeedItems.Any()) {
                 <div class="alert alert-secondary">
                     There are no new items to display in your activity feed.
                 </div>
@@ -69,9 +69,9 @@
                 <hr />
             }
 
-            @if (Model.FeedBatch.Cursor != null && Model.FeedBatch.HasMore) {
+            @if (Model.HasMore) {
                 <p>
-                    <a class="btn btn-primary" href="Feed?host=@Model.Host&cursor=@Uri.EscapeDataString(Model.FeedBatch.Cursor)&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+                    <a class="btn btn-primary" href="Feed?key=@Model.Key&offset=@Model.NextOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
                         Next page &raquo;
                     </a>
                 </p>
