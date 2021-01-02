@@ -45,7 +45,7 @@ namespace ArtworkInbox.Controllers {
             return RedirectToAction(nameof(Feed));
         }
 
-        public async Task<IActionResult> Feed(int offset = 0, int limit = 20, DateTimeOffset? latest = null, Guid? key = null) {
+        public async Task<IActionResult> Feed(int offset = 0, int limit = 200, DateTimeOffset? latest = null, Guid? key = null) {
             try {
                 var user = await _userManager.GetUserAsync(User);
 
