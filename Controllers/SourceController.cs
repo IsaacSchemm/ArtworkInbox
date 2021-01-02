@@ -1,44 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using ArtworkInbox.Backend;
+using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Backend.Types;
 using ArtworkInbox.Data;
 using ArtworkInbox.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ArtworkInbox.Controllers {
     [Authorize]
     public abstract class SourceController : Controller {
-        protected abstract Task<ApplicationUser> GetUserAsync();
-        protected abstract string SiteName { get; }
+        public record ControllerCacheItem {
+            public Guid Id { get; init; }
+            public string LocalUserId { get; init; }
+            public Author RemoteUser { get; init; }
+            public AsyncEnumerableCache<FeedItem> FeedItems { get; init; }
+            public string NotificationsCount { get; init; }
+            public string NotificationsUrl { get; init; }
+            public string SubmitUrl { get; init; }
+            public DateTimeOffset Earliest { get; init; }
+        }
 
-        protected abstract Task<Author> GetAuthorAsync();
+        protected UserManager<ApplicationUser> _userManager;
+        protected IMemoryCache _cache;
 
-        protected abstract IAsyncEnumerable<FeedItem> GetFeedItemsAsync();
+        protected SourceController(UserManager<ApplicationUser> userManager, IMemoryCache cache) {
+            _cache = cache;
+            _userManager = userManager;
+        }
+
+        protected abstract Task<ISource> GetArtworkSource();
         protected abstract Task<DateTimeOffset> GetLastRead();
         protected abstract Task SetLastRead(DateTimeOffset lastRead);
 
-        protected abstract string NotificationsUrl { get; }
+        protected abstract string SiteName { get; }
 
-        protected abstract string SubmitUrl { get; }
+        public IActionResult Index() {
+            return RedirectToAction(nameof(Feed));
+        }
 
-        protected virtual Task<string> GetNotificationsCountAsync() => Task.FromResult<string>(null);
-
-        public async Task<IActionResult> Page(int offset = 0, int limit = 200, DateTimeOffset? latest = null) {
+        public async Task<IActionResult> Feed(int offset = 0, int limit = 20, DateTimeOffset? latest = null, Guid? key = null) {
             try {
-                var user = await GetUserAsync();
-                var earliest = await GetLastRead();
+                var user = await _userManager.GetUserAsync(User);
 
-                var source = GetFeedItemsAsync();
+                ControllerCacheItem cacheItem;
+                if (key != null && _cache.TryGetValue(key, out object o) && o is ControllerCacheItem c && c.LocalUserId == user.Id) {
+                    cacheItem = c;
+                } else {
+                    var source = await GetArtworkSource();
+                    int ct = await source.GetNotificationsAsync().Take(20).CountAsync();
+                    cacheItem = new ControllerCacheItem {
+                        Id = Guid.NewGuid(),
+                        LocalUserId = user.Id,
+                        RemoteUser = await source.GetAuthenticatedUserAsync(),
+                        FeedItems = new AsyncEnumerableCache<FeedItem>(source.GetFeedItemsAsync()),
+                        NotificationsCount = ct <= 0 ? null
+                            : ct >= 20 ? "20+"
+                            : $"{ct}",
+                        NotificationsUrl = source.GetNotificationsUrl(),
+                        SubmitUrl = source.GetSubmitUrl(),
+                        Earliest = await GetLastRead()
+                    };
+                    _cache.Set(cacheItem.Id, cacheItem, DateTimeOffset.UtcNow.AddMinutes(15));
+                }
+
+                IAsyncEnumerable<FeedItem> feedItems = cacheItem.FeedItems.TakeWhile(x => x.Timestamp > cacheItem.Earliest);
+
                 if (user.HideReposts)
-                    source = source.Where(x => x.RepostedFrom == null);
+                    feedItems = feedItems.Where(x => x.RepostedFrom == null);
                 if (user.HideMature)
-                    source = source.Where(x => x.MatureContent == false);
+                    feedItems = feedItems.Where(x => x.MatureContent == false);
                 if (user.HideMatureThumbnails)
-                    source = source.Select(i => {
+                    feedItems = feedItems.Select(i => {
                         if (i.MatureContent && i is Artwork a) {
                             return new Artwork {
                                 Author = a.Author,
@@ -54,18 +93,19 @@ namespace ArtworkInbox.Controllers {
                         }
                     });
 
-                var feedItems = await source.Skip(offset).Take(limit).ToListAsync();
-                bool hasMore = await source.Skip(offset + limit).AnyAsync();
+                var page = await feedItems.Skip(offset).Take(limit).ToListAsync();
+                bool hasMore = await feedItems.Skip(offset + limit).AnyAsync();
 
-                return View(new SourceViewModel {
-                    Latest = latest ?? feedItems.Select(x => x.Timestamp).DefaultIfEmpty(DateTimeOffset.MinValue).First(),
-                    AuthenticatedUser = await GetAuthorAsync(),
-                    FeedItems = feedItems,
+                return View("NewFeed", new SourceViewModel {
+                    Key = cacheItem.Id,
+                    Latest = latest ?? page.Select(x => x.Timestamp).DefaultIfEmpty(DateTimeOffset.MinValue).First(),
+                    AuthenticatedUser = cacheItem.RemoteUser,
+                    FeedItems = page,
                     NextOffset = offset + limit,
                     HasMore = hasMore,
-                    NotificationsCount = await GetNotificationsCountAsync(),
-                    NotificationsUrl = NotificationsUrl,
-                    SubmitUrl = SubmitUrl
+                    NotificationsCount = cacheItem.NotificationsCount,
+                    NotificationsUrl = cacheItem.NotificationsUrl,
+                    SubmitUrl = cacheItem.SubmitUrl
                 });
             } catch (System.Text.Json.JsonException) {
                 return JsonError();
@@ -97,7 +137,7 @@ namespace ArtworkInbox.Controllers {
 
         public async Task<IActionResult> MarkAsRead(DateTimeOffset latest) {
             await SetLastRead(latest);
-            return RedirectToAction(nameof(Page));
+            return RedirectToAction(nameof(Feed));
         }
     }
 }

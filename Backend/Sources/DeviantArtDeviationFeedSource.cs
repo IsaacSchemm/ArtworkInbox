@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class DeviantArtDeviationFeedSource : IFeedSource {
+    public class DeviantArtDeviationFeedSource : IFeedSource, ISource {
         private readonly IDeviantArtAccessToken _token;
 
         public DeviantArtDeviationFeedSource(IDeviantArtAccessToken token) {
@@ -71,5 +71,39 @@ namespace ArtworkInbox.Backend.Sources {
 
         public string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
         public string GetSubmitUrl() => "https://www.deviantart.com/submit";
+
+        public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
+            var asyncSeq = DeviantArtFs.Api.Browse.DeviantsYouWatch.ToAsyncSeq(_token, 0);
+            var asyncEnum = FSharp.Control.AsyncSeq.toAsyncEnum(asyncSeq);
+            await foreach (var d in asyncEnum) {
+                if (!d.is_deleted) {
+                    yield return new Artwork {
+                        Author = d.author.OrNull() is DeviantArtUser a
+                        ? new Author {
+                            Username = a.username,
+                            AvatarUrl = a.usericon,
+                            ProfileUrl = $"https://www.deviantart.com/{Uri.EscapeDataString(a.username)}"
+                        } : new Author {
+                            Username = "???",
+                            AvatarUrl = null,
+                            ProfileUrl = null
+                        },
+                        Timestamp = d.published_time.OrNull() ?? DateTimeOffset.UtcNow,
+                        Title = d.title.OrNull() ?? "",
+                        Thumbnails = d.thumbs.OrEmpty().Select(x => new Thumbnail {
+                            Url = x.src,
+                            Width = x.width,
+                            Height = x.height
+                        }),
+                        LinkUrl = d.url.OrNull(),
+                        MatureContent = d.is_mature.IsTrue()
+                    };
+                }
+            }
+        }
+
+        public IAsyncEnumerable<string> GetNotificationsAsync() {
+            return AsyncEnumerable.Empty<string>();
+        }
     }
 }

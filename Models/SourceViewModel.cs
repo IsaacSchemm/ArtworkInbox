@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace ArtworkInbox.Models {
     public class SourceViewModel {
+        public Guid Key { get; set; }
         public DateTimeOffset Latest { get; set; }
         public Author AuthenticatedUser { get; set; }
         public IEnumerable<FeedItem> FeedItems { get; set; }

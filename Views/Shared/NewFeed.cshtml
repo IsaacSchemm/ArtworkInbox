@@ -135,7 +135,7 @@
 
 @if (Model.HasMore) {
     <p>
-        <a class="btn btn-primary" href="Feed?offset=@Model.NextOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+        <a class="btn btn-primary" href="Feed?key=@Model.Key&offset=@Model.NextOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
             Next page &raquo;
         </a>
     </p>
