@@ -1,7 +1,7 @@
 ﻿namespace ArtworkInbox.Backend.Types {
-    public class Author {
-        public string Username { get; set; }
-        public string AvatarUrl { get; set; }
-        public string ProfileUrl { get; set; }
+    public record Author {
+        public string Username;
+        public string AvatarUrl;
+        public string ProfileUrl;
     }
 }
