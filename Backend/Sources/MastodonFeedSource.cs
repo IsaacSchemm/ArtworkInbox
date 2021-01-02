@@ -32,6 +32,9 @@ namespace ArtworkInbox.Backend.Sources {
             string max_id = "";
             while (true) {
                 var statuses = await MapleFedNet.Api.Timelines.Home(_token, max_id, limit: 100);
+                if (!statuses.Any())
+                    break;
+
                 foreach (var s in statuses) {
                     var author = new Author {
                         Username = s.Account.UserName,

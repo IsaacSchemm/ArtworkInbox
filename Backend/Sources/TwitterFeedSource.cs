@@ -41,6 +41,9 @@ namespace ArtworkInbox.Backend.Sources {
                 } catch (TwitterException ex) when (ex.StatusCode == 429) {
                     throw new TooManyRequestsException();
                 }
+                if (!page.Any())
+                    break;
+
                 foreach (var t in page) {
                     var author = new Author {
                         Username = $"@{t.CreatedBy.ScreenName}",
