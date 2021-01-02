@@ -9,13 +9,16 @@ namespace ArtworkInbox.Backend.Sources {
     public class CompositeArtworkSource : ISource {
         public readonly IEnumerable<ISource> Sources;
 
-        public ISource PrimarySource => Sources.First();
-
         public CompositeArtworkSource(IEnumerable<ISource> sources) {
             Sources = sources;
         }
 
-        public Task<Author> GetAuthenticatedUserAsync() => PrimarySource.GetAuthenticatedUserAsync();
+        public async Task<Author> GetAuthenticatedUserAsync() {
+            var authors = await Task.WhenAll(Sources.Select(x => x.GetAuthenticatedUserAsync()));
+            return authors.Distinct().Count() == 1
+                ? authors.First()
+                : new Author();
+        }
 
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
             var enumerators = Sources

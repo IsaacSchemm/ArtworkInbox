@@ -5,35 +5,24 @@ using ArtworkInbox.Backend;
 using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Tweetinvi.Models;
 
 namespace ArtworkInbox.Controllers {
-    public class TwitterController : FeedController {
-        private readonly UserManager<ApplicationUser> _userManager;
+    public class TwitterController : SourceController {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<HomeController> _logger;
         private readonly IReadOnlyConsumerCredentials _consumerCredentials;
 
-        public TwitterController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger, IReadOnlyConsumerCredentials consumerCredentials) {
-            _userManager = userManager;
+        public TwitterController(UserManager<ApplicationUser> userManager, IMemoryCache cache, ApplicationDbContext context, IReadOnlyConsumerCredentials consumerCredentials) : base(userManager, cache) {
             _context = context;
-            _logger = logger;
             _consumerCredentials = consumerCredentials;
         }
 
-        public IActionResult Index() {
-            return RedirectToAction(nameof(Feed));
-        }
+        protected override string SiteName => "Twitter";
 
-        protected override Task<ApplicationUser> GetUserAsync() =>
-            _userManager.GetUserAsync(User);
-
-        protected override string GetSiteName() => "Twitter";
-
-        protected override async Task<IFeedSource> GetFeedSourceAsync() {
+        protected override async Task<ISource> GetArtworkSource() {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserTwitterTokens
                 .AsQueryable()
