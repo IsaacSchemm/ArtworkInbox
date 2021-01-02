@@ -1,9 +1,10 @@
 ﻿using ArtworkInbox.Backend.Types;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class EmptyFeedSource : IFeedSource {
+    public class EmptySource : IFeedSource, ISource {
         public Task<Author> GetAuthenticatedUserAsync() {
             return Task.FromResult(new Author());
         }
@@ -15,6 +16,10 @@ namespace ArtworkInbox.Backend.Sources {
                 FeedItems = Enumerable.Empty<FeedItem>()
             });
         }
+
+        public IAsyncEnumerable<FeedItem> GetFeedItemsAsync() => AsyncEnumerable.Empty<FeedItem>();
+
+        public IAsyncEnumerable<string> GetNotificationsAsync() => AsyncEnumerable.Empty<string>();
 
         public string GetNotificationsUrl() => null;
         public string GetSubmitUrl() => null;

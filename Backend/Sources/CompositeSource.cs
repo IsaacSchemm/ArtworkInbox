@@ -6,10 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class CompositeArtworkSource : ISource {
+    public class CompositeSource : ISource {
         public readonly IEnumerable<ISource> Sources;
 
-        public CompositeArtworkSource(IEnumerable<ISource> sources) {
+        public CompositeSource(IEnumerable<ISource> sources) {
             Sources = sources;
         }
 

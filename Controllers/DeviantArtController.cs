@@ -37,7 +37,7 @@ namespace ArtworkInbox.Controllers {
             if (dbToken == null)
                 throw new NoTokenException();
             var token = new DeviantArtTokenWrapper(_app, _context, dbToken);
-            return new CompositeArtworkSource(new ISource[] {
+            return new CompositeSource(new ISource[] {
                 new DeviantArtDeviationFeedSource(token),
                 new DeviantArtPostFeedSource(token)
             });

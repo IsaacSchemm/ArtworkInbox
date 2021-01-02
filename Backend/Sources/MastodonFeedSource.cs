@@ -80,7 +80,7 @@ namespace ArtworkInbox.Backend.Sources {
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
             string max_id = "";
             while (true) {
-                var statuses = await MapleFedNet.Api.Timelines.Home(_token, max_id, limit: 5);
+                var statuses = await MapleFedNet.Api.Timelines.Home(_token, max_id, limit: 100);
                 foreach (var s in statuses) {
                     var author = new Author {
                         Username = s.Account.UserName,

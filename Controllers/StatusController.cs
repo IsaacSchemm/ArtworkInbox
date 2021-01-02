@@ -2,42 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ArtworkInbox.Backend;
-using ArtworkInbox.Backend.Filters;
 using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Data;
-using ArtworkInbox.Models;
 using DeviantArtFs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Tweetinvi.Models;
 
 namespace ArtworkInbox.Controllers {
     [Authorize]
-    public class StatusController : FeedController {
-        private readonly UserManager<ApplicationUser> _userManager;
+    public class StatusController : SourceController {
         private readonly ApplicationDbContext _context;
-
         private readonly IReadOnlyConsumerCredentials _consumerCredentials;
         private readonly DeviantArtApp _app;
 
-        public StatusController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IReadOnlyConsumerCredentials consumerCredentials, DeviantArtApp app) {
-            _userManager = userManager;
+        public StatusController(UserManager<ApplicationUser> userManager, IMemoryCache cache, ApplicationDbContext context, IReadOnlyConsumerCredentials consumerCredentials, DeviantArtApp app) : base(userManager, cache) {
             _context = context;
             _consumerCredentials = consumerCredentials;
             _app = app;
         }
 
-        protected override Task<ApplicationUser> GetUserAsync() => _userManager.GetUserAsync(User);
+        protected override string SiteName => "Status Feed (Twitter / Mastodon / DeviantArt)";
 
-        protected override string GetSiteName() => "Status Feed (Twitter / Mastodon / DeviantArt)";
-
-        protected override async Task<IFeedSource> GetFeedSourceAsync() {
+        protected override async Task<ISource> GetSourceAsync() {
             var userId = _userManager.GetUserId(User);
 
-            var feedSources = new List<IFeedSource> {
-                new EmptyFeedSource()
+            var feedSources = new List<ISource> {
+                new EmptySource()
             };
 
             var twitter_rows = await _context.UserTwitterTokens
@@ -70,11 +63,11 @@ namespace ArtworkInbox.Controllers {
                 feedSources.Add(new MastodonFeedSource(dbToken) { IgnoreMedia = true });
             }
 
-            return new CompositeFeedSource(feedSources);
+            return new CompositeSource(feedSources);
         }
 
-        protected override Task<DateTimeOffset> GetLastRead() => Task.FromResult(DateTimeOffset.MinValue);
+        protected override Task<DateTimeOffset> GetLastReadAsync() => Task.FromResult(DateTimeOffset.MinValue);
 
-        protected override Task SetLastRead(DateTimeOffset lastRead) => throw new NotImplementedException();
+        protected override Task SetLastReadAsync(DateTimeOffset lastRead) => throw new NotImplementedException();
     }
 }
