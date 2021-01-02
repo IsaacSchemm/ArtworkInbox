@@ -60,7 +60,7 @@ namespace ArtworkInbox.Controllers {
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
             foreach (var dbToken in mastodon_rows) {
-                feedSources.Add(new MastodonFeedSource(dbToken) { IgnoreMedia = true });
+                feedSources.Add(new MastodonFeedSource(dbToken.Host, dbToken.AccessToken));
             }
 
             return new CompositeSource(feedSources);

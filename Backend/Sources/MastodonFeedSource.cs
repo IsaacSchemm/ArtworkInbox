@@ -1,6 +1,6 @@
 ﻿using ArtworkInbox.Backend.Types;
-using MapleFedNet.Common;
-using MapleFedNet.Model;
+using Pleronet;
+using Pleronet.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,16 +8,18 @@ using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
     public class MastodonFeedSource : ISource {
-        private readonly IMastodonCredentials _token;
+        private readonly IMastodonClient _token;
 
         public bool IgnoreMedia { get; set; } = false;
 
-        public MastodonFeedSource(IMastodonCredentials token) {
-            _token = token;
+        public MastodonFeedSource(string host, string accessToken) {
+            _token = new MastodonClient(
+                new AppRegistration { Instance = host },
+                new Auth { AccessToken = accessToken });
         }
 
         public async Task<Author> GetAuthenticatedUserAsync() {
-            var user = await MapleFedNet.Api.Accounts.VerifyCredentials(_token);
+            var user = await _token.GetCurrentUser();
             return new Author {
                 Username = user.UserName,
                 AvatarUrl = user.AvatarUrl,
@@ -25,13 +27,13 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        public string GetNotificationsUrl() => $"https://{_token.Domain}";
-        public string GetSubmitUrl() => $"https://{_token.Domain}";
+        public string GetNotificationsUrl() => $"https://{_token.Instance}";
+        public string GetSubmitUrl() => $"https://{_token.Instance}";
 
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
             string max_id = "";
             while (true) {
-                var statuses = await MapleFedNet.Api.Timelines.Home(_token, max_id, limit: 100);
+                var statuses = await _token.GetHomeTimeline(max_id);
                 if (!statuses.Any())
                     break;
 
@@ -69,10 +71,22 @@ namespace ArtworkInbox.Backend.Sources {
                         };
                     }
                 }
-                max_id = statuses.Select(x => x.Id).Min();
+                max_id = statuses.NextPageMaxId;
             }
         }
 
-        public IAsyncEnumerable<string> GetNotificationsAsync() => AsyncEnumerable.Empty<string>();
+        public async IAsyncEnumerable<string> GetNotificationsAsync() {
+            string max_id = "";
+            while (true) {
+                var notifications = await _token.GetNotifications(max_id);
+                if (!notifications.Any())
+                    break;
+
+                foreach (var n in notifications) {
+                    yield return n.Type;
+                }
+                max_id = notifications.NextPageMaxId;
+            }
+        }
     }
 }

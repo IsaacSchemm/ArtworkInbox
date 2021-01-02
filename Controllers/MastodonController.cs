@@ -30,7 +30,7 @@ namespace ArtworkInbox.Controllers {
                 .SingleOrDefaultAsync();
             if (dbToken == null)
                 throw new NoTokenException();
-            return new MastodonFeedSource(dbToken);
+            return new MastodonFeedSource(dbToken.Host, dbToken.AccessToken);
         }
 
         protected override async Task<DateTimeOffset> GetLastReadAsync() {
