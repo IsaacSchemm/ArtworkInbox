@@ -34,12 +34,16 @@
         .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
-    var mastodon_tokens = user == null
-        ? Enumerable.Empty<UserMastodonToken>()
-        : await ApplicationDbContext.UserMastodonTokens
-            .AsQueryable()
-            .Where(x => x.UserId == user.Id)
-            .ToListAsync();
+    bool has_mastodon_social = user != null && await ApplicationDbContext.UserMastodonTokens
+        .AsQueryable()
+        .Where(x => x.Host == "mastodon.social")
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
+    bool has_botsin_space = user != null && await ApplicationDbContext.UserMastodonTokens
+        .AsQueryable()
+        .Where(x => x.Host == "botsin.space")
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -116,10 +120,17 @@
                                 </a>
                             </li>
                         }
-                        @foreach (var t in mastodon_tokens) {
+                        @if (has_mastodon_social) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" href="/Mastodon/Feed?host=@Uri.EscapeDataString(t.Host)">
-                                    @t.Host
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MastodonSocial" asp-action="Feed">
+                                    mastodon.social
+                                </a>
+                            </li>
+                        }
+                        @if (has_botsin_space) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="BotsinSpace" asp-action="Feed">
+                                    botsin.space
                                 </a>
                             </li>
                         }

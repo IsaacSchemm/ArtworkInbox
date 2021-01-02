@@ -7,7 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class MastodonFeedSource : IFeedSource {
+    public class MastodonFeedSource : IFeedSource, ISource {
         private readonly IMastodonCredentials _token;
 
         public bool IgnoreMedia { get; set; } = false;
@@ -69,12 +69,56 @@ namespace ArtworkInbox.Backend.Sources {
                 Cursor = page.Any()
                     ? $"{page.Select(x => x.Id).Min()}"
                     : cursor,
-                HasMore = page.Count() > 0,
+                HasMore = page.Count > 0,
                 FeedItems = Wrangle(page)
             };
         }
 
         public string GetNotificationsUrl() => $"https://{_token.Domain}";
         public string GetSubmitUrl() => $"https://{_token.Domain}";
+
+        public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
+            string max_id = "";
+            while (true) {
+                var statuses = await MapleFedNet.Api.Timelines.Home(_token, max_id, limit: 5);
+                foreach (var s in statuses) {
+                    var author = new Author {
+                        Username = s.Account.UserName,
+                        AvatarUrl = s.Account.AvatarUrl,
+                        ProfileUrl = s.Account.ProfileUrl
+                    };
+                    var photos = IgnoreMedia
+                        ? Enumerable.Empty<Attachment>()
+                        : s.MediaAttachments.Where(x => x.Type == "image");
+                    foreach (var media in photos) {
+                        yield return new Artwork {
+                            Author = author,
+                            Timestamp = s.CreatedAt,
+                            LinkUrl = s.Url,
+                            Thumbnails = new[] {
+                            new Thumbnail {
+                                Url = media.PreviewUrl
+                            }
+                        },
+                            RepostedFrom = s.Reblog?.Account?.UserName
+                        };
+                    }
+                    if (!photos.Any()) {
+                        yield return new StatusUpdate {
+                            Author = author,
+                            Timestamp = s.CreatedAt,
+                            LinkUrl = s.Url,
+                            Html = !string.IsNullOrEmpty(s.SpoilerText)
+                                ? WebUtility.HtmlEncode(s.SpoilerText)
+                                : s.Content,
+                            RepostedFrom = s.Reblog?.Account?.UserName
+                        };
+                    }
+                }
+                max_id = statuses.Select(x => x.Id).Min();
+            }
+        }
+
+        public IAsyncEnumerable<string> GetNotificationsAsync() => AsyncEnumerable.Empty<string>();
     }
 }
