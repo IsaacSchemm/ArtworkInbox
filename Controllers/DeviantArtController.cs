@@ -28,7 +28,7 @@ namespace ArtworkInbox.Controllers {
 
         protected override string SiteName => "DeviantArt";
 
-        protected override async Task<ISource> GetArtworkSource() {
+        protected override async Task<ISource> GetSourceAsync() {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserDeviantArtTokens
                 .AsQueryable()
@@ -43,7 +43,7 @@ namespace ArtworkInbox.Controllers {
             });
         }
 
-        protected override async Task<DateTimeOffset> GetLastRead() {
+        protected override async Task<DateTimeOffset> GetLastReadAsync() {
             var userId = _userManager.GetUserId(User);
             var dt = await _context.UserDeviantArtTokens
                 .AsQueryable()
@@ -53,7 +53,7 @@ namespace ArtworkInbox.Controllers {
             return dt ?? DateTimeOffset.MinValue;
         }
 
-        protected override async Task SetLastRead(DateTimeOffset lastRead) {
+        protected override async Task SetLastReadAsync(DateTimeOffset lastRead) {
             var userId = _userManager.GetUserId(User);
             var o = await _context.UserDeviantArtTokens
                 .AsQueryable()

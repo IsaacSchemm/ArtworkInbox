@@ -35,9 +35,9 @@ namespace ArtworkInbox.Controllers {
             _userManager = userManager;
         }
 
-        protected abstract Task<ISource> GetArtworkSource();
-        protected abstract Task<DateTimeOffset> GetLastRead();
-        protected abstract Task SetLastRead(DateTimeOffset lastRead);
+        protected abstract Task<ISource> GetSourceAsync();
+        protected abstract Task<DateTimeOffset> GetLastReadAsync();
+        protected abstract Task SetLastReadAsync(DateTimeOffset lastRead);
 
         protected abstract string SiteName { get; }
 
@@ -53,7 +53,7 @@ namespace ArtworkInbox.Controllers {
                 if (key != null && _cache.TryGetValue(key, out object o) && o is ControllerCacheItem c && c.LocalUserId == user.Id) {
                     cacheItem = c;
                 } else {
-                    var source = await GetArtworkSource();
+                    var source = await GetSourceAsync();
                     int ct = await source.GetNotificationsAsync().Take(20).CountAsync();
                     cacheItem = new ControllerCacheItem {
                         Id = Guid.NewGuid(),
@@ -65,7 +65,7 @@ namespace ArtworkInbox.Controllers {
                             : $"{ct}",
                         NotificationsUrl = source.GetNotificationsUrl(),
                         SubmitUrl = source.GetSubmitUrl(),
-                        Earliest = await GetLastRead()
+                        Earliest = await GetLastReadAsync()
                     };
                     _cache.Set(cacheItem.Id, cacheItem, DateTimeOffset.UtcNow.AddMinutes(15));
                 }
@@ -136,7 +136,7 @@ namespace ArtworkInbox.Controllers {
         }
 
         public async Task<IActionResult> MarkAsRead(DateTimeOffset latest) {
-            await SetLastRead(latest);
+            await SetLastReadAsync(latest);
             return RedirectToAction(nameof(Feed));
         }
     }
