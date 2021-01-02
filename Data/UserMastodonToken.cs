@@ -1,10 +1,9 @@
-﻿using MapleFedNet.Common;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ArtworkInbox.Data {
-    public class UserMastodonToken : IMastodonCredentials {
+    public class UserMastodonToken {
         public int Id { get; set; }
 
         [Required]
@@ -20,8 +19,5 @@ namespace ArtworkInbox.Data {
         public string AccessToken { get; set; }
 
         public DateTimeOffset? LastRead { get; set; }
-
-        string IMastodonCredentials.Domain => Host;
-        string IMastodonCredentials.Token => AccessToken;
     }
 }
