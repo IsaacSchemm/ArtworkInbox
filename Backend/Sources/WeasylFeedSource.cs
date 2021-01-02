@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WeasylFs;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class WeasylFeedSource : IFeedSource, INotificationsSource {
+    public class WeasylFeedSource : ISource {
         private readonly IWeasylCredentials _token;
 
         public WeasylFeedSource(IWeasylCredentials token) {
@@ -31,48 +31,43 @@ namespace ArtworkInbox.Backend.Sources {
                 yield return new Thumbnail { Url = m.url };
         }
 
-        private static IEnumerable<FeedItem> Wrangle(IEnumerable<WeasylSubmission> submissions) {
-            foreach (var s in submissions) {
-                yield return new Artwork {
-                    Author = new Author {
-                        Username = s.owner,
-                        ProfileUrl = $"https://www.weasyl.com/~{Uri.EscapeDataString(s.owner)}"
-                    },
-                    LinkUrl = s.link,
-                    MatureContent = s.rating != "general",
-                    RepostedFrom = s.type == "usercollect" ? "another user" : null,
-                    Thumbnails = GetThumbnails(s),
-                    Timestamp = s.posted_at,
-                    Title = s.title
-                };
-            }
-        }
-
-        public async Task<FeedBatch> GetBatchAsync(string cursor) {
+        public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
             var req = new WeasylFs.Endpoints.MessageSubmissions.Request();
-            if (cursor != null)
-                req.NextTime = DateTimeOffset.Parse(cursor);
-            var page = await WeasylFs.Endpoints.MessageSubmissions.ExecuteAsync(_token, req);
+            while (true) {
+                var page = await WeasylFs.Endpoints.MessageSubmissions.ExecuteAsync(_token, req);
+                if (page.nexttime_or_null == null)
+                    break;
 
-            return new FeedBatch {
-                Cursor = page.nexttime_or_null?.ToString("o"),
-                HasMore = page.nexttime_or_null != null,
-                FeedItems = Wrangle(page.submissions)
-            };
+                foreach (var s in page.submissions) {
+                    yield return new Artwork {
+                        Author = new Author {
+                            Username = s.owner,
+                            ProfileUrl = $"https://www.weasyl.com/~{Uri.EscapeDataString(s.owner)}"
+                        },
+                        LinkUrl = s.link,
+                        MatureContent = s.rating != "general",
+                        RepostedFrom = s.type == "usercollect" ? "another user" : null,
+                        Thumbnails = GetThumbnails(s),
+                        Timestamp = s.posted_at,
+                        Title = s.title
+                    };
+                }
+
+                req.NextTime = page.nexttime_or_null;
+            }
         }
 
         public string GetNotificationsUrl() => "https://www.weasyl.com/messages/notifications";
         public string GetSubmitUrl() => "https://www.weasyl.com/submit";
 
-        public async Task<int> GetNotificationsCountAsync() {
+        public async IAsyncEnumerable<string> GetNotificationsAsync() {
             var o = await WeasylFs.Endpoints.MessageSummary.ExecuteAsync(_token);
-            return new[] {
-                o.comments,
-                o.journals,
-                o.notifications,
-                //o.submissions,
-                //o.unread_notes
-            }.Sum();
+            for (int i = 0; i < o.comments; i++)
+                yield return "comment";
+            for (int i = 0; i < o.journals; i++)
+                yield return "journal";
+            for (int i = 0; i < o.notifications; i++)
+                yield return "notification";
         }
     }
 }
