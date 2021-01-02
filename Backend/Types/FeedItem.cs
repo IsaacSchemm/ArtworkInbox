@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace ArtworkInbox.Backend.Types {
-    public abstract class FeedItem {
-        public DateTimeOffset Timestamp { get; set; }
-        public Author Author { get; set; }
-        public string RepostedFrom { get; set; }
-        public bool MatureContent { get; set; }
+    public abstract record FeedItem {
+        public DateTimeOffset Timestamp { get; init; }
+        public Author Author { get; init; }
+        public string RepostedFrom { get; init; }
+        public bool MatureContent { get; init; }
 
         public abstract string GetDescription();
 
@@ -16,16 +16,16 @@ namespace ArtworkInbox.Backend.Types {
         }
     }
 
-    public class Thumbnail {
-        public string Url { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+    public record Thumbnail {
+        public string Url { get; init; }
+        public int Width { get; init; }
+        public int Height { get; init; }
     }
 
-    public class Artwork : FeedItem {
-        public string Title { get; set; }
-        public IEnumerable<Thumbnail> Thumbnails { get; set; }
-        public string LinkUrl { get; set; }
+    public record Artwork : FeedItem {
+        public string Title { get; init; }
+        public IEnumerable<Thumbnail> Thumbnails { get; init; }
+        public string LinkUrl { get; init; }
 
         public Thumbnail DefaultThumbnail =>
             Thumbnails
@@ -39,26 +39,30 @@ namespace ArtworkInbox.Backend.Types {
             ? string.Join(", ", Thumbnails.Select(x => $"{x.Url} {1.0 * x.Height / 150}x"))
             : null;
 
+        public Artwork WithMatureThumbnailsHidden() => this with {
+            Thumbnails = MatureContent
+                ? Enumerable.Empty<Thumbnail>()
+                : Thumbnails
+        };
+
         public override string GetDescription() => $"{Author.Username}: {Title ?? "[untitled]"}";
     }
 
-    public abstract class TextFeedItem : FeedItem {
-        public string Html { get; set; }
-        public string LinkUrl { get; set; }
+    public abstract record TextFeedItem : FeedItem {
+        public string Html { get; init; }
+        public string LinkUrl { get; init; }
 
-        public string Excerpt => /*Html.Length > 50
-            ? Html.Substring(0, 49) + "..."
-            :*/ Html;
+        public string Excerpt => Html;
 
         public override string GetDescription() => $"{Author.Username}: {Excerpt}";
     }
 
-    public class JournalEntry : TextFeedItem { }
-    public class StatusUpdate : TextFeedItem { }
-    public class BlogPost : TextFeedItem { }
+    public record JournalEntry : TextFeedItem { }
+    public record StatusUpdate : TextFeedItem { }
+    public record BlogPost : TextFeedItem { }
 
-    public class CustomFeedItem : FeedItem {
-        public string Description { get; set; }
+    public record CustomFeedItem : FeedItem {
+        public string Description { get; init; }
 
         public override string GetDescription() => Description;
     }

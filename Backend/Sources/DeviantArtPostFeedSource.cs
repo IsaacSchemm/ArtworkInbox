@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class DeviantArtPostFeedSource : IFeedSource {
+    public class DeviantArtPostFeedSource : ISource {
         private readonly IDeviantArtAccessToken _token;
 
         public bool IncludeJournals { get; set; } = true;
@@ -29,8 +29,13 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        private IEnumerable<FeedItem> Wrangle(IEnumerable<DeviantArtPost> posts) {
-            foreach (var p in posts) {
+        public string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
+        public string GetSubmitUrl() => "https://www.deviantart.com/submit";
+
+        public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
+            var asyncSeq = DeviantArtFs.Api.Browse.PostsByDeviantsYouWatch.ToAsyncSeq(_token, 0);
+            var asyncEnum = FSharp.Control.AsyncSeq.toAsyncEnum(asyncSeq);
+            await foreach (var p in asyncEnum) {
                 if (p.journal.OrNull() is Deviation d && IncludeJournals) {
                     yield return new JournalEntry {
                         Author = d.author.OrNull() is DeviantArtUser a
@@ -68,23 +73,15 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public async Task<FeedBatch> GetBatchAsync(string cursor) {
-            int offset = int.TryParse(cursor, out int i)
-                ? i
-                : 0;
-            try {
-                var page = await DeviantArtFs.Api.Browse.PostsByDeviantsYouWatch.ExecuteAsync(_token, DeviantArtPagingParams.MaxFrom(offset));
-                return new FeedBatch {
-                    Cursor = $"{page.next_offset.OrNull()}",
-                    HasMore = page.has_more,
-                    FeedItems = Wrangle(page.results)
-                };
-            } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
-                throw new TooManyRequestsException();
+        public async IAsyncEnumerable<string> GetNotificationsAsync() {
+            var asyncSeq = DeviantArtFs.Api.Messages.MessagesFeed.ToAsyncSeq(
+                _token,
+                new DeviantArtFs.Api.Messages.MessagesFeedRequest { Stack = false },
+                Microsoft.FSharp.Core.FSharpOption<string>.None);
+            var asyncEnum = FSharp.Control.AsyncSeq.toAsyncEnum(asyncSeq);
+            await foreach (var n in asyncEnum) {
+                yield return $"{n}";
             }
         }
-
-        public string GetNotificationsUrl() => "https://www.deviantart.com/notifications/feedback";
-        public string GetSubmitUrl() => "https://www.deviantart.com/submit";
     }
 }

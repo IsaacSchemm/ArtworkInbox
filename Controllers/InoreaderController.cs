@@ -10,34 +10,24 @@ using ArtworkInbox.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ArtworkInbox.Controllers {
-    public class InoreaderController : FeedController {
+    public class InoreaderController : SourceController {
         private readonly InoreaderFs.Auth.App _app;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<HomeController> _logger;
 
-        public InoreaderController(InoreaderFs.Auth.App app, UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<HomeController> logger) {
+        public InoreaderController(InoreaderFs.Auth.App app, UserManager<ApplicationUser> userManager, IMemoryCache cache, ApplicationDbContext context) : base(userManager, cache) {
             _app = app;
-            _userManager = userManager;
             _context = context;
-            _logger = logger;
         }
 
-        public IActionResult Index() {
-            return RedirectToAction(nameof(Feed));
-        }
+        protected override string SiteName => "Inoreader";
 
-        protected override Task<ApplicationUser> GetUserAsync() =>
-            _userManager.GetUserAsync(User);
-
-        protected override string GetSiteName() => "Inoreader";
-
-        protected override async Task<IFeedSource> GetFeedSourceAsync() {
+        protected override async Task<ISource> GetSourceAsync() {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserInoreaderTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
@@ -49,18 +39,20 @@ namespace ArtworkInbox.Controllers {
                 unreadOnly: dbToken.UnreadOnly);
         }
 
-        protected override async Task<DateTimeOffset> GetLastRead() {
+        protected override async Task<DateTimeOffset> GetLastReadAsync() {
             var userId = _userManager.GetUserId(User);
             var dt = await _context.UserInoreaderTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .Select(t => t.LastRead)
                 .SingleOrDefaultAsync();
             return dt ?? DateTimeOffset.MinValue;
         }
 
-        protected override async Task SetLastRead(DateTimeOffset lastRead) {
+        protected override async Task SetLastReadAsync(DateTimeOffset lastRead) {
             var userId = _userManager.GetUserId(User);
             var o = await _context.UserInoreaderTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .SingleAsync();
 
@@ -72,6 +64,7 @@ namespace ArtworkInbox.Controllers {
         public async Task<IActionResult> Settings() {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserInoreaderTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)
@@ -86,6 +79,7 @@ namespace ArtworkInbox.Controllers {
         public async Task<IActionResult> Settings(InoreaderSettingsViewModel model) {
             var userId = _userManager.GetUserId(User);
             var dbToken = await _context.UserInoreaderTokens
+                .AsQueryable()
                 .Where(t => t.UserId == userId)
                 .SingleOrDefaultAsync();
             if (dbToken == null)

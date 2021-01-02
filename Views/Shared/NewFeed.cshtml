@@ -1,6 +1,16 @@
-﻿@model ArtworkInbox.Models.FeedViewModel
+﻿@model ArtworkInbox.Models.SourceViewModel
 @{
     ViewData["Title"] = "Feed";
+}
+
+@section LinkRelNavigation { 
+    <link rel="first" href="Feed?key=@Model.Key&offset=0&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))" />
+    @if (Model.HasLess) {
+        <link rel="prev" href="Feed?key=@Model.Key&offset=@Model.LastOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))" />
+    }
+    @if (Model.HasMore) {
+        <link rel="next" href="Feed?key=@Model.Key&offset=@Model.NextOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))" />
+    }
 }
 
 <style type="text/css">
@@ -39,15 +49,15 @@
 
 <hr />
 
-@if (Model.FeedBatch.HasMore) {
+@if (Model.HasMore) {
     <div class="alert alert-primary">
         There are too many items in your activity feed to display on one page.
-        Showing the @Model.FeedBatch.FeedItems.Count() most recent items.
+        Showing the @Model.FeedItems.Count() most recent items.
         <br />
     </div>
 }
 
-@if (!Model.FeedBatch.FeedItems.Any()) {
+@if (!Model.FeedItems.Any()) {
     <div class="alert alert-secondary">
         There are no new items to display in your activity feed.
     </div>
@@ -133,18 +143,26 @@
     <hr />
 }
 
-@if (Model.FeedBatch.Cursor != null && Model.FeedBatch.HasMore) {
+@if (Model.HasMore || Model.HasLess) {
     <p>
-        <a class="btn btn-primary" href="Feed?host=@Model.Host&cursor=@Uri.EscapeDataString(Model.FeedBatch.Cursor)&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
-            Next page &raquo;
-        </a>
+        @if (Model.HasLess) {
+            <a class="btn btn-primary" href="Feed?key=@Model.Key&offset=@Model.LastOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+                &laquo; Previous page
+            </a>
+        }
+
+        @if (Model.HasMore) {
+            <a class="btn btn-primary" href="Feed?key=@Model.Key&offset=@Model.NextOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+                Next page &raquo;
+            </a>
+        }
     </p>
     <hr />
 }
 
-@if (Model.FeedBatch.FeedItems.Any()) {
+@if (Model.FeedItems.Any()) {
     <p>
-        <a class="btn btn-danger" href="MarkAsRead?host=@Model.Host&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+        <a class="btn btn-danger" href="MarkAsRead?latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
             Mark all as read
         </a>
         <br />

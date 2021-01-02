@@ -76,6 +76,7 @@ namespace ArtworkInbox {
                 })
                 .AddReddit(o => {
                     o.Scope.Add("read");
+                    o.Scope.Add("privatemessages");
                     o.ClientId = Configuration["Authentication:Reddit:ClientId"];
                     o.ClientSecret = Configuration["Authentication:Reddit:ClientSecret"];
                     o.SaveTokens = true;

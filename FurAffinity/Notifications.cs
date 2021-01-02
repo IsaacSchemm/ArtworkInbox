@@ -50,16 +50,6 @@ namespace ArtworkInbox.FurAffinity {
             public int watchers;
             public int notes;
             public int trouble_tickets;
-
-            public int Sum => new[] {
-                submissions,
-                comments,
-                journals,
-                favorites,
-                watchers,
-                notes,
-                trouble_tickets
-            }.Sum();
         }
 
         public record NewJournal {

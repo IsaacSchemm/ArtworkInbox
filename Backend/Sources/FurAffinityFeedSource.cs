@@ -1,10 +1,11 @@
 ﻿using ArtworkInbox.Backend.Types;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class FurAffinityFeedSource : IFeedSource, INotificationsSource {
+    public class FurAffinityFeedSource : ISource {
         private readonly string _fa_cookie;
 
         private FurAffinity.Notifications.CurrentUser _user = null;
@@ -15,58 +16,78 @@ namespace ArtworkInbox.Backend.Sources {
 
         public async Task<Author> GetAuthenticatedUserAsync() {
             try {
-                if (_user == null) {
-                    var notifications = await FurAffinity.Notifications.GetSubmissionsAsync(_fa_cookie, sfw: true, from: 0);
-                    _user = notifications.current_user;
-                }
+                var ns = await FurAffinity.Notifications.GetOthersAsync(_fa_cookie);
                 return new Author {
-                    Username = _user.profile_name,
+                    Username = ns.current_user.profile_name,
                     AvatarUrl = null,
-                    ProfileUrl = _user.profile
+                    ProfileUrl = ns.current_user.profile
                 };
             } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
                 throw new TooManyRequestsException();
             }
         }
 
-        public async Task<FeedBatch> GetBatchAsync(string cursor) {
-            int from = int.TryParse(cursor, out int i)
-                ? i
-                : int.MaxValue;
-            var sfw = await FurAffinity.Notifications.GetSubmissionsAsync(_fa_cookie, sfw: true, from: from);
-            var nsfw = await FurAffinity.Notifications.GetSubmissionsAsync(_fa_cookie, sfw: false, from: from);
+        public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
+            int from = int.MaxValue;
+            while (true) {
+                FurAffinity.Notifications.Submissions sfw, nsfw;
+                try {
+                    sfw = await FurAffinity.Notifications.GetSubmissionsAsync(_fa_cookie, sfw: true, from: from);
+                    nsfw = await FurAffinity.Notifications.GetSubmissionsAsync(_fa_cookie, sfw: false, from: from);
+                } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
+                    throw new TooManyRequestsException();
+                }
+                if (!nsfw.new_submissions.Any())
+                    break;
 
-            if (_user == null)
-                _user = sfw.current_user;
+                if (_user == null)
+                    _user = sfw.current_user;
 
-            return new FeedBatch {
-                Cursor = $"{nsfw.new_submissions.Select(x => x.id).DefaultIfEmpty(1).Min() - 1}",
-                HasMore = nsfw.new_submissions.Any(),
-                FeedItems = nsfw.new_submissions.Select(x => new Artwork {
-                    Author = new Author {
-                        Username = x.profile_name,
-                        ProfileUrl = x.profile
-                    },
-                    LinkUrl = x.link,
-                    MatureContent = !sfw.new_submissions.Any(y => x.id == y.id),
-                    Thumbnails = new Thumbnail[] {
-                        new Thumbnail {
-                            Url = x.thumbnail
-                        }
-                    },
-                    Timestamp = new DateTimeOffset(x.id, TimeSpan.Zero),
-                    Title = x.title
-                })
-            };
+                from = nsfw.new_submissions.Select(x => x.id).DefaultIfEmpty(1).Min() - 1;
+
+                foreach (var x in nsfw.new_submissions) {
+                    yield return new Artwork {
+                        Author = new Author {
+                            Username = x.profile_name,
+                            ProfileUrl = x.profile
+                        },
+                        LinkUrl = x.link,
+                        MatureContent = !sfw.new_submissions.Any(y => x.id == y.id),
+                        Thumbnails = new Thumbnail[] {
+                            new Thumbnail {
+                                Url = x.thumbnail
+                            }
+                        },
+                        Timestamp = new DateTimeOffset(x.id, TimeSpan.Zero),
+                        Title = x.title
+                    };
+                }
+            }
         }
 
-        public async Task<int> GetNotificationsCountAsync() {
-            var ns = await FurAffinity.Notifications.GetOthersAsync(_fa_cookie);
+        public async IAsyncEnumerable<string> GetNotificationsAsync() {
+            FurAffinity.Notifications.Others ns;
+            try {
+                ns = await FurAffinity.Notifications.GetOthersAsync(_fa_cookie);
+            } catch (Exception ex) when(ex.Message == "Client is rate-limited (too many 429 responses)") {
+                throw new TooManyRequestsException();
+            }
 
             if (_user == null)
                 _user = ns.current_user;
 
-            return ns.notification_counts.Sum - ns.notification_counts.submissions;
+            for (int i = 0; i < ns.notification_counts.comments; i++)
+                yield return "comment";
+            for (int i = 0; i < ns.notification_counts.journals; i++)
+                yield return "journal";
+            for (int i = 0; i < ns.notification_counts.favorites; i++)
+                yield return "favorite";
+            for (int i = 0; i < ns.notification_counts.watchers; i++)
+                yield return "watcher";
+            for (int i = 0; i < ns.notification_counts.notes; i++)
+                yield return "note";
+            for (int i = 0; i < ns.notification_counts.trouble_tickets; i++)
+                yield return "trouble_ticket";
         }
 
         public string GetNotificationsUrl() => "https://www.furaffinity.net/msg/others/";

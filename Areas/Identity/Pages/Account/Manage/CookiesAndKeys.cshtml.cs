@@ -42,10 +42,12 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
         private async Task LoadAsync(ApplicationUser user)
         {
             var furAffinity = await _context.UserFurAffinityTokens
+                .AsQueryable()
                 .Where(x => x.UserId == user.Id)
                 .Select(x => x.FA_COOKIE)
                 .FirstOrDefaultAsync();
             var weasyl = await _context.UserWeasylTokens
+                .AsQueryable()
                 .Where(x => x.UserId == user.Id)
                 .Select(x => x.ApiKey)
                 .FirstOrDefaultAsync();
@@ -84,6 +86,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
             }
 
             var furAffinity = await _context.UserFurAffinityTokens
+                .AsQueryable()
                 .Where(x => x.UserId == user.Id)
                 .FirstOrDefaultAsync();
 
@@ -103,6 +106,7 @@ namespace ArtworkInbox.Areas.Identity.Pages.Account.Manage
             }
 
             var weasyl = await _context.UserWeasylTokens
+                .AsQueryable()
                 .Where(x => x.UserId == user.Id)
                 .FirstOrDefaultAsync();
 

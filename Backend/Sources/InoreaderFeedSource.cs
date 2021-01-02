@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
-    public class InoreaderFeedSource : IFeedSource {
+    public class InoreaderFeedSource : ISource {
         private readonly InoreaderFs.Auth.Credentials _credentials;
         private readonly bool _allAsText;
         private readonly bool _unreadOnly;
@@ -43,67 +43,55 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        private IEnumerable<FeedItem> Wrangle(IEnumerable<InoreaderFs.Endpoints.StreamContents.Item> feedItems) {
-            foreach (var f in feedItems) {
-                var images = GetImageUrls(f.summary.content);
-                if (images.Any()) {
-                    foreach (var i in images) {
-                        yield return new Artwork {
-                            Author = new Author {
-                                Username = f.origin.title
-                            },
-                            LinkUrl = f.canonical.Select(x => x.href).FirstOrDefault(),
-                            Thumbnails = new[] {
-                                new Thumbnail {
-                                    Url = i
-                                }
-                            },
-                            Timestamp = f.GetTimestamp(),
-                            Title = f.title
-                        };
-                    }
-                } else {
-                    yield return new BlogPost {
-                        Author = new Author {
-                            Username = f.origin.title
-                        },
-                        Html = WebUtility.HtmlEncode(f.title),
-                        LinkUrl = f.canonical.Select(x => x.href).FirstOrDefault(),
-                        Timestamp = f.GetTimestamp()
-                    };
-                }
-            }
-        }
+        public string GetNotificationsUrl() => null;
+        public string GetSubmitUrl() => null;
 
-        public async Task<FeedBatch> GetBatchAsync(string cursor) {
-            try {
+        public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
+            string continuation = null;
+            while (true) {
                 var page = await InoreaderFs.Endpoints.StreamContents.ExecuteAsync(_credentials, new InoreaderFs.Endpoints.StreamContents.Request {
-                    Continuation = cursor,
+                    Continuation = continuation,
                     ExcludeRead = _unreadOnly,
                     Order = InoreaderFs.Endpoints.StreamContents.Order.NewestFirst,
                     Number = 100
                 });
-                return new FeedBatch {
-                    Cursor = page.GetContinuation(),
-                    HasMore = page.GetContinuation() != null,
-                    FeedItems = Wrangle(page.items)
-                };
-            } catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.TooManyRequests) {
-                throw new TooManyRequestsException();
-            } catch (WebException ex) when (ex.Response.ContentType == "application/json") {
-                string json;
-                using (var sr = new StreamReader(ex.Response.GetResponseStream())) {
-                    json = await sr.ReadToEndAsync();
+
+                continuation = page.GetContinuation();
+                if (continuation == null)
+                    break;
+
+                foreach (var f in page.items) {
+                    var images = GetImageUrls(f.summary.content);
+                    if (images.Any()) {
+                        foreach (var i in images) {
+                            yield return new Artwork {
+                                Author = new Author {
+                                    Username = f.origin.title
+                                },
+                                LinkUrl = f.canonical.Select(x => x.href).FirstOrDefault(),
+                                Thumbnails = new[] {
+                                new Thumbnail {
+                                    Url = i
+                                }
+                            },
+                                Timestamp = f.GetTimestamp(),
+                                Title = f.title
+                            };
+                        }
+                    } else {
+                        yield return new BlogPost {
+                            Author = new Author {
+                                Username = f.origin.title
+                            },
+                            Html = WebUtility.HtmlEncode(f.title),
+                            LinkUrl = f.canonical.Select(x => x.href).FirstOrDefault(),
+                            Timestamp = f.GetTimestamp()
+                        };
+                    }
                 }
-                var obj = JsonConvert.DeserializeAnonymousType(json, new { error = "" });
-                if (obj.error == "invalid_grant")
-                    throw new NoTokenException();
-                else
-                    throw;
             }
         }
 
-        public string GetNotificationsUrl() => null;
-        public string GetSubmitUrl() => null;
+        public IAsyncEnumerable<string> GetNotificationsAsync() => AsyncEnumerable.Empty<string>();
     }
 }

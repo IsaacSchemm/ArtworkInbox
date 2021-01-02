@@ -7,31 +7,43 @@
     var user = await UserManager.GetUserAsync(User);
 
     bool has_deviantart = user != null && await ApplicationDbContext.UserDeviantArtTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_weasyl = user != null && await ApplicationDbContext.UserWeasylTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_twitter = user != null && await ApplicationDbContext.UserTwitterTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_reddit = user != null && await ApplicationDbContext.UserRedditTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_inoreader = user != null && await ApplicationDbContext.UserInoreaderTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_furaffinity = user != null && await ApplicationDbContext.UserFurAffinityTokens
+        .AsQueryable()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
-    var mastodon_tokens = user == null
-        ? Enumerable.Empty<UserMastodonToken>()
-        : await ApplicationDbContext.UserMastodonTokens
-            .Where(x => x.UserId == user.Id)
-            .ToListAsync();
+    bool has_mastodon_social = user != null && await ApplicationDbContext.UserMastodonTokens
+        .AsQueryable()
+        .Where(x => x.Host == "mastodon.social")
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
+    bool has_botsin_space = user != null && await ApplicationDbContext.UserMastodonTokens
+        .AsQueryable()
+        .Where(x => x.Host == "botsin.space")
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -42,6 +54,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y=" crossorigin="anonymous" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="icon" type="image/svg+xml" href="~/images/favicon.svg">
+    @* SeaMonkey pagination *@
+    @await RenderSectionAsync("LinkRelNavigation", false)
 </head>
 <body>
     <header>
@@ -108,10 +122,17 @@
                                 </a>
                             </li>
                         }
-                        @foreach (var t in mastodon_tokens) {
+                        @if (has_mastodon_social) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" href="/Mastodon/Feed?host=@Uri.EscapeDataString(t.Host)">
-                                    @t.Host
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MastodonSocial" asp-action="Feed">
+                                    mastodon.social
+                                </a>
+                            </li>
+                        }
+                        @if (has_botsin_space) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="BotsinSpace" asp-action="Feed">
+                                    botsin.space
                                 </a>
                             </li>
                         }
