@@ -9,6 +9,8 @@ namespace ArtworkInbox.Models {
         public DateTimeOffset Latest { get; set; }
         public Author AuthenticatedUser { get; set; }
         public IEnumerable<FeedItem> FeedItems { get; set; }
+        public int LastOffset { get; set; }
+        public bool HasLess { get; set; }
         public int NextOffset { get; set; }
         public bool HasMore { get; set; }
         public string NotificationsCount { get; set; }

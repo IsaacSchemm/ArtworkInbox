@@ -101,6 +101,8 @@ namespace ArtworkInbox.Controllers {
                     Latest = latest ?? page.Select(x => x.Timestamp).DefaultIfEmpty(DateTimeOffset.MinValue).First(),
                     AuthenticatedUser = cacheItem.RemoteUser,
                     FeedItems = page,
+                    LastOffset = Math.Max(offset - limit, 0),
+                    HasLess = offset > 0,
                     NextOffset = offset + limit,
                     HasMore = hasMore,
                     NotificationsCount = cacheItem.NotificationsCount,

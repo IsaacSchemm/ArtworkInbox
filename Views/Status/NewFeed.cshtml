@@ -3,6 +3,16 @@
     ViewData["Title"] = "Status Feed (Twitter / Mastodon / DeviantArt)";
 }
 
+@section LinkRelNavigation { 
+    <link rel="first" href="Feed?key=@Model.Key&offset=0&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))" />
+    @if (Model.HasLess) {
+        <link rel="prev" href="Feed?key=@Model.Key&offset=@Model.LastOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))" />
+    }
+    @if (Model.HasMore) {
+        <link rel="next" href="Feed?key=@Model.Key&offset=@Model.NextOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))" />
+    }
+}
+
 <div>
     <h5 class="card-title">
         @if (Model.AuthenticatedUser.AvatarUrl != null) {
@@ -69,11 +79,19 @@
                 <hr />
             }
 
-            @if (Model.HasMore) {
+            @if (Model.HasMore || Model.HasLess) {
                 <p>
-                    <a class="btn btn-primary" href="Feed?key=@Model.Key&offset=@Model.NextOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
-                        Next page &raquo;
-                    </a>
+                    @if (Model.HasLess) {
+                        <a class="btn btn-primary" href="Feed?key=@Model.Key&offset=@Model.LastOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+                            &laquo; Previous page
+                        </a>
+                    }
+
+                    @if (Model.HasMore) {
+                        <a class="btn btn-primary" href="Feed?key=@Model.Key&offset=@Model.NextOffset&latest=@Uri.EscapeDataString(Model.Latest.ToString("o"))">
+                            Next page &raquo;
+                        </a>
+                    }
                 </p>
             }
         </div>
