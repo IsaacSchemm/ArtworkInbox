@@ -16,7 +16,7 @@ namespace ArtworkInbox.Backend.Sources {
 
         public async Task<Author> GetAuthenticatedUserAsync() {
             try {
-                var user = await DeviantArtFs.Api.User.Whoami.ExecuteAsync(_token, DeviantArtObjectExpansion.None);
+                var user = await DeviantArtFs.Api.User.AsyncWhoami(_token, DeviantArtObjectExpansion.None).StartAsTask();
                 return new Author {
                     Username = user.username,
                     AvatarUrl = user.usericon,
@@ -31,9 +31,7 @@ namespace ArtworkInbox.Backend.Sources {
         public string GetSubmitUrl() => "https://www.deviantart.com/submit";
 
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
-            var asyncSeq = DeviantArtFs.Api.Browse.DeviantsYouWatch.ToAsyncSeq(_token, 0);
-            var asyncEnum = FSharp.Control.AsyncSeq.toAsyncEnum(asyncSeq);
-            await foreach (var d in asyncEnum) {
+            await foreach (var d in DeviantArtFs.Api.Browse.AsyncGetByDeviantsYouWatch(_token, 0).ToAsyncEnumerable()) {
                 if (!d.is_deleted) {
                     yield return new Artwork {
                         Author = d.author.OrNull() is DeviantArtUser a
