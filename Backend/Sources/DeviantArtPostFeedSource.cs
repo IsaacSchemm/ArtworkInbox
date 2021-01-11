@@ -33,26 +33,40 @@ namespace ArtworkInbox.Backend.Sources {
         public string GetSubmitUrl() => "https://www.deviantart.com/submit";
 
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
-            var asyncEnum = DeviantArtFs.Api.Messages.AsyncGetFeed(
-                _token,
-                new DeviantArtFs.Api.Messages.MessagesFeedRequest { Stack = false },
-                Microsoft.FSharp.Core.FSharpOption<string>.None).ToAsyncEnumerable();
-            await foreach (var n in asyncEnum) {
-                if (n.comment.OrNull() is DeviantArtComment comment) {
-                    var parent_author = n.subject.OrNull()?.comment?.OrNull()?.user
-                        ?? n.subject.OrNull()?.status?.OrNull()?.author?.OrNull();
-                    var status = n.subject.OrNull()?.status?.OrNull()
-                        ?? n.status.OrNull();
-                    var user = comment.user;
+            var asyncEnum = DeviantArtFs.Api.Browse.AsyncGetPostsByDeviantsYouWatch(_token, 0).ToAsyncEnumerable();
+            await foreach (var p in asyncEnum) {
+                if (p.journal.OrNull() is Deviation d && IncludeJournals) {
+                    yield return new JournalEntry {
+                        Author = d.author.OrNull() is DeviantArtUser a
+                            ? new Author {
+                                Username = a.username,
+                                AvatarUrl = a.usericon,
+                                ProfileUrl = $"https://www.deviantart.com/{Uri.EscapeDataString(a.username)}"
+                            } : new Author {
+                                Username = "???",
+                                AvatarUrl = null,
+                                ProfileUrl = null
+                            },
+                        Timestamp = d.published_time.OrNull() ?? DateTimeOffset.UtcNow,
+                        Html = d.excerpt.OrNull() ?? "",
+                        LinkUrl = d.url.OrNull() ?? ""
+                    };
+                }
+                if (p.status.OrNull() is DeviantArtStatus s && IncludeStatuses) {
                     yield return new StatusUpdate {
-                        Author = new Author {
-                            Username = user.username,
-                            AvatarUrl = user.usericon,
-                            ProfileUrl = $"https://www.deviantart.com/{Uri.EscapeDataString(user.username)}"
-                        },
-                        Html = (parent_author is DeviantArtUser a ? $"@{a.username} " : "") + comment.body,
-                        LinkUrl = status?.url?.OrNull(),
-                        Timestamp = comment.posted
+                        Author = s.author.OrNull() is DeviantArtUser a
+                            ? new Author {
+                                Username = a.username,
+                                AvatarUrl = a.usericon,
+                                ProfileUrl = $"https://www.deviantart.com/{Uri.EscapeDataString(a.username)}"
+                            } : new Author {
+                                Username = "???",
+                                AvatarUrl = null,
+                                ProfileUrl = null
+                            },
+                        Timestamp = s.ts.OrNull() ?? DateTimeOffset.UtcNow,
+                        Html = s.body.OrNull() ?? "",
+                        LinkUrl = s.url.OrNull() ?? ""
                     };
                 }
             }
