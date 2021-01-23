@@ -28,24 +28,26 @@
     }
 </style>
 
-<div>
-    <h5 class="card-title">
-        @if (Model.AuthenticatedUser.AvatarUrl != null) {
-            <img src="@Model.AuthenticatedUser.AvatarUrl" width="50" height="50" />
-        }
-        @Model.AuthenticatedUser.Username
-    </h5>
-    <a href="@Model.AuthenticatedUser.ProfileUrl" target="_blank">Profile</a>
-    &middot;
-    <a href="@Model.NotificationsUrl" target="_blank">
-        Notifications
-        @if (Model.NotificationsCount != null) {
-            @:(@Model.NotificationsCount)
-        }
-    </a>
-    &middot;
-    <a href="@Model.SubmitUrl" target="_blank">Submit</a>
-</div>
+@if (Model.AuthenticatedUser != null) {
+    <div>
+        <h5 class="card-title">
+            @if (Model.AuthenticatedUser.AvatarUrl != null) {
+                <img src="@Model.AuthenticatedUser.AvatarUrl" width="50" height="50" />
+            }
+            @Model.AuthenticatedUser.Username
+        </h5>
+        <a href="@Model.AuthenticatedUser.ProfileUrl" target="_blank">Profile</a>
+        &middot;
+        <a href="@Model.NotificationsUrl" target="_blank">
+            Notifications
+            @if (Model.NotificationsCount != null) {
+                @:(@Model.NotificationsCount)
+            }
+        </a>
+        &middot;
+        <a href="@Model.SubmitUrl" target="_blank">Submit</a>
+    </div>
+}
 
 <hr />
 
