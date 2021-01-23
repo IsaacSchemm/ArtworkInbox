@@ -1,27 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ArtworkInbox.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace ArtworkInbox.Controllers
 {
     public class FeedConfigurationController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public FeedConfigurationController(ApplicationDbContext context)
+        public FeedConfigurationController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
+            _userManager = userManager;
             _context = context;
         }
 
         // GET: FeedConfiguration
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.UserExternalFeeds.Include(u => u.User);
+            string userId = _userManager.GetUserId(User);
+            var applicationDbContext = _context.UserExternalFeeds.AsQueryable().Where(f => f.UserId == userId);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -33,8 +35,10 @@ namespace ArtworkInbox.Controllers
                 return NotFound();
             }
 
+            string userId = _userManager.GetUserId(User);
             var userExternalFeed = await _context.UserExternalFeeds
-                .Include(u => u.User)
+                .AsQueryable()
+                .Where(f => f.UserId == userId)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (userExternalFeed == null)
             {
@@ -47,7 +51,6 @@ namespace ArtworkInbox.Controllers
         // GET: FeedConfiguration/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -56,69 +59,16 @@ namespace ArtworkInbox.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,Type,Url,LastRead")] UserExternalFeed userExternalFeed)
+        public async Task<IActionResult> Create([Bind("Type,Url")] UserExternalFeed userExternalFeed)
         {
             if (ModelState.IsValid)
             {
+                userExternalFeed.UserId = _userManager.GetUserId(User);
                 userExternalFeed.Id = Guid.NewGuid();
                 _context.Add(userExternalFeed);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userExternalFeed.UserId);
-            return View(userExternalFeed);
-        }
-
-        // GET: FeedConfiguration/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var userExternalFeed = await _context.UserExternalFeeds.FindAsync(id);
-            if (userExternalFeed == null)
-            {
-                return NotFound();
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userExternalFeed.UserId);
-            return View(userExternalFeed);
-        }
-
-        // POST: FeedConfiguration/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,UserId,Type,Url,LastRead")] UserExternalFeed userExternalFeed)
-        {
-            if (id != userExternalFeed.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(userExternalFeed);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExternalFeedExists(userExternalFeed.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userExternalFeed.UserId);
             return View(userExternalFeed);
         }
 
@@ -130,8 +80,10 @@ namespace ArtworkInbox.Controllers
                 return NotFound();
             }
 
+            string userId = _userManager.GetUserId(User);
             var userExternalFeed = await _context.UserExternalFeeds
-                .Include(u => u.User)
+                .AsQueryable()
+                .Where(f => f.UserId == userId)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (userExternalFeed == null)
             {
@@ -146,15 +98,14 @@ namespace ArtworkInbox.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var userExternalFeed = await _context.UserExternalFeeds.FindAsync(id);
+            string userId = _userManager.GetUserId(User);
+            var userExternalFeed = await _context.UserExternalFeeds
+                .AsQueryable()
+                .Where(f => f.UserId == userId)
+                .SingleAsync(m => m.Id == id);
             _context.UserExternalFeeds.Remove(userExternalFeed);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserExternalFeedExists(Guid id)
-        {
-            return _context.UserExternalFeeds.Any(e => e.Id == id);
         }
     }
 }

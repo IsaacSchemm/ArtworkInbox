@@ -5,7 +5,11 @@
 @inject ApplicationDbContext ApplicationDbContext
 @{ 
     var user = await UserManager.GetUserAsync(User);
-
+    
+    bool has_external_feeds = user != null && await ApplicationDbContext.UserExternalFeeds
+        .AsQueryable()
+        .Where(x => x.UserId == user.Id)
+        .AnyAsync();
     bool has_deviantart = user != null && await ApplicationDbContext.UserDeviantArtTokens
         .AsQueryable()
         .Where(x => x.UserId == user.Id)
@@ -69,15 +73,26 @@
                 <div class="navbar-collapse collapse d-lg-inline-flex flex-lg-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        @if (has_deviantart) {
+                        @if (has_external_feeds) {
                             <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-ino" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    RSS / Atom
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-ino">
+                                    <a class="dropdown-item" asp-area="" asp-controller="ExternalFeed" asp-action="Index">Feed</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="FeedConfiguration" asp-action="Index">Settings</a>
+                                </div>
+                            </li>
+                        }
+                        @if (has_deviantart) {
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="DeviantArt" asp-action="Feed">
                                     DeviantArt
                                 </a>
                             </li>
                         }
                         @if (has_furaffinity) {
-                            <li class="nav-item dropdown">
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="FurAffinity" asp-action="Feed">
                                     Fur Affinity
                                 </a>

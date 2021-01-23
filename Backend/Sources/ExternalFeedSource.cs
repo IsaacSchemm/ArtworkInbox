@@ -61,29 +61,21 @@ namespace ArtworkInbox.Backend.Sources {
                             yield break;
 
                         var image_match = Regex.Match(item is IAtomEntry a ? a.Summary : item.Description, "img[^>]+src=['\"]([^'\"]+)['\"]");
-                        if (image_match.Success)
-                            yield return new Artwork {
-                                Author = new Author {
-                                    Username = title ?? string.Join(" / ", item.Contributors.Select(x => x.Name ?? x.Email))
-                                },
-                                LinkUrl = item.Links.Select(x => x.Uri).Where(x => x != null).Select(x => x.AbsoluteUri).FirstOrDefault(),
-                                Thumbnails = new Thumbnail[] {
+                        yield return new Artwork {
+                            Author = new Author {
+                                Username = title ?? string.Join(" / ", item.Contributors.Select(x => x.Name ?? x.Email))
+                            },
+                            LinkUrl = item.Links.Select(x => x.Uri).Where(x => x != null).Select(x => x.AbsoluteUri).FirstOrDefault(),
+                            Thumbnails = image_match.Success
+                                ? new Thumbnail[] {
                                     new Thumbnail {
                                         Url = image_match.Groups[1].Value
                                     }
-                                },
-                                Timestamp = ts,
-                                Title = item.Title
-                            };
-                        else
-                            yield return new BlogPost {
-                                Author = new Author {
-                                    Username = string.Join(" / ", item.Contributors.Select(x => x.Name ?? x.Email))
-                                },
-                                LinkUrl = item.Links.Select(x => x.Uri).Where(x => x != null).Select(x => x.AbsoluteUri).FirstOrDefault(),
-                                Timestamp = ts,
-                                Html = item.Description
-                            };
+                                }
+                                : Enumerable.Empty<Thumbnail>(),
+                            Timestamp = ts,
+                            Title = item.Title
+                        };
                         break;
 
                     // Read link
