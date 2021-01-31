@@ -17,6 +17,8 @@ namespace ArtworkInbox.Backend.Sources {
             _client = client;
         }
 
+        public string Name => "Tumblr";
+
         public class UserInfoResponse {
             public User user;
         }

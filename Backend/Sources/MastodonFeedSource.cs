@@ -12,6 +12,8 @@ namespace ArtworkInbox.Backend.Sources {
 
         public bool IgnoreMedia { get; set; } = false;
 
+        public string Name => _token.Instance;
+
         public MastodonFeedSource(string host, string accessToken) {
             _token = new MastodonClient(
                 new AppRegistration { Instance = host },

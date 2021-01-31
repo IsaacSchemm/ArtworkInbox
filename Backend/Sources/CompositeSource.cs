@@ -13,6 +13,8 @@ namespace ArtworkInbox.Backend.Sources {
             Sources = sources;
         }
 
+        public string Name => string.Join(", ", Sources.Select(x => x.Name));
+
         public async Task<Author> GetAuthenticatedUserAsync() {
             var authors = await Task.WhenAll(Sources.Select(x => x.GetAuthenticatedUserAsync()));
             return authors.Distinct().Count() == 1

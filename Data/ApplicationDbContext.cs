@@ -25,5 +25,7 @@ namespace ArtworkInbox.Data {
         public DbSet<UserInoreaderToken> UserInoreaderTokens { get; set; }
 
         public DbSet<UserFurAffinityToken> UserFurAffinityTokens { get; set; }
+
+        public DbSet<UserExternalFeed> UserExternalFeeds { get; set; }
     }
 }

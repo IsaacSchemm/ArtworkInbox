@@ -18,6 +18,8 @@ namespace ArtworkInbox.Backend.Sources {
             _client = new TwitterClient(token);
         }
 
+        public string Name => "Twitter";
+
         public async Task<Author> GetAuthenticatedUserAsync() {
             var user = await _client.Users.GetAuthenticatedUserAsync();
             return new Author {
