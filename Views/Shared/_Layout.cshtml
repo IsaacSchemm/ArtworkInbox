@@ -6,46 +6,40 @@
 @{ 
     var user = await UserManager.GetUserAsync(User);
     
-    bool has_external_feeds = user != null && await ApplicationDbContext.UserExternalFeeds
-        .AsQueryable()
+    var has_external_feeds = user != null && await ApplicationDbContext.UserExternalFeeds
+        .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_deviantart = user != null && await ApplicationDbContext.UserDeviantArtTokens
-        .AsQueryable()
+        .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_weasyl = user != null && await ApplicationDbContext.UserWeasylTokens
-        .AsQueryable()
+        .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_twitter = user != null && await ApplicationDbContext.UserTwitterTokens
-        .AsQueryable()
+        .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
-        .AsQueryable()
+        .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_reddit = user != null && await ApplicationDbContext.UserRedditTokens
-        .AsQueryable()
+        .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_inoreader = user != null && await ApplicationDbContext.UserInoreaderTokens
-        .AsQueryable()
+        .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
     bool has_furaffinity = user != null && await ApplicationDbContext.UserFurAffinityTokens
-        .AsQueryable()
+        .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
-    bool has_mastodon_social = user != null && await ApplicationDbContext.UserMastodonTokens
-        .AsQueryable()
-        .Where(x => x.Host == "mastodon.social")
-        .Where(x => x.UserId == user.Id)
-        .AnyAsync();
-    bool has_botsin_space = user != null && await ApplicationDbContext.UserMastodonTokens
-        .AsQueryable()
-        .Where(x => x.Host == "botsin.space")
+    bool has_mastodon = user != null && await ApplicationDbContext.UserMastodonTokens
+        .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .AnyAsync();
 }
@@ -79,8 +73,8 @@
                                     RSS / Atom
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dropdown-ino">
-                                    <a class="dropdown-item" asp-area="" asp-controller="ExternalFeed" asp-action="Index">Feed</a>
-                                    <a class="dropdown-item" asp-area="" asp-controller="FeedConfiguration" asp-action="Index">Settings</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="ExternalFeed" asp-action="Feed">All Feeds</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="FeedConfiguration" asp-action="Index">Add/Remove</a>
                                 </div>
                             </li>
                         }
@@ -137,18 +131,29 @@
                                 </a>
                             </li>
                         }
-                        @if (has_mastodon_social) {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MastodonSocial" asp-action="Feed">
-                                    mastodon.social
+                        @if (has_mastodon) {
+                            bool has_mastodon_social = user != null && await ApplicationDbContext.UserMastodonTokens
+                                .AsNoTracking()
+                                .Where(x => x.Host == "mastodon.social")
+                                .Where(x => x.UserId == user.Id)
+                                .AnyAsync();
+                            bool has_botsin_space = user != null && await ApplicationDbContext.UserMastodonTokens
+                                .AsNoTracking()
+                                .Where(x => x.Host == "botsin.space")
+                                .Where(x => x.UserId == user.Id)
+                                .AnyAsync();
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-mas" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Mastodon
                                 </a>
-                            </li>
-                        }
-                        @if (has_botsin_space) {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="BotsinSpace" asp-action="Feed">
-                                    botsin.space
-                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown-mas">
+                                    @if (has_mastodon_social) {
+                                        <a class="dropdown-item" asp-area="" asp-controller="MastodonSocial" asp-action="Feed">mastodon.social</a>
+                                    }
+                                    @if (has_botsin_space) {
+                                        <a class="dropdown-item" asp-area="" asp-controller="BotsinSpace" asp-action="Feed">botsin.space</a>
+                                    }
+                                </div>
                             </li>
                         }
                     </ul>

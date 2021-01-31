@@ -23,7 +23,9 @@ namespace ArtworkInbox.Controllers {
                 .AsNoTracking()
                 .Where(f => f.UserId == userId)
                 .ToListAsync();
-            return new CompositeSource(feeds.Select(x => new ExternalFeedSource(x)));
+            return feeds.Count == 1
+                ? new ExternalFeedSource(feeds.Single())
+                : new CompositeSource(feeds.Select(x => new ExceptionEater(new ExternalFeedSource(x))));
         }
 
         // For external feeds, the hiding of already-read items is handled inside ExternalFeedSource.

@@ -3,7 +3,6 @@ using ArtworkInbox.Data;
 using Microsoft.SyndicationFeed;
 using Microsoft.SyndicationFeed.Atom;
 using Microsoft.SyndicationFeed.Rss;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +20,8 @@ namespace ArtworkInbox.Backend.Sources {
             _externalFeed = externalFeed;
         }
 
+        public string Name => $"{_externalFeed.Type} feed {_externalFeed.Url}";
+
         public Task<Author> GetAuthenticatedUserAsync() => Task.FromResult<Author>(null);
 
         public string GetNotificationsUrl() => null;
@@ -31,7 +32,6 @@ namespace ArtworkInbox.Backend.Sources {
 
             var req = WebRequest.CreateHttp(_externalFeed.Url);
             using var resp = await req.GetResponseAsync();
-            System.Diagnostics.Debug.WriteLine(resp.ContentType);
             using var s = resp.GetResponseStream();
             using var sr = new StreamReader(s);
             string xml = await sr.ReadToEndAsync();

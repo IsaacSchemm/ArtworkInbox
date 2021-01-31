@@ -14,6 +14,8 @@ namespace ArtworkInbox.Backend.Sources {
             _token = token;
         }
 
+        public string Name => "DeviantArt (Deviations)";
+
         public async Task<Author> GetAuthenticatedUserAsync() {
             try {
                 var user = await DeviantArtFs.Api.User.AsyncWhoami(_token, DeviantArtObjectExpansion.None).StartAsTask();

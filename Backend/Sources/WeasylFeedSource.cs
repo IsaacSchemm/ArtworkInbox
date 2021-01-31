@@ -13,6 +13,8 @@ namespace ArtworkInbox.Backend.Sources {
             _token = token;
         }
 
+        public string Name => "Weasyl";
+
         public async Task<Author> GetAuthenticatedUserAsync() {
             var user = await WeasylFs.Endpoints.Whoami.ExecuteAsync(_token);
             var avatar = await WeasylFs.Endpoints.UserAvatar.ExecuteAsync(_token, user.login);

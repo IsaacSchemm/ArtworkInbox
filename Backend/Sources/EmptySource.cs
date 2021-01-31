@@ -9,6 +9,8 @@ namespace ArtworkInbox.Backend.Sources {
             return Task.FromResult(new Author());
         }
 
+        public string Name => "Empty";
+
         public IAsyncEnumerable<FeedItem> GetFeedItemsAsync() => AsyncEnumerable.Empty<FeedItem>();
 
         public IAsyncEnumerable<string> GetNotificationsAsync() => AsyncEnumerable.Empty<string>();

@@ -1,10 +1,14 @@
 ﻿@model IEnumerable<ArtworkInbox.Data.UserExternalFeed>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Add/Remove Feeds";
 }
 
-<h1>Index</h1>
+<h1>Add/Remove Feeds</h1>
+
+<p>
+    Artwork Inbox can read both Atom and RSS feeds. When adding a new feed, ake sure to select the correct type.
+</p>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -12,9 +16,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Type)
             </th>
@@ -31,9 +32,6 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Type)
             </td>
             <td>
@@ -43,8 +41,7 @@
                 @Html.DisplayFor(modelItem => item.LastRead)
             </td>
             <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Remove</a>
             </td>
         </tr>
 }

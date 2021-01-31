@@ -18,6 +18,8 @@ namespace ArtworkInbox.Backend.Sources {
             _client = client;
         }
 
+        public string Name => "Reddit";
+
         public Task<Author> GetAuthenticatedUserAsync() {
             var response = _client.Account.GetMe();
             return Task.FromResult(new Author {

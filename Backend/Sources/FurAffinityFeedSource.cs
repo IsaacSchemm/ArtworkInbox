@@ -14,6 +14,8 @@ namespace ArtworkInbox.Backend.Sources {
             _fa_cookie = fa_cookie;
         }
 
+        public string Name => "Fur Affinity";
+
         public async Task<Author> GetAuthenticatedUserAsync() {
             try {
                 var ns = await FurAffinity.Notifications.GetOthersAsync(_fa_cookie);

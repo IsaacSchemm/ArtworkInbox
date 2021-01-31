@@ -14,6 +14,8 @@ namespace ArtworkInbox.Backend.Sources {
         private readonly bool _allAsText;
         private readonly bool _unreadOnly;
 
+        public string Name => "Inoreader";
+
         public InoreaderFeedSource(InoreaderFs.Auth.Credentials credentials, bool allAsText = false, bool unreadOnly = false) {
             _credentials = credentials;
             _allAsText = allAsText;
