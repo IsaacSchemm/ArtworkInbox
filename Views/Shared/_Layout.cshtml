@@ -67,13 +67,15 @@
                 <div class="navbar-collapse collapse d-lg-inline-flex flex-lg-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        @if (has_external_feeds) {
+                        @if (user != null) {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-ino" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     RSS / Atom
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dropdown-ino">
+                                    @if (has_external_feeds) {
                                     <a class="dropdown-item" asp-area="" asp-controller="ExternalFeed" asp-action="Feed">All Feeds</a>
+                                    }
                                     <a class="dropdown-item" asp-area="" asp-controller="FeedConfiguration" asp-action="Index">Add/Remove</a>
                                 </div>
                             </li>
