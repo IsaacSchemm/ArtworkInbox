@@ -60,32 +60,32 @@
 
 
   <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.DeviantArt" Version="5.0.0" />
-    <PackageReference Include="AspNet.Security.OAuth.Reddit" Version="5.0.0" />
-    <PackageReference Include="DeviantArtFs" Version="7.0.1" />
+    <PackageReference Include="AspNet.Security.OAuth.DeviantArt" Version="5.0.4" />
+    <PackageReference Include="AspNet.Security.OAuth.Reddit" Version="5.0.4" />
+    <PackageReference Include="DeviantArtFs" Version="8.0.0" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.0.3" />
     <PackageReference Include="InoreaderFs" Version="1.1.0" />
     <PackageReference Include="ISchemm.AspNetCore.Authentication.Tumblr" Version="3.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.2">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
     <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NewTumblrSharp" Version="1.2.0.156" />
     <PackageReference Include="Pleronet" Version="1.0.0" />
-    <PackageReference Include="Reddit" Version="1.4.0" />
+    <PackageReference Include="Reddit" Version="1.5.0" />
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
-    <PackageReference Include="TweetinviAPI" Version="5.0.3" />
+    <PackageReference Include="TweetinviAPI" Version="5.0.4" />
     <PackageReference Include="WeasylFs" Version="2.0.0" />
   </ItemGroup>
 

@@ -1,6 +1,8 @@
 ﻿using ArtworkInbox.Backend.Types;
 using DeviantArtFs;
 using DeviantArtFs.Extensions;
+using DeviantArtFs.ParameterTypes;
+using DeviantArtFs.ResponseTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +20,9 @@ namespace ArtworkInbox.Backend.Sources {
 
         public async Task<Author> GetAuthenticatedUserAsync() {
             try {
-                var user = await DeviantArtFs.Api.User.AsyncWhoami(_token, DeviantArtObjectExpansion.None).StartAsTask();
+                var user = await DeviantArtFs.Api.User.AsyncWhoami(
+                    _token,
+                    ObjectExpansion.None).StartAsTask();
                 return new Author {
                     Username = user.username,
                     AvatarUrl = user.usericon,
@@ -33,10 +37,10 @@ namespace ArtworkInbox.Backend.Sources {
         public string GetSubmitUrl() => "https://www.deviantart.com/submit";
 
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
-            await foreach (var d in DeviantArtFs.Api.Browse.AsyncGetByDeviantsYouWatch(_token, 0).ToAsyncEnumerable()) {
+            await foreach (var d in DeviantArtFs.Api.Browse.AsyncGetByDeviantsYouWatch(_token, PagingLimit.MaximumPagingLimit, PagingOffset.StartingOffset)) {
                 if (!d.is_deleted) {
                     yield return new Artwork {
-                        Author = d.author.OrNull() is DeviantArtUser a
+                        Author = d.author.OrNull() is User a
                         ? new Author {
                             Username = a.username,
                             AvatarUrl = a.usericon,

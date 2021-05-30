@@ -1,6 +1,8 @@
 ﻿using ArtworkInbox.Backend.Types;
 using DeviantArtFs;
 using DeviantArtFs.Extensions;
+using DeviantArtFs.ParameterTypes;
+using DeviantArtFs.ResponseTypes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,7 +22,9 @@ namespace ArtworkInbox.Backend.Sources {
 
         public async Task<Author> GetAuthenticatedUserAsync() {
             try {
-                var user = await DeviantArtFs.Api.User.AsyncWhoami(_token, DeviantArtObjectExpansion.None).StartAsTask();
+                var user = await DeviantArtFs.Api.User.AsyncWhoami(
+                    _token,
+                    ObjectExpansion.None).StartAsTask();
                 return new Author {
                     Username = user.username,
                     AvatarUrl = user.usericon,
@@ -35,11 +39,11 @@ namespace ArtworkInbox.Backend.Sources {
         public string GetSubmitUrl() => "https://www.deviantart.com/submit";
 
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
-            var asyncEnum = DeviantArtFs.Api.Browse.AsyncGetPostsByDeviantsYouWatch(_token, 0).ToAsyncEnumerable();
+            var asyncEnum = DeviantArtFs.Api.Browse.AsyncGetPostsByDeviantsYouWatch(_token, PagingLimit.MaximumPagingLimit, PagingOffset.StartingOffset);
             await foreach (var p in asyncEnum) {
                 if (p.journal.OrNull() is Deviation d && IncludeJournals) {
                     yield return new JournalEntry {
-                        Author = d.author.OrNull() is DeviantArtUser a
+                        Author = d.author.OrNull() is User a
                             ? new Author {
                                 Username = a.username,
                                 AvatarUrl = a.usericon,
@@ -54,9 +58,9 @@ namespace ArtworkInbox.Backend.Sources {
                         LinkUrl = d.url.OrNull() ?? ""
                     };
                 }
-                if (p.status.OrNull() is DeviantArtStatus s && IncludeStatuses) {
+                if (p.status.OrNull() is Status s && IncludeStatuses) {
                     yield return new StatusUpdate {
-                        Author = s.author.OrNull() is DeviantArtUser a
+                        Author = s.author.OrNull() is User a
                             ? new Author {
                                 Username = a.username,
                                 AvatarUrl = a.usericon,
@@ -77,8 +81,9 @@ namespace ArtworkInbox.Backend.Sources {
         public async IAsyncEnumerable<string> GetNotificationsAsync() {
             var asyncEnum = DeviantArtFs.Api.Messages.AsyncGetFeed(
                 _token,
-                new DeviantArtFs.Api.Messages.MessagesFeedRequest { Stack = false },
-                Microsoft.FSharp.Core.FSharpOption<string>.None).ToAsyncEnumerable();
+                StackMessages.NewStackMessages(false),
+                MessageFolder.Inbox,
+                MessageCursor.StartingCursor);
             await foreach (var n in asyncEnum) {
                 yield return $"{n}";
             }
