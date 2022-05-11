@@ -5,6 +5,7 @@ using DeviantArtFs.ParameterTypes;
 using DeviantArtFs.ResponseTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
@@ -78,15 +79,8 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public async IAsyncEnumerable<string> GetNotificationsAsync() {
-            var asyncEnum = DeviantArtFs.Api.Messages.AsyncGetFeed(
-                _token,
-                StackMessages.NewStackMessages(false),
-                MessageFolder.Inbox,
-                MessageCursor.StartingCursor);
-            await foreach (var n in asyncEnum) {
-                yield return $"{n}";
-            }
+        public IAsyncEnumerable<string> GetNotificationsAsync() {
+            return AsyncEnumerable.Empty<string>();
         }
     }
 }
