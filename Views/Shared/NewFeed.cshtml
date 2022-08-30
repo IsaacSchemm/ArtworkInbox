@@ -70,8 +70,8 @@
     <div class="container-fluid">
         <div class="row">
             @foreach (var d in g) {
-                <div class="col-md-3 text-center my-4">
-                    <a href="@d.LinkUrl">
+                <div class="col-sm-4 col-md-3 text-center my-4">
+                    <a href="@d.LinkUrl" target="_blank">
                         <img src="@(d.ThumbnailUrl ?? "/images/no-thumb.svg")"
                              srcset="@d.Srcset"
                              alt=""
@@ -96,7 +96,7 @@
         <p class="font-weight-bold">@g.Key</p>
         @foreach (var d in g) {
             <p style="white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis">
-                <a href="@d.LinkUrl">
+                <a href="@d.LinkUrl" target="_blank">
                     <strong>@d.Author.Username:</strong>
                 </a>
                 <span class="html-to-convert">@d.Excerpt</span>
@@ -112,7 +112,7 @@
         <p class="font-weight-bold">@g.Key</p>
         foreach (var s in g) {
             <p style="white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis">
-                <a href="@s.LinkUrl">
+                <a href="@s.LinkUrl" target="_blank">
                     <strong>@s.Author.Username:</strong>
                 </a>
                 <span class="html-to-convert">@s.Excerpt</span>
@@ -128,7 +128,7 @@
         <p class="font-weight-bold">@g.Key</p>
         foreach (var s in g) {
             <p style="white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis">
-                <a href="@s.LinkUrl">
+                <a href="@s.LinkUrl" target="_blank">
                     <strong>@s.Author.Username:</strong>
                 </a>
                 <span class="html-to-convert">@s.Excerpt</span>
