@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Azure.ResourceManager.Compute;
+using Azure.Identity;
+using Azure.ResourceManager;
 
 namespace ArtworkInbox {
     public class Startup {
@@ -26,6 +29,15 @@ namespace ArtworkInbox {
         public void ConfigureServices(IServiceCollection services) {
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddHttpClient();
+
+            var credential = new ChainedTokenCredential(
+                new ManagedIdentityCredential(),
+                new VisualStudioCredential(new VisualStudioCredentialOptions { TenantId = "dd259809-e6e5-487a-bdfb-8bf0a973b11e" }));
+            var client = new ArmClient(credential);
+            services.AddSingleton(client.GetVirtualMachineResource(
+                new Azure.Core.ResourceIdentifier(
+                    Configuration["VirtualMachineResourceId"])));
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection"),

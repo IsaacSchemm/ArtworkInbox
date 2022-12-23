@@ -37,3 +37,17 @@
 </p>
 
 <div style="clear: both"></div>
+
+<hr>
+
+<p>
+    Database server status: @string.Join(", ", ViewBag.PowerStates)
+
+    <form asp-controller="Home" asp-action="StartDatabase" method="post" style="display: inline">
+        <button class="btn btn-primary" type="submit">Start</button>
+    </form>
+
+    <form asp-controller="Home" asp-action="StopDatabase" method="post" style="display: inline">
+        <button class="btn btn-primary" type="submit">Stop</button>
+    </form>
+</p>
