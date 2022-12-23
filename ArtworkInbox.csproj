@@ -64,7 +64,6 @@
     <PackageReference Include="AspNet.Security.OAuth.Reddit" Version="6.0.6" />
     <PackageReference Include="DeviantArtFs" Version="8.0.0" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
-    <PackageReference Include="InoreaderFs" Version="1.1.0" />
     <PackageReference Include="ISchemm.AspNetCore.Authentication.Tumblr" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="6.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.6" />

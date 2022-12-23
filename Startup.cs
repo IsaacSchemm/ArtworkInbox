@@ -16,10 +16,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace ArtworkInbox {
     public class Startup {
-        private class InoreaderTempToken : InoreaderFs.Auth.OAuth.IAccessToken {
-            public string AccessToken { get; set; }
-        }
-
         public Startup(IConfiguration configuration) {
             Configuration = configuration;
         }
@@ -39,40 +35,6 @@ namespace ArtworkInbox {
                     d.ClientId = Configuration["Authentication:DeviantArt:ClientId"];
                     d.ClientSecret = Configuration["Authentication:DeviantArt:ClientSecret"];
                     d.SaveTokens = true;
-                })
-                .AddOAuth("Inoreader", "Inoreader", o => {
-                    o.ClientId = Configuration["Authentication:Inoreader:AppId"];
-                    o.ClientSecret = Configuration["Authentication:Inoreader:AppKey"];
-                    o.AuthorizationEndpoint = "https://www.inoreader.com/oauth2/auth";
-                    o.TokenEndpoint = "https://www.inoreader.com/oauth2/token";
-                    o.CallbackPath = new PathString("/signin-inoreader");
-                    o.SaveTokens = true;
-
-                    o.Events = new OAuthEvents {
-                        OnCreatingTicket = async context => {
-                            if (context.Options.SaveTokens) {
-                                context.Properties.StoreTokens(new[] {
-                                    new AuthenticationToken { Name = "access_token", Value = context.AccessToken },
-                                    new AuthenticationToken { Name = "refresh_token", Value = context.RefreshToken }
-                                });
-                            }
-
-                            var token = new InoreaderTempToken { AccessToken = context.AccessToken };
-                            var credentials = InoreaderFs.Auth.Credentials.NewOAuth(token);
-                            var user = await InoreaderFs.Endpoints.UserInfo.ExecuteAsync(credentials);
-                            context.Principal.AddIdentity(new ClaimsIdentity(new[] {
-                                new Claim(ClaimTypes.NameIdentifier, $"{user.userId}"),
-                                new Claim(ClaimTypes.Name, user.userName),
-                                new Claim("urn:inoreader:userid", $"{user.userId}"),
-                                new Claim("urn:inoreader:username", user.userName),
-                            }));
-                        },
-                        OnRemoteFailure = context => {
-                            context.HandleResponse();
-                            context.Response.Redirect("/Home/Error");
-                            return Task.FromResult(0);
-                        }
-                    };
                 })
                 .AddReddit(o => {
                     o.Scope.Add("read");
@@ -111,9 +73,6 @@ namespace ArtworkInbox {
             services.AddSingleton(new ArtworkInboxRedditCredentials(
                 Configuration["Authentication:Reddit:ClientId"],
                 Configuration["Authentication:Reddit:ClientSecret"]));
-            services.AddSingleton(new InoreaderFs.Auth.App(
-                Configuration["Authentication:Inoreader:AppId"],
-                Configuration["Authentication:Inoreader:AppKey"]));
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
