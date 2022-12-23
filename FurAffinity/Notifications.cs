@@ -1,81 +1,68 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.FSharp.Collections;
 using System;
-using System.Collections.Immutable;
-using System.IO;
-using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.FurAffinity {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
     public class Notifications {
         public const string FAExportHost = "faexport.spangle.org.uk";
 
-        public record CurrentUser {
-            public string name;
-            public string profile;
-            public string profile_name;
+        private readonly HttpClient _client;
+
+        public Notifications(IHttpClientFactory httpClientFactory, string fa_cookie) {
+            _client = httpClientFactory.CreateClient();
+            _client.BaseAddress = new Uri($"https://{FAExportHost}");
+            _client.DefaultRequestHeaders.Add("User-Agent", "ArtworkInbox/0.1 (https://github.com/IsaacSchemm/ArtworkInbox)");
+            _client.DefaultRequestHeaders.Add("FA_COOKIE", fa_cookie);
         }
 
-        public record NewSubmission {
-            public int id;
-            public string title;
-            public string thumbnail;
-            public string link;
-            public string name;
-            public string profile;
-            public string profile_name;
-        }
+        public record CurrentUser(
+            string name,
+            string profile,
+            string profile_name);
 
-        public record Submissions {
-            public CurrentUser current_user;
-            public ImmutableList<NewSubmission> new_submissions;
-        }
+        public record NewSubmission(
+            int id,
+            string title,
+            string thumbnail,
+            string link,
+            string name,
+            string profile,
+            string profile_name);
 
-        public static async Task<Submissions> GetSubmissionsAsync(string fa_cookie, bool sfw, int from) {
-            var req = WebRequest.CreateHttp($"https://{FAExportHost}/notifications/submissions.json?{(sfw ? "sfw=1" : "")}&from={from}");
-            req.UserAgent = "ArtworkInbox/0.1 (https://github.com/IsaacSchemm/ArtworkInbox)";
-            req.Headers.Set("FA_COOKIE", fa_cookie);
-            using var resp = await req.GetResponseAsync();
-            using var stream = resp.GetResponseStream();
-            using var sr = new StreamReader(stream);
-            string json = await sr.ReadToEndAsync();
-            return JsonConvert.DeserializeObject<Submissions>(json);
-        }
+        public record Submissions(
+            CurrentUser current_user,
+            FSharpList<NewSubmission> new_submissions);
 
-        public record NotificationCounts {
-            public int submissions;
-            public int comments;
-            public int journals;
-            public int favorites;
-            public int watchers;
-            public int notes;
-            public int trouble_tickets;
-        }
+        public Task<Submissions> GetSubmissionsAsync(bool sfw, int from) =>
+            _client.GetFromJsonAsync<Submissions>($"/notifications/submissions.json?{(sfw ? "sfw=1" : "")}&from={from}");
 
-        public record NewJournal {
-            public int journal_id;
-            public string title;
-            public string name;
-            public string profile;
-            public string profile_name;
-            public string posted;
-            public DateTimeOffset posted_at;
-        }
+        public record NotificationCounts(
+            int submissions,
+            int comments,
+            int journals,
+            int favorites,
+            int watchers,
+            int notes,
+            int trouble_tickets);
 
-        public record Others {
-            public CurrentUser current_user;
-            public NotificationCounts notification_counts;
-            public ImmutableList<NewJournal> new_journals;
-        }
+        public record NewJournal(
+            int journal_id,
+            string title,
+            string name,
+            string profile,
+            string profile_name,
+            string posted,
+            DateTimeOffset posted_at);
 
-        public static async Task<Others> GetOthersAsync(string fa_cookie) {
-            var req = WebRequest.CreateHttp($"https://{FAExportHost}/notifications/others.json");
-            req.UserAgent = "ArtworkInbox/0.1 (https://github.com/IsaacSchemm/ArtworkInbox)";
-            req.Headers.Set("FA_COOKIE", fa_cookie);
-            using var resp = await req.GetResponseAsync();
-            using var stream = resp.GetResponseStream();
-            using var sr = new StreamReader(stream);
-            string json = await sr.ReadToEndAsync();
-            return JsonConvert.DeserializeObject<Others>(json);
-        }
+        public record Others(
+            CurrentUser current_user,
+            NotificationCounts notification_counts,
+            FSharpList<NewJournal> new_journals);
+
+        public Task<Others> GetOthersAsync() =>
+            _client.GetFromJsonAsync<Others>("/notifications/others.json");
     }
 }

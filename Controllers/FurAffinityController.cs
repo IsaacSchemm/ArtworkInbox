@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using ArtworkInbox.Backend;
 using ArtworkInbox.Backend.Sources;
@@ -10,9 +11,11 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace ArtworkInbox.Controllers {
     public class FurAffinityController : SourceController {
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ApplicationDbContext _context;
 
-        public FurAffinityController(UserManager<ApplicationUser> userManager, IMemoryCache cache, ApplicationDbContext context) : base(userManager, cache) {
+        public FurAffinityController(UserManager<ApplicationUser> userManager, IMemoryCache cache, IHttpClientFactory httpClientFactory, ApplicationDbContext context) : base(userManager, cache) {
+            _httpClientFactory = httpClientFactory;
             _context = context;
         }
 
@@ -26,7 +29,7 @@ namespace ArtworkInbox.Controllers {
                 .SingleOrDefaultAsync();
             if (dbToken == null)
                 throw new NoTokenException();
-            return new FurAffinityFeedSource(dbToken.FA_COOKIE);
+            return new FurAffinityFeedSource(_httpClientFactory, dbToken.FA_COOKIE);
         }
 
         protected override async Task<DateTimeOffset> GetLastReadAsync() {

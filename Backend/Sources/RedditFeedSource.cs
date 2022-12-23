@@ -6,8 +6,6 @@ using Reddit.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
@@ -34,7 +32,7 @@ namespace ArtworkInbox.Backend.Sources {
         public string GetNotificationsUrl() => "https://www.reddit.com/message/inbox/";
         public string GetSubmitUrl() => "https://www.reddit.com/";
 
-        public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
+        public IEnumerable<FeedItem> GetFeedItems() {
             string cursor = null;
             while (true) {
                 var posts = _client.Subreddit().Posts.GetNew(after: cursor);
@@ -72,11 +70,14 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public async IAsyncEnumerable<string> GetNotificationsAsync() {
+        public IEnumerable<string> GetNotifications() {
             var unread = _client.Account.Messages.GetMessagesUnread(mark: false, limit: 100);
             foreach (var m in unread) {
                 yield return m.Subject;
             }
         }
+
+        IAsyncEnumerable<FeedItem> ISource.GetFeedItemsAsync() => GetFeedItems().ToAsyncEnumerable();
+        IAsyncEnumerable<string> ISource.GetNotificationsAsync() => GetNotifications().ToAsyncEnumerable();
     }
 }

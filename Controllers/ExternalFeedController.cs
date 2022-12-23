@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using ArtworkInbox.Backend.Sources;
 using ArtworkInbox.Data;
@@ -9,9 +10,11 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace ArtworkInbox.Controllers {
     public class ExternalFeedController : SourceController {
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ApplicationDbContext _context;
 
-        public ExternalFeedController(UserManager<ApplicationUser> userManager, IMemoryCache cache, ApplicationDbContext context) : base(userManager, cache) {
+        public ExternalFeedController(UserManager<ApplicationUser> userManager, IMemoryCache cache, IHttpClientFactory httpClientFactory, ApplicationDbContext context) : base(userManager, cache) {
+            _httpClientFactory = httpClientFactory;
             _context = context;
         }
 
@@ -24,8 +27,8 @@ namespace ArtworkInbox.Controllers {
                 .Where(f => f.UserId == userId)
                 .ToListAsync();
             return feeds.Count == 1
-                ? new ExternalFeedSource(feeds.Single())
-                : new CompositeSource(feeds.Select(x => new ExceptionEater(new ExternalFeedSource(x))));
+                ? new ExternalFeedSource(_httpClientFactory, feeds.Single())
+                : new CompositeSource(feeds.Select(x => new ExceptionEater(new ExternalFeedSource(_httpClientFactory, x))));
         }
 
         // For external feeds, the hiding of already-read items is handled inside ExternalFeedSource.

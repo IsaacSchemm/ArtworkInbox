@@ -8,15 +8,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 
 namespace ArtworkInbox.Backend.Sources {
     public class ExternalFeedSource : ISource {
+        private readonly HttpClient _httpClient;
         private readonly UserExternalFeed _externalFeed;
 
-        public ExternalFeedSource(UserExternalFeed externalFeed) {
+        public ExternalFeedSource(IHttpClientFactory httpClientFactory, UserExternalFeed externalFeed) {
+            _httpClient = httpClientFactory.CreateClient();
             _externalFeed = externalFeed;
         }
 
@@ -30,11 +33,7 @@ namespace ArtworkInbox.Backend.Sources {
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
             string title = null;
 
-            var req = WebRequest.CreateHttp(_externalFeed.Url);
-            using var resp = await req.GetResponseAsync();
-            using var s = resp.GetResponseStream();
-            using var sr = new StreamReader(s);
-            string xml = await sr.ReadToEndAsync();
+            string xml = await _httpClient.GetStringAsync(_externalFeed.Url);
             using var tr = new StringReader(xml);
             using var xmlReader = XmlReader.Create(tr, new XmlReaderSettings() { Async = true });
             var feedReader = _externalFeed.Type == UserExternalFeed.FeedType.Atom
@@ -60,7 +59,8 @@ namespace ArtworkInbox.Backend.Sources {
                         if (ts <= _externalFeed.LastRead)
                             yield break;
 
-                        var image_match = Regex.Match(item is IAtomEntry a ? a.Summary : item.Description, "img[^>]+src=['\"]([^'\"]+)['\"]");
+                        string summary = (item as IAtomEntry)?.Summary ?? item.Description;
+                        var image_match = Regex.Match(summary, "img[^>]+src=['\"]([^'\"]+)['\"]");
                         yield return new Artwork {
                             Author = new Author {
                                 Username = title ?? string.Join(" / ", item.Contributors.Select(x => x.Name ?? x.Email))

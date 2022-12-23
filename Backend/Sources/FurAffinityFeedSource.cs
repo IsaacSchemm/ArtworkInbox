@@ -1,24 +1,26 @@
 ﻿using ArtworkInbox.Backend.Types;
+using ArtworkInbox.FurAffinity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
     public class FurAffinityFeedSource : ISource {
-        private readonly string _fa_cookie;
+        private readonly Notifications _handler;
 
-        private FurAffinity.Notifications.CurrentUser _user = null;
+        private Notifications.CurrentUser _user = null;
 
-        public FurAffinityFeedSource(string fa_cookie) {
-            _fa_cookie = fa_cookie;
+        public FurAffinityFeedSource(IHttpClientFactory factory, string fa_cookie) {
+            _handler = new Notifications(factory, fa_cookie);
         }
 
         public string Name => "Fur Affinity";
 
         public async Task<Author> GetAuthenticatedUserAsync() {
             try {
-                var ns = await FurAffinity.Notifications.GetOthersAsync(_fa_cookie);
+                var ns = await _handler.GetOthersAsync();
                 return new Author {
                     Username = ns.current_user.profile_name,
                     AvatarUrl = null,
@@ -32,10 +34,10 @@ namespace ArtworkInbox.Backend.Sources {
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
             int from = int.MaxValue;
             while (true) {
-                FurAffinity.Notifications.Submissions sfw, nsfw;
+                Notifications.Submissions sfw, nsfw;
                 try {
-                    sfw = await FurAffinity.Notifications.GetSubmissionsAsync(_fa_cookie, sfw: true, from: from);
-                    nsfw = await FurAffinity.Notifications.GetSubmissionsAsync(_fa_cookie, sfw: false, from: from);
+                    sfw = await _handler.GetSubmissionsAsync(sfw: true, from: from);
+                    nsfw = await _handler.GetSubmissionsAsync(sfw: false, from: from);
                 } catch (Exception ex) when (ex.Message == "Client is rate-limited (too many 429 responses)") {
                     throw new TooManyRequestsException();
                 }
@@ -68,9 +70,9 @@ namespace ArtworkInbox.Backend.Sources {
         }
 
         public async IAsyncEnumerable<string> GetNotificationsAsync() {
-            FurAffinity.Notifications.Others ns;
+            Notifications.Others ns;
             try {
-                ns = await FurAffinity.Notifications.GetOthersAsync(_fa_cookie);
+                ns = await _handler.GetOthersAsync();
             } catch (Exception ex) when(ex.Message == "Client is rate-limited (too many 429 responses)") {
                 throw new TooManyRequestsException();
             }

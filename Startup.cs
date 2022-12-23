@@ -24,6 +24,8 @@ namespace ArtworkInbox {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
+            services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddHttpClient();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection"),
@@ -83,7 +85,8 @@ namespace ArtworkInbox {
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();    
             } else {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
