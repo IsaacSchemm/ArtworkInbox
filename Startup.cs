@@ -62,6 +62,14 @@ namespace ArtworkInbox {
                     o.ClientId = Configuration["Authentication:Mastodon:mastodon.social:client_id"];
                     o.ClientSecret = Configuration["Authentication:Mastodon:mastodon.social:client_secret"];
                     o.SaveTokens = true;
+                })
+                .AddMastodon("mstdn.jp", o => {
+                    o.Scope.Add("read:statuses");
+                    o.Scope.Add("read:accounts");
+                    o.Scope.Add("read:notifications");
+                    o.ClientId = Configuration["Authentication:Mastodon:mstdn.jp:client_id"];
+                    o.ClientSecret = Configuration["Authentication:Mastodon:mstdn.jp:client_secret"];
+                    o.SaveTokens = true;
                 });
             services.AddSingleton(new DeviantArtApp(
                 Configuration["Authentication:DeviantArt:ClientId"],
