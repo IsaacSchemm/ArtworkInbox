@@ -41,9 +41,9 @@
 <hr>
 
 <p>
-    Database server status: @string.Join(", ", ViewBag.PowerStates)
+    Database server status: @ViewBag.DatabaseServerStatus
 
-    @if (!ViewBag.PowerStates.Contains("PowerState/running")) {
+    @if (ViewBag.CanStartDatabaseServer) {
         <form asp-controller="Home" asp-action="StartDatabase" method="post" style="display: inline">
             <button class="btn btn-primary" type="submit">Start</button>
         </form>
