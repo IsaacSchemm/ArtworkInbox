@@ -1,27 +1,28 @@
 ﻿using ArtworkInbox.Backend.Types;
-using Pleronet;
-using Pleronet.Entities;
+using Mastonet;
+using Mastonet.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox.Backend.Sources {
     public class MastodonFeedSource : ISource {
-        private readonly IMastodonClient _token;
+        private readonly IMastodonClient _client;
 
         public bool IgnoreMedia { get; set; } = false;
 
-        public string Name => _token.Instance;
+        public string Name => _client.Instance;
 
-        public MastodonFeedSource(string host, string accessToken) {
-            _token = new MastodonClient(
-                new AppRegistration { Instance = host },
-                new Auth { AccessToken = accessToken });
+        public MastodonFeedSource(IHttpClientFactory httpClientFactory, string host, string accessToken) {
+            var client = httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "ArtworkInbox/0.1 (https://github.com/IsaacSchemm/ArtworkInbox)");
+            _client = new MastodonClient(host, accessToken, client);
         }
 
         public async Task<Author> GetAuthenticatedUserAsync() {
-            var user = await _token.GetCurrentUser();
+            var user = await _client.GetCurrentUser();
             return new Author {
                 Username = user.UserName,
                 AvatarUrl = user.AvatarUrl,
@@ -29,13 +30,15 @@ namespace ArtworkInbox.Backend.Sources {
             };
         }
 
-        public string GetNotificationsUrl() => $"https://{_token.Instance}";
-        public string GetSubmitUrl() => $"https://{_token.Instance}";
+        public string GetNotificationsUrl() => $"https://{_client.Instance}";
+        public string GetSubmitUrl() => $"https://{_client.Instance}";
 
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
             string max_id = "";
             while (true) {
-                var statuses = await _token.GetHomeTimeline(max_id);
+                var statuses = await _client.GetHomeTimeline(new ArrayOptions {
+                    MaxId = max_id
+                });
                 if (!statuses.Any())
                     break;
 
@@ -80,7 +83,9 @@ namespace ArtworkInbox.Backend.Sources {
         public async IAsyncEnumerable<string> GetNotificationsAsync() {
             string max_id = "";
             while (true) {
-                var notifications = await _token.GetNotifications(max_id);
+                var notifications = await _client.GetNotifications(new ArrayOptions {
+                    MaxId = max_id
+                });
                 if (!notifications.Any())
                     break;
 

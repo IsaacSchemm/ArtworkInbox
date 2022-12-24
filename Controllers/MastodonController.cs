@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using ArtworkInbox.Backend;
 using ArtworkInbox.Backend.Sources;
@@ -10,10 +11,11 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace ArtworkInbox.Controllers {
     public class MastodonController : SourceController {
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ApplicationDbContext _context;
 
-        public MastodonController(UserManager<ApplicationUser> userManager, IMemoryCache cache, ApplicationDbContext context) : base(userManager, cache) {
-            _userManager = userManager;
+        public MastodonController(UserManager<ApplicationUser> userManager, IMemoryCache cache, IHttpClientFactory httpClientFactory, ApplicationDbContext context) : base(userManager, cache) {
+            _httpClientFactory = httpClientFactory;
             _context = context;
         }
 
@@ -27,7 +29,7 @@ namespace ArtworkInbox.Controllers {
                 .ToListAsync();
             if (!dbTokens.Any())
                 throw new NoTokenException();
-            return new CompositeSource(dbTokens.Select(t => new MastodonFeedSource(t.Host, t.AccessToken)));
+            return new CompositeSource(dbTokens.Select(t => new MastodonFeedSource(_httpClientFactory, t.Host, t.AccessToken)));
         }
 
         protected override async Task<DateTimeOffset> GetLastReadAsync() {
