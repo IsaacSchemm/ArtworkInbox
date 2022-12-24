@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -10,7 +11,12 @@ using System.Threading.Tasks;
 
 namespace ArtworkInbox {
     public static class MastodonOAuthExtensions {
+        private static readonly HashSet<string> _hosts = new();
+
+        public static IEnumerable<string> Hosts => _hosts;
+
         public static AuthenticationBuilder AddMastodon(this AuthenticationBuilder builder, string hostname, Action<OAuthOptions> configureOptions) {
+            _hosts.Add(hostname);
             return builder.AddOAuth(hostname, hostname, o => {
                 // https://medium.com/@mauridb/using-oauth2-middleware-with-asp-net-core-2-0-b31ffef58cd0
 

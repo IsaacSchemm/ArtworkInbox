@@ -119,25 +119,10 @@
                             </li>
                         }
                         @if (has_mastodon) {
-                            async Task<bool> has(string host) {
-                                return user != null && await ApplicationDbContext.UserMastodonTokens
-                                    .AsNoTracking()
-                                    .Where(x => x.Host == host)
-                                    .Where(x => x.UserId == user.Id)
-                                    .AnyAsync();
-                            }
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdown-mas" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Mastodon" asp-action="Feed">
                                     Mastodon
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-mas">
-                                    @if (await has("mastodon.social")) {
-                                        <a class="dropdown-item" asp-area="" asp-controller="MastodonSocial" asp-action="Feed">mastodon.social</a>
-                                    }
-                                    @if (await has("mstdn.jp")) {
-                                        <a class="dropdown-item" asp-area="" asp-controller="MstdnJp" asp-action="Feed">mstdn.jp</a>
-                                    }
-                                </div>
                             </li>
                         }
                     </ul>

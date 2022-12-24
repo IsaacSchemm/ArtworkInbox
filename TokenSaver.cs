@@ -94,7 +94,7 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
-            } else if (new[] { "mastodon.social", "mstdn.jp" }.Contains(info.LoginProvider)) {
+            } else if (MastodonOAuthExtensions.Hosts.Contains(info.LoginProvider)) {
                 var token = await _context.UserMastodonTokens
                     .AsQueryable()
                     .Where(t => t.UserId == user.Id)
@@ -183,7 +183,7 @@ namespace ArtworkInbox {
                     _context.Remove(token);
                     await _context.SaveChangesAsync();
                 }
-            } else if (new[] { "mastodon.social", "mstdn.jp" }.Contains(loginProvider)) {
+            } else if (MastodonOAuthExtensions.Hosts.Contains(loginProvider)) {
                 var tokens = await _context.UserMastodonTokens
                     .AsQueryable()
                     .Where(t => t.UserId == user.Id)

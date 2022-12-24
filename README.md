@@ -15,6 +15,7 @@ Supported sites:
 * Mastodon
     * [mastodon.social](https://mastodon.social/)
     * [mstdn.jp](https://mstdn.jp/)
+    * [botsin.space](https://botsin.space/) (for debugging only)
     * file an issue on GitHub if you have another one you want added!
 
 Note: clearing your feed items from within this app does not actually clear
