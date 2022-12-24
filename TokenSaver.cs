@@ -94,7 +94,7 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
-            } else if (new[] { "mastodon.social", "botsin.space" }.Contains(info.LoginProvider)) {
+            } else if (new[] { "mastodon.social", "mstdn.jp" }.Contains(info.LoginProvider)) {
                 var token = await _context.UserMastodonTokens
                     .AsQueryable()
                     .Where(t => t.UserId == user.Id)
@@ -124,26 +124,6 @@ namespace ArtworkInbox {
                 }
                 token.ApiKey = info.AuthenticationTokens
                     .Where(t => t.Name == "access_token")
-                    .Select(t => t.Value)
-                    .Single();
-                await _context.SaveChangesAsync();
-            } else if (info.LoginProvider == "Inoreader") {
-                var token = await _context.UserInoreaderTokens
-                    .AsQueryable()
-                    .Where(t => t.UserId == user.Id)
-                    .SingleOrDefaultAsync();
-                if (token == null) {
-                    token = new UserInoreaderToken {
-                        UserId = user.Id
-                    };
-                    _context.UserInoreaderTokens.Add(token);
-                }
-                token.AccessToken = info.AuthenticationTokens
-                    .Where(t => t.Name == "access_token")
-                    .Select(t => t.Value)
-                    .Single();
-                token.RefreshToken = info.AuthenticationTokens
-                    .Where(t => t.Name == "refresh_token")
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
@@ -203,7 +183,7 @@ namespace ArtworkInbox {
                     _context.Remove(token);
                     await _context.SaveChangesAsync();
                 }
-            } else if (new[] { "mastodon.social", "botsin.space" }.Contains(loginProvider)) {
+            } else if (new[] { "mastodon.social", "mstdn.jp" }.Contains(loginProvider)) {
                 var tokens = await _context.UserMastodonTokens
                     .AsQueryable()
                     .Where(t => t.UserId == user.Id)
@@ -215,15 +195,6 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Weasyl") {
                 var token = await _context.UserWeasylTokens
-                    .AsQueryable()
-                    .Where(t => t.UserId == user.Id)
-                    .SingleOrDefaultAsync();
-                if (token != null) {
-                    _context.Remove(token);
-                    await _context.SaveChangesAsync();
-                }
-            } else if (loginProvider == "Inoreader") {
-                var token = await _context.UserInoreaderTokens
                     .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();
