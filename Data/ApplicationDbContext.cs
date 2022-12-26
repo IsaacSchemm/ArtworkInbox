@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkInbox.Data {
@@ -22,5 +23,15 @@ namespace ArtworkInbox.Data {
         public DbSet<UserFurAffinityToken> UserFurAffinityTokens { get; set; }
 
         public DbSet<UserExternalFeed> UserExternalFeeds { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder) {
+            base.OnModelCreating(builder);
+            builder.Entity<IdentityRole>()
+                .Property(b => b.ConcurrencyStamp)
+                .IsETagConcurrency();
+            builder.Entity<ApplicationUser>()
+                .Property(b => b.ConcurrencyStamp)
+                .IsETagConcurrency();
+        }
     }
 }

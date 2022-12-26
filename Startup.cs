@@ -20,10 +20,16 @@ namespace ArtworkInbox {
         public void ConfigureServices(IServiceCollection services) {
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddHttpClient();
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"),
-                    o => o.EnableRetryOnFailure()));
+            if (Configuration.GetConnectionString("CosmosDB") is string cosmosDb) {
+                services.AddDbContext<ApplicationDbContext>(options => {
+                    options.UseCosmos(cosmosDb, "ArtworkInbox");
+                });
+            } else {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString("DefaultConnection"),
+                        o => o.EnableRetryOnFailure()));
+            }
             services.AddAuthentication()
                 .AddDeviantArt(d => {
                     d.Scope.Add("browse");

@@ -7,17 +7,21 @@ using System;
 using Microsoft.FSharp.Collections;
 using System.Net.Http.Json;
 using System.Linq;
+using ArtworkInbox.Data;
 
 namespace ArtworkInbox.Controllers {
     public class HomeController : Controller {
+        private readonly ApplicationDbContext _context;
         private readonly HttpClient _httpClient;
 
-        public HomeController(IHttpClientFactory httpClientFactory) {
+        public HomeController(ApplicationDbContext context, IHttpClientFactory httpClientFactory) {
+            _context = context;
             _httpClient = httpClientFactory.CreateClient();
             _httpClient.BaseAddress = new Uri("https://artworkinbox-db-management.azurewebsites.net");
         }
 
         public async Task<IActionResult> Index() {
+            //await _context.Database.EnsureCreatedAsync();
             try {
                 var powerStates = await _httpClient.GetFromJsonAsync<FSharpList<string>>("/api/power-states");
                 ViewBag.DatabaseServerStatus = $"{powerStates}";
