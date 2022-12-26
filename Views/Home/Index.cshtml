@@ -37,15 +37,3 @@
 </p>
 
 <div style="clear: both"></div>
-
-<hr>
-
-<p>
-    Database server status: @ViewBag.DatabaseServerStatus
-
-    @if (ViewBag.CanStartDatabaseServer) {
-        <form asp-controller="Home" asp-action="StartDatabase" method="post" style="display: inline">
-            <button class="btn btn-primary" type="submit">Start</button>
-        </form>
-    }
-</p>
