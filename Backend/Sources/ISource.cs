@@ -8,7 +8,7 @@ namespace ArtworkInbox.Backend.Sources {
 
         Task<Author> GetAuthenticatedUserAsync();
         IAsyncEnumerable<FeedItem> GetFeedItemsAsync();
-        IAsyncEnumerable<string> GetNotificationsAsync();
+        Task<int?> GetNotificationCountAsync();
         string GetNotificationsUrl();
         string GetSubmitUrl();
     }

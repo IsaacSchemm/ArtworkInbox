@@ -69,7 +69,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public async IAsyncEnumerable<string> GetNotificationsAsync() {
+        public async Task<int?> GetNotificationCountAsync() {
             Notifications.Others ns;
             try {
                 ns = await _handler.GetOthersAsync();
@@ -80,18 +80,14 @@ namespace ArtworkInbox.Backend.Sources {
             if (_user == null)
                 _user = ns.current_user;
 
-            for (int i = 0; i < ns.notification_counts.comments; i++)
-                yield return "comment";
-            for (int i = 0; i < ns.notification_counts.journals; i++)
-                yield return "journal";
-            for (int i = 0; i < ns.notification_counts.favorites; i++)
-                yield return "favorite";
-            for (int i = 0; i < ns.notification_counts.watchers; i++)
-                yield return "watcher";
-            for (int i = 0; i < ns.notification_counts.notes; i++)
-                yield return "note";
-            for (int i = 0; i < ns.notification_counts.trouble_tickets; i++)
-                yield return "trouble_ticket";
+            return new[] {
+                ns.notification_counts.comments,
+                ns.notification_counts.journals,
+                ns.notification_counts.favorites,
+                ns.notification_counts.watchers,
+                ns.notification_counts.notes,
+                ns.notification_counts.trouble_tickets
+            }.Sum();
         }
 
         public string GetNotificationsUrl() => "https://www.furaffinity.net/msg/others/";

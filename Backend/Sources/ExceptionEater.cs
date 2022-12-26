@@ -48,7 +48,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public IAsyncEnumerable<string> GetNotificationsAsync() => _source.GetNotificationsAsync();
+        public Task<int?> GetNotificationCountAsync() => _source.GetNotificationCountAsync();
 
         public string GetNotificationsUrl() => _source.GetNotificationsUrl();
 

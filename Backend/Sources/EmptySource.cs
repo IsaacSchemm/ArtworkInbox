@@ -13,7 +13,7 @@ namespace ArtworkInbox.Backend.Sources {
 
         public IAsyncEnumerable<FeedItem> GetFeedItemsAsync() => AsyncEnumerable.Empty<FeedItem>();
 
-        public IAsyncEnumerable<string> GetNotificationsAsync() => AsyncEnumerable.Empty<string>();
+        public Task<int?> GetNotificationCountAsync() => Task.FromResult<int?>(null);
 
         public string GetNotificationsUrl() => null;
         public string GetSubmitUrl() => null;

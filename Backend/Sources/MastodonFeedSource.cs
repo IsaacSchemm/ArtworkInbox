@@ -80,7 +80,7 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public async IAsyncEnumerable<string> GetNotificationsAsync() {
+        private async IAsyncEnumerable<Notification> GetNotificationsAsync() {
             string max_id = "";
             while (true) {
                 var notifications = await _client.GetNotifications(new ArrayOptions {
@@ -90,10 +90,12 @@ namespace ArtworkInbox.Backend.Sources {
                     break;
 
                 foreach (var n in notifications) {
-                    yield return n.Type;
+                    yield return n;
                 }
                 max_id = notifications.NextPageMaxId;
             }
         }
+
+        public async Task<int?> GetNotificationCountAsync() => await GetNotificationsAsync().Take(99).CountAsync();
     }
 }

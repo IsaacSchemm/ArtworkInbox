@@ -62,14 +62,13 @@ namespace ArtworkInbox.Backend.Sources {
         public string GetNotificationsUrl() => "https://www.weasyl.com/messages/notifications";
         public string GetSubmitUrl() => "https://www.weasyl.com/submit";
 
-        public async IAsyncEnumerable<string> GetNotificationsAsync() {
+        public async Task<int?> GetNotificationCountAsync() {
             var o = await WeasylFs.Endpoints.MessageSummary.ExecuteAsync(_token);
-            for (int i = 0; i < o.comments; i++)
-                yield return "comment";
-            for (int i = 0; i < o.journals; i++)
-                yield return "journal";
-            for (int i = 0; i < o.notifications; i++)
-                yield return "notification";
+            return new[] {
+                o.comments,
+                o.journals,
+                o.notifications
+            }.Sum();
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using ArtworkInbox.Backend.Types;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Reddit;
 using Reddit.Controllers;
 using System;
@@ -70,14 +68,15 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public IEnumerable<string> GetNotifications() {
-            var unread = _client.Account.Messages.GetMessagesUnread(mark: false, limit: 100);
+        private IEnumerable<string> GetNotifications() {
+            var unread = _client.Account.Messages.GetMessagesUnread(mark: false);
             foreach (var m in unread) {
                 yield return m.Subject;
             }
         }
 
         IAsyncEnumerable<FeedItem> ISource.GetFeedItemsAsync() => GetFeedItems().ToAsyncEnumerable();
-        IAsyncEnumerable<string> ISource.GetNotificationsAsync() => GetNotifications().ToAsyncEnumerable();
+
+        Task<int?> ISource.GetNotificationCountAsync() => Task.FromResult<int?>(GetNotifications().Take(99).Count());
     }
 }

@@ -39,12 +39,13 @@ namespace ArtworkInbox.Backend.Sources {
             }
         }
 
-        public async IAsyncEnumerable<string> GetNotificationsAsync() {
-            foreach (var s in Sources) {
-                await foreach (var item in s.GetNotificationsAsync()) {
-                    yield return item;
-                }
-            }
+        public async Task<int?> GetNotificationCountAsync() {
+            var counts = new List<int>();
+            foreach (var s in Sources)
+                if (await s.GetNotificationCountAsync() is int c)
+                    counts.Add(c);
+            if (counts.Any()) return counts.Sum();
+            else return null;
         }
 
         public string GetNotificationsUrl() {

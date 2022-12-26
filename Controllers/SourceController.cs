@@ -54,15 +54,13 @@ namespace ArtworkInbox.Controllers {
                     cacheItem = c;
                 } else {
                     var source = await GetSourceAsync();
-                    int ct = await source.GetNotificationsAsync().Take(20).CountAsync();
+                    int? ct = await source.GetNotificationCountAsync();
                     cacheItem = new ControllerCacheItem {
                         Id = Guid.NewGuid(),
                         LocalUserId = user.Id,
                         RemoteUser = await source.GetAuthenticatedUserAsync(),
                         FeedItems = new AsyncEnumerableCache<FeedItem>(source.GetFeedItemsAsync()),
-                        NotificationsCount = ct <= 0 ? null
-                            : ct >= 20 ? "20+"
-                            : $"{ct}",
+                        NotificationsCount = ct?.ToString(),
                         NotificationsUrl = source.GetNotificationsUrl(),
                         SubmitUrl = source.GetSubmitUrl(),
                         Earliest = await GetLastReadAsync()

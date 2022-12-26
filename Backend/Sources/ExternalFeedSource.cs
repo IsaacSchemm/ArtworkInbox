@@ -100,6 +100,6 @@ namespace ArtworkInbox.Backend.Sources {
             yield break;
         }
 
-        public IAsyncEnumerable<string> GetNotificationsAsync() => AsyncEnumerable.Empty<string>();
+        public Task<int?> GetNotificationCountAsync() => Task.FromResult<int?>(null);
     }
 }
