@@ -182,7 +182,7 @@ namespace ArtworkInbox.Backend.Sources {
                             Author = author,
                             Html = WebUtility.HtmlEncode(p.summary),
                             LinkUrl = p.post_url,
-                            RepostedFrom = p.trail.Select(x => x.blog.name).DefaultIfEmpty(null).Last(),
+                            RepostedFrom = p.trail.Where(x => x.blog != null).Select(x => x.blog.name).DefaultIfEmpty(null).Last(),
                             Timestamp = DateTimeOffset.FromUnixTimeSeconds(p.timestamp)
                         };
                     }
