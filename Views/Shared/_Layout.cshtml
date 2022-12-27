@@ -6,8 +6,7 @@
 @inject ApplicationDbContext ApplicationDbContext
 @{ 
     var user = await UserManager.GetUserAsync(User);
-    
-    var has_external_feeds = user != null && await ApplicationDbContext.UserExternalFeeds
+    bool has_external_feeds = user != null && await ApplicationDbContext.UserExternalFeeds
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .ListAnyAsync();
