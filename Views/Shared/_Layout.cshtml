@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
+@using ArtworkInbox
 @using ArtworkInbox.Data
 @inject UserManager<ApplicationUser> UserManager
 @inject ApplicationDbContext ApplicationDbContext
@@ -9,35 +10,35 @@
     var has_external_feeds = user != null && await ApplicationDbContext.UserExternalFeeds
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
-        .AnyAsync();
+        .ListAnyAsync();
     bool has_deviantart = user != null && await ApplicationDbContext.UserDeviantArtTokens
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
-        .AnyAsync();
+        .ListAnyAsync();
     bool has_weasyl = user != null && await ApplicationDbContext.UserWeasylTokens
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
-        .AnyAsync();
+        .ListAnyAsync();
     bool has_twitter = user != null && await ApplicationDbContext.UserTwitterTokens
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
-        .AnyAsync();
+        .ListAnyAsync();
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
-        .AnyAsync();
+        .ListAnyAsync();
     bool has_reddit = user != null && await ApplicationDbContext.UserRedditTokens
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
-        .AnyAsync();
+        .ListAnyAsync();
     bool has_furaffinity = user != null && await ApplicationDbContext.UserFurAffinityTokens
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
-        .AnyAsync();
+        .ListAnyAsync();
     bool has_mastodon = user != null && await ApplicationDbContext.UserMastodonTokens
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
-        .AnyAsync();
+        .ListAnyAsync();
 }
 <!DOCTYPE html>
 <html lang="en">
