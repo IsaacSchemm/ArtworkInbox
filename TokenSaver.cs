@@ -1,6 +1,7 @@
 ﻿using ArtworkInbox.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Reddit.Things;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -215,6 +216,15 @@ namespace ArtworkInbox {
                 }
             } else if (loginProvider == "Weasyl") {
                 var token = await _context.UserWeasylTokens
+                    .AsQueryable()
+                    .Where(t => t.UserId == user.Id)
+                    .SingleOrDefaultAsync();
+                if (token != null) {
+                    _context.Remove(token);
+                    await _context.SaveChangesAsync();
+                }
+            } else if (loginProvider == "YouTube") {
+                var token = await _context.UserYouTubeTokens
                     .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DeviantArtFs;
 using Tweetinvi.Models;
+using Google.Apis.Auth.OAuth2;
 
 namespace ArtworkInbox {
     public class Startup {
@@ -55,13 +56,6 @@ namespace ArtworkInbox {
                     t.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
                     t.SaveTokens = true;
                 })
-                .AddGoogle("YouTube", "YouTube", o => {
-                    o.Scope.Add("https://www.googleapis.com/auth/youtube.readonly");
-                    o.AccessType = "offline";
-                    o.ClientId = Configuration["Authentication:Google:ClientId"];
-                    o.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-                    o.SaveTokens = true;
-                })
                 .AddMastodon("mastodon.social", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
@@ -85,6 +79,13 @@ namespace ArtworkInbox {
                     o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
                     o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
                     o.SaveTokens = true;
+                })
+                .AddGoogle("YouTube", "YouTube", o => {
+                    o.Scope.Add("https://www.googleapis.com/auth/youtube.readonly");
+                    o.AccessType = "offline";
+                    o.ClientId = Configuration["Authentication:Google:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                    o.SaveTokens = true;
                 });
             services.AddSingleton(new DeviantArtApp(
                 Configuration["Authentication:DeviantArt:ClientId"],
@@ -98,6 +99,10 @@ namespace ArtworkInbox {
             services.AddSingleton(new ArtworkInboxRedditCredentials(
                 Configuration["Authentication:Reddit:ClientId"],
                 Configuration["Authentication:Reddit:ClientSecret"]));
+            services.AddSingleton(new ClientSecrets {
+                ClientId = Configuration["Authentication:Google:ClientId"],
+                ClientSecret = Configuration["Authentication:Google:ClientSecret"]
+            });
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();

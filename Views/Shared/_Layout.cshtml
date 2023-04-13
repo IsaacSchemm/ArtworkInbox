@@ -38,6 +38,10 @@
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .ListAnyAsync();
+    bool has_youtube = user != null && await ApplicationDbContext.UserYouTubeTokens
+        .AsNoTracking()
+        .Where(x => x.UserId == user.Id)
+        .ListAnyAsync();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -90,6 +94,13 @@
                                 </a>
                             </li>
                         }
+                        @if (has_mastodon) {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Mastodon" asp-action="Feed">
+                                    Mastodon
+                                </a>
+                            </li>
+                        }
                         @if (has_reddit) {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Reddit" asp-action="Feed">
@@ -118,10 +129,10 @@
                                 </a>
                             </li>
                         }
-                        @if (has_mastodon) {
+                        @if (has_youtube) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Mastodon" asp-action="Feed">
-                                    Mastodon
+                                <a class="nav-link text-dark" asp-area="" asp-controller="YouTube" asp-action="Feed">
+                                    YouTube
                                 </a>
                             </li>
                         }
