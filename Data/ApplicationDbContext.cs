@@ -22,6 +22,8 @@ namespace ArtworkInbox.Data {
 
         public DbSet<UserFurAffinityToken> UserFurAffinityTokens { get; set; }
 
+        public DbSet<UserYouTubeToken> UserYouTubeTokens { get; set; }
+
         public DbSet<UserExternalFeed> UserExternalFeeds { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder) {

@@ -55,6 +55,13 @@ namespace ArtworkInbox {
                     t.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
                     t.SaveTokens = true;
                 })
+                .AddGoogle("YouTube", "YouTube", o => {
+                    o.Scope.Add("https://www.googleapis.com/auth/youtube.readonly");
+                    o.AccessType = "offline";
+                    o.ClientId = Configuration["Authentication:Google:ClientId"];
+                    o.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                    o.SaveTokens = true;
+                })
                 .AddMastodon("mastodon.social", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
