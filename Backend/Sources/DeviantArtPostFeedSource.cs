@@ -23,9 +23,7 @@ namespace ArtworkInbox.Backend.Sources {
 
         public async Task<Author> GetAuthenticatedUserAsync() {
             try {
-                var user = await DeviantArtFs.Api.User.AsyncWhoami(
-                    _token,
-                    ObjectExpansion.None).StartAsTask();
+                var user = await DeviantArtFs.Api.User.WhoamiAsync(_token);
                 return new Author {
                     Username = user.username,
                     AvatarUrl = user.usericon,
@@ -40,7 +38,7 @@ namespace ArtworkInbox.Backend.Sources {
         public string GetSubmitUrl() => "https://www.deviantart.com/submit";
 
         public async IAsyncEnumerable<FeedItem> GetFeedItemsAsync() {
-            var asyncEnum = DeviantArtFs.Api.Browse.AsyncGetPostsByDeviantsYouWatch(_token, PagingLimit.MaximumPagingLimit, PagingOffset.StartingOffset);
+            var asyncEnum = DeviantArtFs.Api.Browse.GetPostsByDeviantsYouWatchAsync(_token, PagingLimit.MaximumPagingLimit, PagingOffset.StartingOffset);
             await foreach (var p in asyncEnum) {
                 if (p.journal.OrNull() is Deviation d && IncludeJournals) {
                     yield return new JournalEntry {

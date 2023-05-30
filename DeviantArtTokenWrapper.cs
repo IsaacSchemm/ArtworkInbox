@@ -1,12 +1,10 @@
 ﻿using ArtworkInbox.Data;
 using DeviantArtFs;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArtworkInbox {
-    public class DeviantArtTokenWrapper : IDeviantArtAutomaticRefreshToken {
+    public class DeviantArtTokenWrapper : IDeviantArtRefreshableAccessToken {
         private readonly ApplicationDbContext _context;
         private readonly UserDeviantArtToken _token;
 
@@ -22,9 +20,10 @@ namespace ArtworkInbox {
 
         public string AccessToken => _token.AccessToken;
 
-        public async Task UpdateTokenAsync(IDeviantArtRefreshToken value) {
-            _token.RefreshToken = value.RefreshToken;
-            _token.AccessToken = value.AccessToken;
+        public async Task RefreshAccessTokenAsync() {
+            var resp = await DeviantArtAuth.RefreshAsync(App, _token.RefreshToken);
+            _token.RefreshToken = resp.refresh_token;
+            _token.AccessToken = resp.access_token;
             await _context.SaveChangesAsync();
         }
     }
