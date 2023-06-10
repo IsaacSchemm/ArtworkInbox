@@ -78,6 +78,12 @@ namespace ArtworkInbox {
                     o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
                     o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
                     o.SaveTokens = true;
+                })
+                .AddMastodon("pixelfed.furryfandom.me", o => {
+                    o.Scope.Add("read");
+                    o.ClientId = Configuration["Authentication:Mastodon:pixelfed.furryfandom.me:client_id"];
+                    o.ClientSecret = Configuration["Authentication:Mastodon:pixelfed.furryfandom.me:client_secret"];
+                    o.SaveTokens = true;
                 });
             services.AddSingleton(new DeviantArtApp(
                 Configuration["Authentication:DeviantArt:ClientId"],
@@ -99,14 +105,14 @@ namespace ArtworkInbox {
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-            if (env.IsDevelopment()) {
+            //if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();    
-            } else {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+            //} else {
+            //    app.UseExceptionHandler("/Home/Error");
+            //    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            //    app.UseHsts();
+            //}
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
