@@ -3,8 +3,6 @@
 
 @{
     ViewData["Title"] = "Log in";
-
-    string[] mainProviders = new[] { "DeviantArt", "Tumblr" };
 }
 
 <div class="row">
@@ -37,7 +35,7 @@
                     <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                         <div>
                             <p>
-                                @foreach (var provider in Model.ExternalLogins.Where(x => mainProviders.Contains(x.Name))) {
+                                @foreach (var provider in Model.ExternalLogins.Where(x => true)) {
                                     <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
                                 }
                                 <span class="dropdown">
@@ -45,7 +43,7 @@
                                         Other
                                     </button>
                                     <span class="dropdown-menu" aria-labelledby="otherProviders">
-                                        @foreach (var provider in Model.ExternalLogins.Where(x => !mainProviders.Contains(x.Name))) {
+                                        @foreach (var provider in Model.ExternalLogins.Where(x => false)) {
                                             <button type="submit" class="btn btn-link d-block" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
                                         }
                                     </span>

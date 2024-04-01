@@ -49,36 +49,6 @@ namespace ArtworkInbox {
                     t.ConsumerKey = Configuration["Authentication:Tumblr:ConsumerKey"];
                     t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
                     t.SaveTokens = true;
-                })
-                .AddMastodon("mastodon.social", o => {
-                    o.Scope.Add("read:statuses");
-                    o.Scope.Add("read:accounts");
-                    o.Scope.Add("read:notifications");
-                    o.ClientId = Configuration["Authentication:Mastodon:mastodon.social:client_id"];
-                    o.ClientSecret = Configuration["Authentication:Mastodon:mastodon.social:client_secret"];
-                    o.SaveTokens = true;
-                })
-                .AddMastodon("mstdn.jp", o => {
-                    o.Scope.Add("read:statuses");
-                    o.Scope.Add("read:accounts");
-                    o.Scope.Add("read:notifications");
-                    o.ClientId = Configuration["Authentication:Mastodon:mstdn.jp:client_id"];
-                    o.ClientSecret = Configuration["Authentication:Mastodon:mstdn.jp:client_secret"];
-                    o.SaveTokens = true;
-                })
-                .AddMastodon("botsin.space", o => {
-                    o.Scope.Add("read:statuses");
-                    o.Scope.Add("read:accounts");
-                    o.Scope.Add("read:notifications");
-                    o.ClientId = Configuration["Authentication:Mastodon:botsin.space:client_id"];
-                    o.ClientSecret = Configuration["Authentication:Mastodon:botsin.space:client_secret"];
-                    o.SaveTokens = true;
-                })
-                .AddMastodon("pixelfed.furryfandom.me", o => {
-                    o.Scope.Add("read");
-                    o.ClientId = Configuration["Authentication:Mastodon:pixelfed.furryfandom.me:client_id"];
-                    o.ClientSecret = Configuration["Authentication:Mastodon:pixelfed.furryfandom.me:client_secret"];
-                    o.SaveTokens = true;
                 });
             services.AddSingleton(new DeviantArtApp(
                 Configuration["Authentication:DeviantArt:ClientId"],
