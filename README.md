@@ -8,7 +8,6 @@ An ASP.NET Core web application that provides an alternate UI for viewing your f
 Supported sites:
 
 * [DeviantArt](https://www.deviantart.com/)
-* [Twitter](https://www.twitter.com)
 * [Tumblr](https://www.tumblr.com)
 * [Reddit](https://www.reddit.com/new/)
 * [Weasyl](https://www.weasyl.com) (artwork only; API key required)

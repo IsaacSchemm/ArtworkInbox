@@ -34,26 +34,6 @@ namespace ArtworkInbox {
                     .Select(t => t.Value)
                     .Single();
                 await _context.SaveChangesAsync();
-            } else if (info.LoginProvider == "Twitter") {
-                var token = await _context.UserTwitterTokens
-                    .AsQueryable()
-                    .Where(t => t.UserId == user.Id)
-                    .SingleOrDefaultAsync();
-                if (token == null) {
-                    token = new UserTwitterToken {
-                        UserId = user.Id
-                    };
-                    _context.UserTwitterTokens.Add(token);
-                }
-                token.AccessToken = info.AuthenticationTokens
-                    .Where(t => t.Name == "access_token")
-                    .Select(t => t.Value)
-                    .Single();
-                token.AccessTokenSecret = info.AuthenticationTokens
-                    .Where(t => t.Name == "access_token_secret")
-                    .Select(t => t.Value)
-                    .Single();
-                await _context.SaveChangesAsync();
             } else if (info.LoginProvider == "Tumblr") {
                 var token = await _context.UserTumblrTokens
                     .AsQueryable()
@@ -149,15 +129,6 @@ namespace ArtworkInbox {
         public async Task RemoveTokensAsync(ApplicationUser user, string loginProvider) {
             if (loginProvider == "DeviantArt") {
                 var token = await _context.UserDeviantArtTokens
-                    .AsQueryable()
-                    .Where(t => t.UserId == user.Id)
-                    .SingleOrDefaultAsync();
-                if (token != null) {
-                    _context.Remove(token);
-                    await _context.SaveChangesAsync();
-                }
-            } else if (loginProvider == "Twitter") {
-                var token = await _context.UserTwitterTokens
                     .AsQueryable()
                     .Where(t => t.UserId == user.Id)
                     .SingleOrDefaultAsync();

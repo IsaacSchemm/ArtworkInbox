@@ -10,8 +10,6 @@ namespace ArtworkInbox.Data {
 
         public DbSet<UserDeviantArtToken> UserDeviantArtTokens { get; set; }
 
-        public DbSet<UserTwitterToken> UserTwitterTokens { get; set; }
-
         public DbSet<UserTumblrToken> UserTumblrTokens { get; set; }
 
         public DbSet<UserMastodonToken> UserMastodonTokens { get; set; }

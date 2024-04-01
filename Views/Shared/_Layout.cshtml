@@ -18,10 +18,6 @@
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
         .ListAnyAsync();
-    bool has_twitter = user != null && await ApplicationDbContext.UserTwitterTokens
-        .AsNoTracking()
-        .Where(x => x.UserId == user.Id)
-        .ListAnyAsync();
     bool has_tumblr = user != null && await ApplicationDbContext.UserTumblrTokens
         .AsNoTracking()
         .Where(x => x.UserId == user.Id)
@@ -101,13 +97,6 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Tumblr" asp-action="Feed">
                                     Tumblr
-                                </a>
-                            </li>
-                        }
-                        @if (has_twitter) {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Twitter" asp-action="Feed">
-                                    Twitter
                                 </a>
                             </li>
                         }

@@ -50,11 +50,6 @@ namespace ArtworkInbox {
                     t.ConsumerSecret = Configuration["Authentication:Tumblr:ConsumerSecret"];
                     t.SaveTokens = true;
                 })
-                .AddTwitter(t => {
-                    t.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
-                    t.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
-                    t.SaveTokens = true;
-                })
                 .AddMastodon("mastodon.social", o => {
                     o.Scope.Add("read:statuses");
                     o.Scope.Add("read:accounts");
