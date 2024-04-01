@@ -37,8 +37,6 @@ namespace ArtworkInbox.Backend.Sources {
             var req = new WeasylFs.Endpoints.MessageSubmissions.Request();
             while (true) {
                 var page = await WeasylFs.Endpoints.MessageSubmissions.ExecuteAsync(_token, req);
-                if (page.nexttime_or_null == null)
-                    break;
 
                 foreach (var s in page.submissions) {
                     yield return new Artwork {
@@ -54,6 +52,9 @@ namespace ArtworkInbox.Backend.Sources {
                         Title = s.title
                     };
                 }
+
+                if (page.nexttime_or_null == null)
+                    break;
 
                 req.NextTime = page.nexttime_or_null;
             }
