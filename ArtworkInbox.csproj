@@ -5,59 +5,6 @@
     <UserSecretsId>aspnet-DANotify-323AE0A6-D00F-4C91-89E7-85AF41063D20</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Data\Migrations\20191224155815_DATokenServerStorage.cs" />
-    <Compile Remove="Data\Migrations\20191224155815_DATokenServerStorage.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191224161530_DATokenServerStorage.cs" />
-    <Compile Remove="Data\Migrations\20191224161530_DATokenServerStorage.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191224172024_dfgdf.cs" />
-    <Compile Remove="Data\Migrations\20191224172024_dfgdf.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191224172307_UserReadMarker.cs" />
-    <Compile Remove="Data\Migrations\20191224172307_UserReadMarker.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191228162733_TwitterTokens.cs" />
-    <Compile Remove="Data\Migrations\20191228162733_TwitterTokens.Designer.cs" />
-    <Compile Remove="Data\Migrations\20191228214947_TwitterLastRead.cs" />
-    <Compile Remove="Data\Migrations\20191228214947_TwitterLastRead.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200108184221_Preferences.cs" />
-    <Compile Remove="Data\Migrations\20200108184221_Preferences.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200108184640_HideMatre.cs" />
-    <Compile Remove="Data\Migrations\20200108184640_HideMatre.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200108184748_HideMature.cs" />
-    <Compile Remove="Data\Migrations\20200108184748_HideMature.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200109005732_HideReposts.cs" />
-    <Compile Remove="Data\Migrations\20200109005732_HideReposts.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200109005907_HideReposts.cs" />
-    <Compile Remove="Data\Migrations\20200109005907_HideReposts.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200109010528_ArtworkInbox.cs" />
-    <Compile Remove="Data\Migrations\20200109010528_ArtworkInbox.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200113210812_Weasyl.cs" />
-    <Compile Remove="Data\Migrations\20200113210812_Weasyl.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200113211711_Weasyl.cs" />
-    <Compile Remove="Data\Migrations\20200113211711_Weasyl.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200126202911_Inkbunny.cs" />
-    <Compile Remove="Data\Migrations\20200126202911_Inkbunny.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200128001112_MastodonTokens.cs" />
-    <Compile Remove="Data\Migrations\20200128001112_MastodonTokens.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200128002507_MastodonTokens.cs" />
-    <Compile Remove="Data\Migrations\20200128002507_MastodonTokens.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200128002836_MastodonTokens.cs" />
-    <Compile Remove="Data\Migrations\20200128002836_MastodonTokens.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200128003204_MastodonTokens.cs" />
-    <Compile Remove="Data\Migrations\20200128003204_MastodonTokens.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200129022205_Mastodon.cs" />
-    <Compile Remove="Data\Migrations\20200129022205_Mastodon.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200129025025_Mastodon.cs" />
-    <Compile Remove="Data\Migrations\20200129025025_Mastodon.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200129030345_Mastodon.cs" />
-    <Compile Remove="Data\Migrations\20200129030345_Mastodon.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200203235642_Mastodon.cs" />
-    <Compile Remove="Data\Migrations\20200203235642_Mastodon.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200209163442_Inoreader.cs" />
-    <Compile Remove="Data\Migrations\20200209163442_Inoreader.Designer.cs" />
-    <Compile Remove="Data\Migrations\20200209220844_Inoreader.cs" />
-    <Compile Remove="Data\Migrations\20200209220844_Inoreader.Designer.cs" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.DeviantArt" Version="7.0.2" />
